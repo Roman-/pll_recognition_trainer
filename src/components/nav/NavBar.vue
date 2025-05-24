@@ -43,7 +43,7 @@ const onSettingsClicked = () => {
           <i class="bi-gear font-bigger"/>
         </button>
         <button tabindex="-1" class="btn btn-link text-info" @click="resetSessionClicked" title="Restart evaluation">
-          <i class="bi-recycle font-bigger"/>
+          <i class="bi-arrow-counterclockwise font-bigger"/>
         </button>
         <ThemeSwitcher/>
       </div>
