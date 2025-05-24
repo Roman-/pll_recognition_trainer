@@ -6,8 +6,11 @@ import PllCaseInfo from "@/components/PllCaseInfo.vue";
 import {computed, onMounted, onUnmounted} from "vue";
 import {isHelpKey, isPllLetter} from "@/scripts/helpers";
 import ResultsList from "@/components/ResultsList.vue";
+import OnScreenKeyboard from "@/components/OnScreenKeyboard.vue";
+import {useSettingsStore} from "@/stores/SettingsStore";
 
 const session = useSessionStore()
+const settings = useSettingsStore()
 
 const handleKeyPress = e => {
   // if bs modal (.modal.show) or note input (.noteInput) is present, ignore
@@ -55,6 +58,9 @@ onUnmounted(() => {
 })
 
 const keyPressHint = computed(() => {
+  if (settings.store.showOnScreenKeyboard) {
+    return ""
+  }
   if (session.store.state === GameState.Playing && session.store.mistake) {
     return `Press ${session.currentCase.name[0]} to continue, Esc to pause`;
   }
@@ -75,9 +81,10 @@ const keyPressHint = computed(() => {
       <div class="text-center">
         <PllPic :pllCase="session.currentCase" viewType="cube" :size="400" :clickable="false"/>
       </div>
-        <div class="text-secondary text-center my-3">
-          {{ keyPressHint }}
-        </div>
+      <OnScreenKeyboard/>
+      <div class="text-secondary text-center my-3" v-if="!settings.store.showOnScreenKeyboard">
+        {{ keyPressHint }}
+      </div>
       <div v-if="session.store.state === GameState.Playing && session.store.mistake">
         <hr>
         <div class="d-flex justify-content-center">

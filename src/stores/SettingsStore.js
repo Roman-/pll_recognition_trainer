@@ -3,11 +3,15 @@ import {defineStore} from 'pinia'
 import {CubeViews, DefaultAllowedCrossColors, DefaultColorScheme, strokeWidthOptions} from "@/scripts/colors";
 import {random_element} from "@/scripts/helpers";
 
+const isMobileDevice = typeof window !== 'undefined' &&
+    ('ontouchstart' in window || navigator.maxTouchPoints > 0);
+
 const defaultSettings = {
     puzzleRotations: CubeViews["Center"],
     strokeWidth: strokeWidthOptions["1"],
     colorScheme: DefaultColorScheme,
-    allowedCrossColors: DefaultAllowedCrossColors
+    allowedCrossColors: DefaultAllowedCrossColors,
+    showOnScreenKeyboard: isMobileDevice
 }
 
 const localStorageKey = "pll_recognition_settings"
