@@ -58,17 +58,20 @@ onUnmounted(() => {
 })
 
 const keyPressHint = computed(() => {
-  if (settings.store.showOnScreenKeyboard) {
-    return ""
-  }
   if (session.store.state === GameState.Playing && session.store.mistake) {
-    return `Press ${session.currentCase.name[0]} to continue, Esc to pause`;
+    return settings.store.showOnScreenKeyboard
+        ? `Click ${session.currentCase.name[0]} to continue`
+        : `Press ${session.currentCase.name[0]} to continue, Esc to pause`;
   }
   if (session.store.state === GameState.Playing && !session.store.mistake) {
-    return "Enter PLL case name. Press Esc to pause"
+    return settings.store.showOnScreenKeyboard
+        ? "Which PLL case is this?"
+        : "Enter PLL case name. Press Esc to pause";
   }
   if (session.store.state === GameState.Paused) {
-    return "Press space to " + (session.store.results.length === 0 ? "start" : "resume")
+    return settings.store.showOnScreenKeyboard
+        ? ""
+        : "Press space to " + (session.store.results.length === 0 ? "start" : "resume")
   }
   return session.store.state === GameState.Playing ? "Press Esc to pause" : "Press space to resume"
 })
@@ -81,10 +84,10 @@ const keyPressHint = computed(() => {
       <div class="text-center">
         <PllPic :pllCase="session.currentCase" viewType="cube" :size="400" :clickable="false"/>
       </div>
-      <OnScreenKeyboard/>
-      <div class="text-secondary text-center my-3" v-if="!settings.store.showOnScreenKeyboard">
+      <div class="text-secondary text-center my-3">
         {{ keyPressHint }}
       </div>
+      <OnScreenKeyboard/>
       <div v-if="session.store.state === GameState.Playing && session.store.mistake">
         <hr>
         <div class="d-flex justify-content-center">

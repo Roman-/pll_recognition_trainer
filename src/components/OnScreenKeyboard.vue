@@ -6,14 +6,14 @@
       </button>
     </div>
     <div v-else-if="session.store.state === GameState.Playing">
-      <div class="mb-2">
-        <button class="btn btn-secondary" @click="session.pausePlay()">Pause</button>
-      </div>
       <div class="d-flex flex-wrap justify-content-center">
         <button v-for="letter in letters" :key="letter" class="btn btn-outline-primary m-1"
                 @click="session.submitAnswer(letter)">
           {{ letter }}
         </button>
+      </div>
+      <div class="mt-2">
+        <button class="btn btn-secondary" @click="session.pausePlay()">Pause</button>
       </div>
     </div>
   </div>
