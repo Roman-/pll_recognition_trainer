@@ -1,0 +1,11 @@
+{
+  "en": {
+    "nav": {
+      "language": "Language",
+      "toggle_night_mode": "Toggle night mode"
+    },
+    "main": {
+      "hello": "Hello! This text in English"
+    }
+  }
+}
