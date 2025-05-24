@@ -1,6 +1,8 @@
-# PLL Recognition Trainer
+# PLL Recognition Trainer: [bestsiteever.net/pll_recognition](https://bestsiteever.net/pll_recognition).
 
-This project is a web based trainer for practicing PLL (Permutation of the Last Layer) recognition for speedcubing. It presents PLL cases from multiple angles and lets you answer quickly using keyboard shortcuts. The trainer adapts to your performance to focus on the cases that need more work.
+![app preview](public/pll_recognition_trainer.jpg "App preview")
+
+Web based trainer for practicing PLL (Permutation of the Last Layer) recognition for speedcubing. Presents PLL cases from multiple angles and lets you answer quickly using keyboard shortcuts. Adapts to your performance to focus on the cases that need more work.
 
 - **Interactive practice** – An image of a PLL case is shown and you press the key corresponding to its name.
 - **Instant feedback** – When you make a mistake, the correct answer appears right away.
@@ -10,11 +12,11 @@ This project is a web based trainer for practicing PLL (Permutation of the Last 
 - **Adaptive sessions** – Future practice will surface cases that you answered slowly or incorrectly more often.
 - **Customizable settings** – Options include multi‑color practice, front/side orientation, and color schemes that match your cube. Settings can be reset to defaults.
 
-The live site is available at [bestsiteever.net/pll_recognition](https://bestsiteever.net/pll_recognition). A video overview can be found on [YouTube](https://youtu.be/lIjel-amSeg?si=nLCzXIcVpmAKlFyn).
+Live site: [bestsiteever.net/pll_recognition](https://bestsiteever.net/pll_recognition). Video overview: [YouTube](https://youtu.be/lIjel-amSeg?si=nLCzXIcVpmAKlFyn).
 
 ## Development
 
-This project uses [Vite](https://vitejs.dev/) and Vue 3. To start a local development server:
+Vue 3 + [Vite](https://vitejs.dev/). To start a local development server:
 
 ```bash
 npm install
@@ -26,8 +28,3 @@ To build for production:
 ```bash
 npm run build
 ```
-
-## License
-
-This project is provided without a specific license.
-
