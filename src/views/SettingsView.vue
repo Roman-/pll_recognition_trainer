@@ -69,6 +69,15 @@ const customizeColorsVisible = ref(false)
 
     <div class="row my-1">
       <div class="col-6 d-flex align-items-center justify-content-end">
+        Display on-screen keyboard
+      </div>
+      <div class="col-6 text-start">
+        <input type="checkbox" v-model="settings.store.showOnScreenKeyboard" />
+      </div>
+    </div>
+
+    <div class="row my-1">
+      <div class="col-6 d-flex align-items-center justify-content-end">
         Color tones
       </div>
       <div class="col-6 text-start">
