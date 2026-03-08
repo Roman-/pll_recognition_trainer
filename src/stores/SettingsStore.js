@@ -10,12 +10,14 @@ const defaultSettings = {
     strokeWidth: strokeWidthOptions["1"],
     colorScheme: DefaultColorScheme,
     allowedCrossColors: DefaultAllowedCrossColors,
-    showOnScreenKeyboard: isMobileDevice
+    showOnScreenKeyboard: isMobileDevice,
+    fullNameMode: false
 }
 
 const localStorageKey = "pll_recognition_settings"
 export const useSettingsStore = defineStore('settings', () => {
-    const store = reactive(JSON.parse(localStorage.getItem(localStorageKey)) || defaultSettings)
+    const saved = JSON.parse(localStorage.getItem(localStorageKey))
+    const store = reactive(saved ? { ...defaultSettings, ...saved } : defaultSettings)
 
     const reset = () => {
         Object.assign(store, defaultSettings)

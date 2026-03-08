@@ -3,14 +3,21 @@
 import PllPic from "@/components/PllPic.vue";
 import {GameState, useSessionStore} from "@/stores/SessionStore";
 import PllCaseInfo from "@/components/PllCaseInfo.vue";
-import {computed, onMounted, onUnmounted} from "vue";
-import {isHelpKey, isPllLetter} from "@/scripts/helpers";
+import {computed, onMounted, onUnmounted, ref, watch} from "vue";
+import {isHelpKey, isPllLetter, isSingleLetterPll, isTwoLetterPllPrefix, validPllSuffixes} from "@/scripts/helpers";
 import ResultsList from "@/components/ResultsList.vue";
 import OnScreenKeyboard from "@/components/OnScreenKeyboard.vue";
 import {useSettingsStore} from "@/stores/SettingsStore";
 
 const session = useSessionStore()
 const settings = useSettingsStore()
+
+const pendingKey = ref(null)
+
+// Clear pendingKey when the case changes (e.g. correct answer submitted)
+watch(() => session.currentCase, () => {
+  pendingKey.value = null
+})
 
 const handleKeyPress = e => {
   // if bs modal (.modal.show) or note input (.noteInput) is present, ignore
@@ -20,7 +27,44 @@ const handleKeyPress = e => {
   }
 
   const withModifiers = e.altKey || e.ctrlKey || e.metaKey || e.shiftKey
+
+  if (settings.store.fullNameMode && pendingKey.value) {
+    // We have a buffered prefix key — handle second keystroke
+    if (!withModifiers && e.key === "Escape") {
+      pendingKey.value = null
+      session.pausePlay()
+      e.preventDefault()
+      return
+    }
+    if (!withModifiers && e.key === "Backspace") {
+      pendingKey.value = null
+      e.preventDefault()
+      return
+    }
+    if (!withModifiers && isHelpKey(e.key)) {
+      pendingKey.value = null
+      session.giveUpOnCase()
+      e.preventDefault()
+      return
+    }
+    if (!withModifiers) {
+      const suffix = e.key.toLowerCase()
+      const suffixes = validPllSuffixes[pendingKey.value]
+      if (suffixes && suffixes.includes(suffix)) {
+        const fullName = pendingKey.value + suffix
+        session.submitAnswer(fullName, true)
+        pendingKey.value = null
+        e.preventDefault()
+        return
+      }
+      // Invalid suffix — ignore
+      e.preventDefault()
+      return
+    }
+  }
+
   if (!withModifiers && e.key === "Escape") {
+    pendingKey.value = null
     session.pausePlay()
     e.preventDefault()
     return
@@ -31,7 +75,16 @@ const handleKeyPress = e => {
     return
   }
   if (!withModifiers && isPllLetter(e.key.toUpperCase())) {
-    session.submitAnswer(e.key.toUpperCase())
+    const letter = e.key.toUpperCase()
+    if (settings.store.fullNameMode) {
+      if (isSingleLetterPll(letter)) {
+        session.submitAnswer(letter, true)
+      } else if (isTwoLetterPllPrefix(letter)) {
+        pendingKey.value = letter
+      }
+    } else {
+      session.submitAnswer(letter)
+    }
     e.preventDefault()
     return
   }
@@ -42,7 +95,11 @@ const handleKeyPress = e => {
   }
   if (!withModifiers && e.key === '0' && session.currentCase) {
     // = cheat (for debugging purposes
-    session.submitAnswer(session.currentCase.name[0])
+    if (settings.store.fullNameMode) {
+      session.submitAnswer(session.currentCase.name, true)
+    } else {
+      session.submitAnswer(session.currentCase.name[0])
+    }
     e.preventDefault()
     return
   }
@@ -58,10 +115,16 @@ onUnmounted(() => {
 })
 
 const keyPressHint = computed(() => {
+  if (session.store.state === GameState.Playing && pendingKey.value) {
+    return `${pendingKey.value}_ ...`
+  }
   if (session.store.state === GameState.Playing && session.store.mistake) {
+    const correctName = settings.store.fullNameMode
+        ? session.currentCase.name
+        : session.currentCase.name[0]
     return settings.store.showOnScreenKeyboard
-        ? `Click ${session.currentCase.name[0]} to continue`
-        : `Press ${session.currentCase.name[0]} to continue, Esc to pause`;
+        ? `Click ${correctName} to continue`
+        : `Press ${correctName} to continue, Esc to pause`;
   }
   if (session.store.state === GameState.Playing && !session.store.mistake) {
     return settings.store.showOnScreenKeyboard

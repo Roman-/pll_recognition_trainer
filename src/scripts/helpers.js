@@ -31,6 +31,25 @@ export const isPllLetter = l => {
     return new Set(['A', 'E', 'F', 'G', 'H', 'J', 'N', 'R', 'T', 'U', 'V', 'Y', 'Z']).has(l)
 }
 
+export const isSingleLetterPll = l => {
+    return new Set(['E', 'F', 'H', 'T', 'V', 'Y', 'Z']).has(l)
+}
+
+export const isTwoLetterPllPrefix = l => {
+    return new Set(['A', 'G', 'J', 'N', 'R', 'U']).has(l)
+}
+
+export const validPllSuffixes = {
+    A: ['a', 'b'],
+    G: ['a', 'b', 'c', 'd'],
+    J: ['a', 'b'],
+    N: ['a', 'b'],
+    R: ['a', 'b'],
+    U: ['a', 'b']
+}
+
+export const allPllCaseNames = new Set(Object.keys(pllMap))
+
 export const isHelpKey = key => {
     return new Set(['-', 'F1', '?']).has(key)
 }

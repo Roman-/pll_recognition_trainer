@@ -1,7 +1,7 @@
 import {computed, reactive, ref, watch} from 'vue'
 import {defineStore} from 'pinia'
 import {keysToCases, allPllKeys, resultsToEvalResults, evalResultsToNewQueue} from "@/scripts/pll_cases";
-import {isPllLetter, shuffle} from "@/scripts/helpers";
+import {isPllLetter, allPllCaseNames, shuffle} from "@/scripts/helpers";
 import {DefaultAllowedCrossColors, randomCrossColor} from "@/scripts/colors";
 
 const storeKey = 'pll_store';
@@ -79,12 +79,17 @@ export const useSessionStore = defineStore('session', () => {
         store.currentRecognitionStarted = new Date()
     }
 
-    const submitAnswer = letter => {
-        if (store.state !== GameState.Playing || !isPllLetter(letter.toUpperCase()) || !currentCase.value) {
+    const submitAnswer = (answer, fullNameMode = false) => {
+        if (store.state !== GameState.Playing || !currentCase.value) {
             return
         }
-        const answer = letter.toUpperCase()
-        const isCorrect = currentCase.value.name[0] === answer
+        if (fullNameMode) {
+            if (!allPllCaseNames.has(answer)) return
+        } else {
+            if (!isPllLetter(answer.toUpperCase())) return
+            answer = answer.toUpperCase()
+        }
+        const isCorrect = fullNameMode ? currentCase.value.name === answer : currentCase.value.name[0] === answer
         // if mistake is empty, this result hasn't been added to history yet
         if (!store.mistake) {
             const currentAnswerMistake = isCorrect ? "" : answer

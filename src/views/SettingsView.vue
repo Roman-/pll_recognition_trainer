@@ -78,6 +78,18 @@ const customizeColorsVisible = ref(false)
 
     <div class="row my-1">
       <div class="col-6 d-flex align-items-center justify-content-end">
+        <div class="text-end">
+          <div>Full name mode</div>
+          <div class="text-secondary">Type full case name (e.g. Ga instead of just G)</div>
+        </div>
+      </div>
+      <div class="col-6 text-start">
+        <input type="checkbox" v-model="settings.store.fullNameMode" />
+      </div>
+    </div>
+
+    <div class="row my-1">
+      <div class="col-6 d-flex align-items-center justify-content-end">
         Color tones
       </div>
       <div class="col-6 text-start">
