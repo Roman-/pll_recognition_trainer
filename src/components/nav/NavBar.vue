@@ -28,9 +28,12 @@ const onSettingsClicked = () => {
 
 <template>
   <nav class="navbar sticky-top" :class="navBarClass">
-    <div class="row w-100 align-items-center">
+    <div class="row w-100 align-items-center flex-nowrap">
       <div class="col-auto me-auto" @click="router.push('meta')">
-        <span class="navbar-brand clickable text-primary mx-2">PLL Recognition Trainer</span>
+        <span class="navbar-brand clickable text-primary mx-2">
+          <span class="d-none d-sm-inline">PLL Recognition Trainer</span>
+          <span class="d-inline d-sm-none">PLL</span>
+        </span>
       </div>
       <div class="col-auto">
         <button
