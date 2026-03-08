@@ -1,7 +1,6 @@
-import {computed, reactive, ref, watch} from 'vue'
+import {reactive, watch} from 'vue'
 import {defineStore} from 'pinia'
 import {CubeViews, DefaultAllowedCrossColors, DefaultColorScheme, strokeWidthOptions} from "@/scripts/colors";
-import {random_element} from "@/scripts/helpers";
 
 const isMobileDevice = typeof window !== 'undefined' &&
     ('ontouchstart' in window || navigator.maxTouchPoints > 0);

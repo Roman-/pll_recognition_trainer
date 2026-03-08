@@ -1,4 +1,4 @@
-import {computed, reactive, ref, watch} from 'vue'
+import {reactive, watch} from 'vue'
 import {defineStore} from 'pinia'
 
 const notesKey = 'pll_notes';

@@ -1,7 +1,7 @@
 import {computed, reactive, ref, watch} from 'vue'
 import {defineStore} from 'pinia'
 import {keysToCases, allPllKeys, resultsToEvalResults, evalResultsToNewQueue} from "@/scripts/pll_cases";
-import {isPllLetter, random_element, shuffle} from "@/scripts/helpers";
+import {isPllLetter, shuffle} from "@/scripts/helpers";
 import {DefaultAllowedCrossColors, randomCrossColor} from "@/scripts/colors";
 
 const storeKey = 'pll_store';

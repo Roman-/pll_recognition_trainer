@@ -1,7 +1,7 @@
 <script setup>
-import { PNG, SVG } from "sr-puzzlegen"
+import { SVG } from "sr-puzzlegen"
 import {computed, onMounted, ref, watch} from "vue";
-import {llPuzzleMask, noCubePuzzleMask, scrambleForCase} from "@/scripts/helpers";
+import {noCubePuzzleMask, scrambleForCase} from "@/scripts/helpers";
 import {useSettingsStore} from "@/stores/SettingsStore";
 import CaseVariationsModal from "@/components/CaseVariationsModal.vue";
 
@@ -37,11 +37,8 @@ const insertSvg = () => {
     opts.puzzle.rotations = settings.store.puzzleRotations
   }
 
-  const hideF2l = false
   if (!scramble.value) {
     opts.puzzle.mask = noCubePuzzleMask
-  } else if (hideF2l) {
-    opts.puzzle.mask = llPuzzleMask
   }
   SVG(cubeImgDiv.value, props.viewType, opts)
 }

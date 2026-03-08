@@ -1,5 +1,5 @@
 {
-  "name": "vue_template",
+  "name": "pll-recognition-trainer",
   "version": "0.0.0",
   "private": true,
   "scripts": {
@@ -8,14 +8,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "animate.css": "^4.1.1",
     "bootstrap": "^5.2.3",
     "bootstrap-icons": "^1.10.3",
-    "bootstrap-select": "^1.13.18",
     "pinia": "^2.0.28",
     "sr-puzzlegen": "^1.0.4",
     "vue": "^3.2.46",
-    "vue-i18n": "^9.2.2",
     "vue-router": "^4.1.6"
   },
   "devDependencies": {
