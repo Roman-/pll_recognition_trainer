@@ -55,7 +55,9 @@ const modalShown = ref(false);
 
 <template>
   <div ref="cubeImgDiv" :class="props.clickable ? 'clickable' : ''" @click="props.clickable && (modalShown = true)"></div>
-  <CaseVariationsModal v-if="modalShown" :pllCase="props.pllCase" :closeCallback="() => modalShown=false"/>
+  <Teleport to="body">
+    <CaseVariationsModal v-if="modalShown" :pllCase="props.pllCase" :closeCallback="() => modalShown=false"/>
+  </Teleport>
 </template>
 
 <style scoped>

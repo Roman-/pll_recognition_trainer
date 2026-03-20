@@ -37,6 +37,7 @@ watch(() => session.currentCase, () => {
 const handleKeyPress = e => {
   // if bs modal (.modal.show) or note input (.noteInput) is present, ignore
   if (document.querySelector(".modal.show")
+      || session.store.showResultsModal
       || document.querySelector(".noteInput:focus")) {
     return
   }
