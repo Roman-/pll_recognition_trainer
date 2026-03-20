@@ -17,13 +17,7 @@ const router = useRouter();
 const route = useRoute();
 const isSettings = computed(() => route.name === "Settings")
 const isHome = computed(() => route.name === "Home")
-const onSettingsClicked = () => {
-  if (isSettings.value) {
-    router.push("/trainer")
-  } else {
-    router.push("Settings")
-  }
-}
+const isTrainer = computed(() => route.name === "Meta")
 
 const showResults = computed(() =>
     !isSettings.value && (session.store.state === GameState.Playing || session.store.results.length > 0)
@@ -51,14 +45,21 @@ const resultsCount = computed(() => session.store.results.length)
           <i class="bi-list-ol font-bigger"/>
           <span class="badge bg-secondary align-top">{{ resultsCount }}</span>
         </button>
-        <button
-            class="btn btn-link"
-            @click="onSettingsClicked"
-            :class="isSettings ? 'text-secondary' : 'text-info'"
+        <button v-if="isTrainer"
+            class="btn btn-link text-info"
+            @click="router.push('/settings')"
             title="Settings"
             tabindex="-1"
         >
           <i class="bi-gear font-bigger"/>
+        </button>
+        <button v-else
+            class="btn btn-link text-info"
+            @click="router.push('/trainer')"
+            title="Start Training"
+            tabindex="-1"
+        >
+          <i class="bi-lightning-charge-fill font-bigger"/>
         </button>
         <button v-if="!isHome" tabindex="-1" class="btn btn-link text-info" @click="resetSessionClicked" title="Restart evaluation">
           <i class="bi-arrow-counterclockwise font-bigger"/>

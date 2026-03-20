@@ -17,7 +17,7 @@
           come back more often until you nail them.
         </p>
         <div class="text-center">
-          <router-link to="/trainer" class="btn btn-primary btn-lg">Start Training</router-link>
+          <router-link to="/trainer" class="btn btn-primary btn-lg"><i class="bi-lightning-charge-fill me-1"/>Start Training</router-link>
         </div>
       </div>
     </div>
