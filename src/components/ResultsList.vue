@@ -5,7 +5,8 @@ const props = defineProps({
   results: Object,
   pictureSize: Number,
   showNotes: Boolean,
-  showTopPicture: Boolean
+  showTopPicture: Boolean,
+  cardLayout: Boolean
 })
 
 </script>
@@ -14,7 +15,7 @@ const props = defineProps({
   <div class="resultList">
     <TransitionGroup enter-active-class="animate__animated animate__fadeIn result-enter-fast">
       <div v-for="r in props.results" :key="r.started">
-        <ResultItem :result="r" :pictureSize="props.pictureSize" :showNotes="props.showNotes" :showTopPicture="props.showTopPicture"/>
+        <ResultItem :result="r" :pictureSize="props.pictureSize" :showNotes="props.showNotes" :showTopPicture="props.showTopPicture" :cardLayout="props.cardLayout"/>
       </div>
     </TransitionGroup>
   </div>

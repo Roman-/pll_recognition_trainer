@@ -27,8 +27,10 @@ const subtitle2 = computed(() => {
     <h1>Evaluation results</h1>
     <h4>{{subtitle1}}</h4>
     <h4>{{subtitle2}}</h4>
-    <button class="btn btn-primary m-2" @click="session.startPersonalized()">Start personalized training</button>
-    <div class="w-100 p-2 pt-3">
+    <button class="btn btn-primary btn-lg px-4 py-2 m-2 start-btn" @click="session.startPersonalized()">
+      <i class="bi-lightning-charge-fill me-1"/>Start personalized training
+    </button>
+    <div class="col-12 col-md-8 col-lg-6 mx-auto p-2 pt-3">
       <p>
         Study these cases thoroughly and add notes on how you recognize them.
         You can <strong>click the cube picture</strong> to view the PLL in all color/AUF variations.
@@ -37,8 +39,8 @@ const subtitle2 = computed(() => {
         When you start personalized training, you will be shown the cases you got wrong more often.
       </p>
     </div>
-    <div class="w-100">
-      <ResultsList :results="evalResults" :pictureSize="220" :showNotes="true" :showTopPicture="true"/>
+    <div class="col-12 col-md-8 col-lg-6 mx-auto">
+      <ResultsList :results="evalResults" :pictureSize="220" :showNotes="true" :showTopPicture="true" :cardLayout="true"/>
     </div>
   </div>
 </template>

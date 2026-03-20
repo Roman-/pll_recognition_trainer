@@ -9,7 +9,8 @@ const props = defineProps({
   result: Object,
   pictureSize: Number,
   showNotes: Boolean,
-  showTopPicture: Boolean
+  showTopPicture: Boolean,
+  cardLayout: Boolean
 })
 
 const timeText = computed(() => {
@@ -21,7 +22,35 @@ const resultIsPoor = computed(() => resultTimeMs(props.result) > 3000)
 </script>
 
 <template>
-  <div class="row align-items-center mx-0">
+  <!-- Card layout for evaluation results -->
+  <div v-if="cardLayout" class="card mb-3">
+    <div class="card-body">
+      <!-- Row 1: Name + Badge -->
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <h5 class="mb-0">{{ props.result.pllCase.name }}</h5>
+        <span v-if="props.result.mistake" class="badge bg-danger" :title="timeText">
+          {{ props.result.mistake === "-" ? "gave up" : `not ${props.result.mistake}` }}
+        </span>
+        <span v-else class="badge" :class="resultIsPoor ? 'bg-warning' : 'bg-success'">
+          {{ timeText }}
+        </span>
+      </div>
+      <!-- Row 2: Two images side by side -->
+      <div class="row mb-2">
+        <div class="col-6">
+          <PllPic :pllCase="props.result.pllCase" viewType="cube-top" :size="props.pictureSize" :clickable="true"/>
+        </div>
+        <div class="col-6">
+          <PllPic :pllCase="props.result.pllCase" viewType="cube" :size="props.pictureSize" :clickable="true"/>
+        </div>
+      </div>
+      <!-- Row 3: Note -->
+      <Note :pll-case="props.result.pllCase" :enableHotkeys="false"/>
+    </div>
+  </div>
+
+  <!-- Compact layout (existing behavior) -->
+  <div v-else class="row align-items-center mx-0">
     <div v-if="props.showTopPicture" class="col col-auto">
       <PllPic :pllCase="props.result.pllCase" viewType="cube-top" :size="Math.round(props.pictureSize * 0.8)" :clickable="true"/>
     </div>

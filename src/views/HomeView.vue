@@ -59,34 +59,4 @@ useKeydown((e) => {
 </template>
 
 <style scoped>
-.start-btn {
-  position: relative;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  overflow: hidden;
-}
-
-.start-btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    120deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.25) 50%,
-    transparent 100%
-  );
-  transition: left 0.5s ease;
-}
-
-.start-btn:hover {
-  transform: scale(1.05);
-  box-shadow: 0 0 20px rgba(var(--bs-primary-rgb), 0.5);
-}
-
-.start-btn:hover::before {
-  left: 100%;
-}
 </style>

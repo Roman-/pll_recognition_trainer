@@ -110,8 +110,8 @@ const handleKeyPress = e => {
     e.preventDefault()
     return
   }
-  if (!withModifiers && e.key === '0' && session.currentCase) {
-    // = cheat (for debugging purposes
+  if (e.shiftKey && e.key === 'C' && !e.altKey && !e.ctrlKey && !e.metaKey && session.currentCase) {
+    // Shift+C = cheat (for debugging purposes)
     if (settings.store.fullNameMode) {
       session.submitAnswer(session.currentCase.name, true)
     } else {
@@ -119,6 +119,15 @@ const handleKeyPress = e => {
     }
     e.preventDefault()
     return
+  }
+}
+
+const cheat = () => {
+  if (!session.currentCase) return
+  if (settings.store.fullNameMode) {
+    session.submitAnswer(session.currentCase.name, true)
+  } else {
+    session.submitAnswer(session.currentCase.name[0])
   }
 }
 
@@ -173,6 +182,9 @@ const keyPressHint = computed(() => {
       <div class="text-secondary text-center my-3"
            :class="{ 'animate__animated animate__headShake': shakeHint }">
         {{ keyPressHint }}
+      </div>
+      <div v-if="session.store.state === GameState.Playing" class="text-center">
+        <button class="btn btn-link btn-sm text-muted" @click="cheat">Cheat</button>
       </div>
       <OnScreenKeyboard/>
       <div v-if="session.store.state === GameState.Playing && session.store.mistake">
