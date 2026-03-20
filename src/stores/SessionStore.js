@@ -39,6 +39,9 @@ const defaultStore = {
 export const useSessionStore = defineStore('session', () => {
     const store = reactive(JSON.parse(localStorage.getItem(storeKey)) || defaultStore)
 
+    // Non-persisted: signals the most recent answer submission for UI feedback
+    const lastSubmission = ref(null)
+
     const currentCase = computed(() => store.state === GameState.Playing && store.queue.length > 0 ? store.queue[0] : null)
 
     const setAllowedCrossColors = (crossColors) => {
@@ -93,6 +96,10 @@ export const useSessionStore = defineStore('session', () => {
             answer = answer.toUpperCase()
         }
         const isCorrect = fullNameMode ? currentCase.value.name === answer : currentCase.value.name[0] === answer
+        // Signal feedback for on-screen keyboard (first attempt or correct retry)
+        if (!store.mistake || isCorrect) {
+            lastSubmission.value = { key: answer, type: isCorrect ? 'correct' : 'wrong' }
+        }
         // if mistake is empty, this result hasn't been added to history yet
         if (!store.mistake) {
             const currentAnswerMistake = isCorrect ? "" : answer
@@ -145,7 +152,7 @@ export const useSessionStore = defineStore('session', () => {
         localStorage.setItem(storeKey, JSON.stringify(store))
     }, {deep: true})
 
-    return {store, currentCase, setInitial,
+    return {store, currentCase, lastSubmission, setInitial,
         restartEvaluation, startPersonalized, setAllowedCrossColors,
         pausePlay, resumePlay, submitAnswer, giveUpOnCase}
 });

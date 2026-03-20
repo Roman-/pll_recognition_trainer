@@ -42,7 +42,7 @@
 </template>
 
 <script setup>
-import {ref} from 'vue'
+import {ref, watch} from 'vue'
 import {useSessionStore, GameState} from '@/stores/SessionStore'
 import {useSettingsStore} from '@/stores/SettingsStore'
 
@@ -57,17 +57,17 @@ const fullNameRow3 = ['Rb', 'T', 'Ua', 'Ub', 'V', 'Y', 'Z']
 
 const buttonFeedback = ref({ key: null, type: null })
 
+let feedbackTimer = null
+watch(() => session.lastSubmission, (submission) => {
+  if (!submission) return
+  buttonFeedback.value = { key: submission.key, type: submission.type }
+  clearTimeout(feedbackTimer)
+  feedbackTimer = setTimeout(() => {
+    buttonFeedback.value = { key: null, type: null }
+  }, 300)
+}, { flush: 'sync' })
+
 function handleAnswer(answer, fullNameMode = false) {
-  const current = session.currentCase
-  if (current) {
-    const correctName = fullNameMode ? current.name : current.name[0]
-    const isCorrect = answer === correctName
-    // Only flash on first attempt; on retries, flash correct only
-    if (!session.store.mistake || isCorrect) {
-      buttonFeedback.value = { key: answer, type: isCorrect ? 'correct' : 'wrong' }
-      setTimeout(() => buttonFeedback.value = { key: null, type: null }, 300)
-    }
-  }
   session.submitAnswer(answer, fullNameMode)
 }
 
