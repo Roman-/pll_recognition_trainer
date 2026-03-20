@@ -7,19 +7,19 @@
     </div>
     <div v-else-if="session.store.state === GameState.Playing">
       <template v-if="settings.store.fullNameMode">
-        <div class="d-flex flex-nowrap justify-content-center mb-1 fullname-row">
+        <div class="d-flex flex-nowrap justify-content-center mb-1 mx-1 fullname-row">
           <button v-for="name in fullNameRow1" :key="name" class="btn btn-outline-primary btn-fullname"
                   @click="session.submitAnswer(name, true)">
             {{ name }}
           </button>
         </div>
-        <div class="d-flex flex-nowrap justify-content-center mb-1 fullname-row">
+        <div class="d-flex flex-nowrap justify-content-center mb-1 mx-1 fullname-row">
           <button v-for="name in fullNameRow2" :key="name" class="btn btn-outline-primary btn-fullname"
                   @click="session.submitAnswer(name, true)">
             {{ name }}
           </button>
         </div>
-        <div class="d-flex flex-nowrap justify-content-center mb-1 fullname-row">
+        <div class="d-flex flex-nowrap justify-content-center mb-1 mx-1 fullname-row">
           <button v-for="name in fullNameRow3" :key="name" class="btn btn-outline-primary btn-fullname"
                   @click="session.submitAnswer(name, true)">
             {{ name }}
