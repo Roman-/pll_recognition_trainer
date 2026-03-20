@@ -59,4 +59,15 @@ const fullNameRow3 = ['E', 'F', 'H', 'T', 'V', 'Y', 'Z']
 button {
   min-width: 3rem;
 }
+
+/* On touch devices, :hover sticks after a tap until you touch elsewhere.
+   Reset hover back to the button's default look; :active still fires
+   while the finger is down so there's still visual tap feedback. */
+@media (hover: none) {
+  button.btn:not(:active):hover {
+    color: var(--bs-btn-color);
+    background-color: var(--bs-btn-bg);
+    border-color: var(--bs-btn-border-color);
+  }
+}
 </style>
