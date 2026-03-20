@@ -2,6 +2,7 @@
 import { SVG } from "sr-puzzlegen"
 import {computed, onMounted, ref, watch} from "vue";
 import {noCubePuzzleMask, scrambleForCase} from "@/scripts/helpers";
+import {topViewAdjustment} from "@/scripts/colors";
 import {useSettingsStore} from "@/stores/SettingsStore";
 import CaseVariationsModal from "@/components/CaseVariationsModal.vue";
 
@@ -17,7 +18,14 @@ const props = defineProps({
 const cubeImgDiv = ref(null)
 const settings = useSettingsStore()
 
-const scramble = computed(() => scrambleForCase(props.pllCase, props.crossColor))
+const scramble = computed(() => {
+    const base = scrambleForCase(props.pllCase, props.crossColor)
+    if (props.viewType === "cube-top") {
+        const adj = topViewAdjustment(settings.store.puzzleRotations)
+        return adj ? `${base} ${adj}` : base
+    }
+    return base
+})
 
 // Image of a cube for which the SOLUTION is: rotation + pll_alg(with block on BL) + inverse d turn(or AUF by d turn). Pll case object:
 const insertSvg = () => {
