@@ -59,4 +59,8 @@ const modalShown = ref(false);
 </template>
 
 <style scoped>
+:deep(svg) {
+  max-width: 100%;
+  height: auto;
+}
 </style>

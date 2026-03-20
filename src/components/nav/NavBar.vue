@@ -2,7 +2,7 @@
 import {useThemeStore} from "@/stores/ThemeStore";
 import ThemeSwitcher from "@/components/nav/ThemeSwitcher.vue";
 import {computed} from "vue";
-import {useSessionStore} from "@/stores/SessionStore";
+import {GameState, useSessionStore} from "@/stores/SessionStore";
 const session = useSessionStore()
 
 const themeStore = useThemeStore();
@@ -16,26 +16,41 @@ import {useRoute, useRouter} from "vue-router";
 const router = useRouter();
 const route = useRoute();
 const isSettings = computed(() => route.name === "Settings")
+const isHome = computed(() => route.name === "Home")
 const onSettingsClicked = () => {
   if (isSettings.value) {
-    router.push("Meta")
+    router.push("/trainer")
   } else {
     router.push("Settings")
   }
 }
+
+const showResults = computed(() =>
+    !isSettings.value && (session.store.state === GameState.Playing || session.store.results.length > 0)
+)
+const resultsCount = computed(() => session.store.results.length)
 
 </script>
 
 <template>
   <nav class="navbar sticky-top" :class="navBarClass">
     <div class="row w-100 align-items-center flex-nowrap">
-      <div class="col-auto me-auto" @click="router.push('meta')">
+      <div class="col-auto me-auto" @click="router.push('/')">
         <span class="navbar-brand clickable text-primary mx-2">
           <span class="d-none d-sm-inline">PLL Recognition Trainer</span>
           <span class="d-inline d-sm-none">PLL</span>
         </span>
       </div>
       <div class="col-auto">
+        <button v-if="showResults && !isHome"
+                class="btn btn-link text-info d-md-none"
+                @click="session.store.showResultsModal = true"
+                title="Results"
+                tabindex="-1"
+        >
+          <i class="bi-list-ol font-bigger"/>
+          <span class="badge bg-secondary align-top">{{ resultsCount }}</span>
+        </button>
         <button
             class="btn btn-link"
             @click="onSettingsClicked"
@@ -45,7 +60,7 @@ const onSettingsClicked = () => {
         >
           <i class="bi-gear font-bigger"/>
         </button>
-        <button tabindex="-1" class="btn btn-link text-info" @click="resetSessionClicked" title="Restart evaluation">
+        <button v-if="!isHome" tabindex="-1" class="btn btn-link text-info" @click="resetSessionClicked" title="Restart evaluation">
           <i class="bi-arrow-counterclockwise font-bigger"/>
         </button>
         <ThemeSwitcher/>

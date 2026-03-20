@@ -109,7 +109,7 @@ const customizeColorsVisible = ref(false)
       <button class="btn btn-warning" @click="resetSettings">Reset</button>
     </div>
     <div class="col-6 text-start">
-      <button class="btn btn-success" @click="router.push('meta')">Save</button>
+      <button class="btn btn-success" @click="router.push('/trainer')">Save</button>
     </div>
   </div>
 </template>

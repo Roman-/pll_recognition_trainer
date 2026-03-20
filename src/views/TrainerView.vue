@@ -7,10 +7,17 @@ import {computed, onMounted, onUnmounted, ref, watch} from "vue";
 import {isHelpKey, isPllLetter, isSingleLetterPll, isTwoLetterPllPrefix, validPllSuffixes} from "@/scripts/helpers";
 import ResultsList from "@/components/ResultsList.vue";
 import OnScreenKeyboard from "@/components/OnScreenKeyboard.vue";
+import ResultsModal from "@/components/ResultsModal.vue";
 import {useSettingsStore} from "@/stores/SettingsStore";
 
 const session = useSessionStore()
 const settings = useSettingsStore()
+
+const totalCases = computed(() =>
+    session.store.queue.length + session.store.results.length - (session.store.mistake === "" ? 0 : 1)
+)
+const completed = computed(() => session.store.results.length)
+const progressPercent = computed(() => totalCases.value > 0 ? (completed.value / totalCases.value * 100) : 0)
 
 const pendingKey = ref(null)
 
@@ -144,6 +151,15 @@ const keyPressHint = computed(() => {
 <template>
   <div class="d-flex h-100">
     <div class="flex-grow-1 d-flex flex-column">
+      <div class="d-md-none mx-3 mt-2">
+        <div class="progress" style="height: 22px;">
+          <div class="progress-bar" role="progressbar"
+               :style="{width: progressPercent + '%'}"
+               :aria-valuenow="completed" aria-valuemin="0" :aria-valuemax="totalCases">
+            {{ completed }}/{{ totalCases }}
+          </div>
+        </div>
+      </div>
       <div class="text-center">
         <PllPic :pllCase="session.currentCase" viewType="cube" :size="400" :clickable="false"/>
       </div>
@@ -159,14 +175,12 @@ const keyPressHint = computed(() => {
       </div>
     </div>
 
-    <div>
+    <div class="d-none d-md-block">
       <div class="d-flex h-100">
         <div class="card my-2">
           <div class="card-body overflow-auto">
             <div class="h4">
-              {{
-                `Results (${session.store.results.length}/${session.store.queue.length + session.store.results.length - (session.store.mistake === "" ? 0 : 1)})`
-              }}
+              Results ({{ completed }}/{{ totalCases }})
             </div>
             <hr>
             <div class="resultsContainer">
@@ -176,10 +190,19 @@ const keyPressHint = computed(() => {
         </div>
       </div>
     </div>
+
+    <ResultsModal v-if="session.store.showResultsModal"
+                  :results="session.store.results"
+                  :totalCases="totalCases"
+                  :closeCallback="() => session.store.showResultsModal = false"/>
   </div>
 </template>
 
 <style scoped>
+.flex-grow-1 {
+  min-width: 0;
+}
+
 .resultsContainer {
   overflow-y: auto;
   overflow-x: hidden;

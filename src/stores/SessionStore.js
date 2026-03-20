@@ -31,7 +31,9 @@ const defaultStore = {
 
     currentRecognitionStarted: new Date(),
 
-    allowedCrossColors: DefaultAllowedCrossColors
+    allowedCrossColors: DefaultAllowedCrossColors,
+
+    showResultsModal: false
 }
 
 export const useSessionStore = defineStore('session', () => {
@@ -52,6 +54,7 @@ export const useSessionStore = defineStore('session', () => {
     // when just enter the trainer screen, it's good to have the game paused
     const setInitial = () => {
         shiftMistakeIfAny()
+        store.showResultsModal = false
         if (store.queue.length === 0 && store.results.length === 0) {
             store.queue = generateEvaluationQueue(DefaultAllowedCrossColors)
         }

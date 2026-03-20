@@ -1,4 +1,5 @@
 import {createRouter, createWebHashHistory} from 'vue-router'
+import HomeView from "@/views/HomeView.vue";
 import MetaTrainerView from "@/views/MetaTrainerView.vue";
 import SettingsView from "@/views/SettingsView.vue";
 
@@ -7,17 +8,22 @@ const router = createRouter({
     routes: [
         {
             path: '/',
-            name: 'Meta',
-            component: MetaTrainerView
+            name: 'Home',
+            component: HomeView
         },
         {
-            path: '/:pathMatch(.*)*',
-            redirect: '/'
+            path: '/trainer',
+            name: 'Meta',
+            component: MetaTrainerView
         },
         {
             path: '/settings',
             name: 'Settings',
             component: SettingsView
+        },
+        {
+            path: '/:pathMatch(.*)*',
+            redirect: '/'
         },
     ]
 })
