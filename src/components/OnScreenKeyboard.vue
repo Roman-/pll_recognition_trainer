@@ -7,20 +7,20 @@
     </div>
     <div v-else-if="session.store.state === GameState.Playing">
       <template v-if="settings.store.fullNameMode">
-        <div class="d-flex flex-wrap justify-content-center mb-1">
-          <button v-for="name in fullNameRow1" :key="name" class="btn btn-outline-primary m-1"
+        <div class="d-flex flex-nowrap justify-content-center mb-1 fullname-row">
+          <button v-for="name in fullNameRow1" :key="name" class="btn btn-outline-primary btn-fullname"
                   @click="session.submitAnswer(name, true)">
             {{ name }}
           </button>
         </div>
-        <div class="d-flex flex-wrap justify-content-center mb-1">
-          <button v-for="name in fullNameRow2" :key="name" class="btn btn-outline-primary m-1"
+        <div class="d-flex flex-nowrap justify-content-center mb-1 fullname-row">
+          <button v-for="name in fullNameRow2" :key="name" class="btn btn-outline-primary btn-fullname"
                   @click="session.submitAnswer(name, true)">
             {{ name }}
           </button>
         </div>
-        <div class="d-flex flex-wrap justify-content-center mb-1">
-          <button v-for="name in fullNameRow3" :key="name" class="btn btn-outline-primary m-1"
+        <div class="d-flex flex-nowrap justify-content-center mb-1 fullname-row">
+          <button v-for="name in fullNameRow3" :key="name" class="btn btn-outline-primary btn-fullname"
                   @click="session.submitAnswer(name, true)">
             {{ name }}
           </button>
@@ -50,14 +50,25 @@ const settings = useSettingsStore()
 
 const letters = ['A','E','F','G','H','J','N','R','T','U','V','Y','Z']
 
-const fullNameRow1 = ['Aa', 'Ab', 'Ga', 'Gb', 'Gc', 'Gd']
-const fullNameRow2 = ['Ja', 'Jb', 'Na', 'Nb', 'Ra', 'Rb', 'Ua', 'Ub']
-const fullNameRow3 = ['E', 'F', 'H', 'T', 'V', 'Y', 'Z']
+const fullNameRow1 = ['Aa', 'Ab', 'E', 'F', 'Ga', 'Gb', 'Gc']
+const fullNameRow2 = ['Gd', 'H', 'Ja', 'Jb', 'Na', 'Nb', 'Ra']
+const fullNameRow3 = ['Rb', 'T', 'Ua', 'Ub', 'V', 'Y', 'Z']
 </script>
 
 <style scoped>
 button {
   min-width: 3rem;
+}
+
+.fullname-row {
+  gap: 0.25rem;
+}
+
+.btn-fullname {
+  flex: 1 1 0;
+  max-width: 4rem;
+  min-width: 0;
+  padding: 0.375rem 0;
 }
 
 /* On touch devices, :hover sticks after a tap until you touch elsewhere.
