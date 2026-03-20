@@ -171,7 +171,7 @@ const keyPressHint = computed(() => {
         <PllPic :pllCase="session.currentCase" viewType="cube" :size="400" :clickable="false"/>
       </div>
       <div class="text-secondary text-center my-3"
-           :class="{ 'animate__animated animate__shakeX': shakeHint }">
+           :class="{ 'animate__animated animate__headShake': shakeHint }">
         {{ keyPressHint }}
       </div>
       <OnScreenKeyboard/>
