@@ -1,12 +1,10 @@
 <script setup>
 import {useSettingsStore} from "@/stores/SettingsStore";
 import PllPic from "@/components/PllPic.vue";
-import {useRouter} from "vue-router";
 import {CubeViews, randomCrossColor, strokeWidthOptions} from "@/scripts/colors";
 import CrossColorPicker from "@/components/CrossColorPicker.vue";
-import {computed, ref} from "vue";
-
-const router = useRouter();
+import ColorToneEditor from "@/components/ColorToneEditor.vue";
+import {computed} from "vue";
 
 const settings = useSettingsStore()
 const pllCaseForPicture = {
@@ -24,91 +22,62 @@ const resetSettings = () => {
 }
 
 const pictureCrossColor = computed(() => randomCrossColor(settings.store.allowedCrossColors))
-const customizeColorsVisible = ref(false)
-
 </script>
 
 <template>
-  <div class="container">
-    <h2 class="text-center">Settings</h2>
+  <div class="container py-3">
+    <div class="row justify-content-center">
+      <div class="col-12 col-md-8 col-lg-6">
+        <h2 class="text-center mb-4">Settings</h2>
 
-    <div class="row my-1">
-      <div class="col-6 d-flex align-items-center justify-content-end">
-        Cross color
-      </div>
-      <div class="col-6 text-start">
-        <CrossColorPicker v-model="settings.store.allowedCrossColors" />
-      </div>
-    </div>
+        <div class="mb-3">
+          <label class="form-label">Cross color</label>
+          <CrossColorPicker v-model="settings.store.allowedCrossColors" />
+        </div>
 
-    <div class="row my-1">
-      <div class="col-6 d-flex align-items-center justify-content-end">
-        View
-      </div>
-      <div class="col-6 text-start">
-        <select v-model="settings.store.puzzleRotations" class="form-control themed w-25">
-          <option v-for="viewName in Object.keys(CubeViews)" :value="CubeViews[viewName]">{{viewName}}</option>
-        </select>
-      </div>
-    </div>
+        <div class="d-flex align-items-center gap-2 mb-3">
+          <label class="form-label mb-0 flex-shrink-0">View</label>
+          <select v-model="settings.store.puzzleRotations" class="form-select themed">
+            <option v-for="viewName in Object.keys(CubeViews)" :value="CubeViews[viewName]">{{viewName}}</option>
+          </select>
+        </div>
 
-    <div class="row my-1">
-      <div class="col-6 d-flex align-items-center justify-content-end">
-        Stroke
-      </div>
-      <div class="col-6 text-start">
-        <select class="form-control themed w-25" v-model.number="settings.store.strokeWidth">
-          <option v-for="w in Object.keys(strokeWidthOptions)" :value="strokeWidthOptions[w]">{{w}}</option>
-        </select>
-      </div>
-    </div>
+        <div class="d-flex align-items-center gap-2 mb-3">
+          <label class="form-label mb-0 flex-shrink-0">Stroke</label>
+          <select class="form-select themed" v-model.number="settings.store.strokeWidth">
+            <option v-for="w in Object.keys(strokeWidthOptions)" :value="strokeWidthOptions[w]">{{w}}</option>
+          </select>
+        </div>
 
-    <div class="row my-1">
-      <div class="col-6 d-flex align-items-center justify-content-end">
-        On-screen keyboard
-      </div>
-      <div class="col-6 text-start">
-        <input type="checkbox" v-model="settings.store.showOnScreenKeyboard" />
-      </div>
-    </div>
+        <div class="d-flex align-items-start gap-2 mb-3">
+          <label class="form-label mb-0 flex-shrink-0 mt-1">Color tones</label>
+          <ColorToneEditor :colorScheme="settings.store.colorScheme" />
+        </div>
 
-    <div class="row my-1">
-      <div class="col-6 d-flex align-items-center justify-content-end">
-        <div class="text-end">
-          <div>Full name mode</div>
-          <div class="text-secondary">Type full case name (e.g. Ga instead of just G)</div>
+        <div class="text-center mb-3">
+          <PllPic :pllCase="pllCaseForPicture" viewType="cube" :size="250" :crossColor="pictureCrossColor"/>
+        </div>
+
+        <div class="mb-3">
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="onScreenKeyboard" v-model="settings.store.showOnScreenKeyboard" />
+            <label class="form-check-label" for="onScreenKeyboard">On-screen keyboard</label>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="fullNameMode" v-model="settings.store.fullNameMode" />
+            <label class="form-check-label" for="fullNameMode">Full name mode</label>
+          </div>
+          <small class="text-secondary">Type full case name (e.g. Ga instead of just G)</small>
+        </div>
+
+        <div class="d-flex justify-content-center gap-3">
+          <button class="btn btn-warning" @click="resetSettings">Reset</button>
+          <router-link to="/trainer" class="btn btn-success">Start Training</router-link>
         </div>
       </div>
-      <div class="col-6 text-start">
-        <input type="checkbox" v-model="settings.store.fullNameMode" />
-      </div>
-    </div>
-
-    <div class="row my-1">
-      <div class="col-6 d-flex align-items-center justify-content-end">
-        Color tones
-      </div>
-      <div class="col-6 text-start">
-          <input v-if="customizeColorsVisible" type="color" v-for="face in ['U', 'D', 'L', 'R', 'F', 'B']" v-model="settings.store.colorScheme[face].value"/>
-        <button v-else @click="customizeColorsVisible=true" class="btn btn-sm btn-outline-primary">Customize...</button>
-      </div>
-    </div>
-
-    <hr class="m-1">
-    <div class="text-center">
-      <PllPic :pllCase="pllCaseForPicture" viewType="cube" :size="300" :crossColor="pictureCrossColor"/>
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="col-6 d-flex align-items-center justify-content-end">
-      <button class="btn btn-warning" @click="resetSettings">Reset</button>
-    </div>
-    <div class="col-6 text-start">
-      <button class="btn btn-success" @click="router.push('/trainer')">Save</button>
     </div>
   </div>
 </template>
-
-<style scoped>
-</style>

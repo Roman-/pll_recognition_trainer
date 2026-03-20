@@ -81,7 +81,7 @@ function onlyWhite() {
 
 <style scoped>
 .cross-color-picker {
-  display: inline-block;
+  display: block;
 }
 
 .swatches {
@@ -95,6 +95,7 @@ function onlyWhite() {
   flex-direction: column;
   align-items: center;
   gap: 4px;
+  margin-bottom: 4px;
 }
 
 .swatch {
@@ -151,7 +152,7 @@ function onlyWhite() {
 }
 
 .picker-actions {
-  margin-top: 6px;
+  margin-top: 12px;
 }
 
 @keyframes shake {
