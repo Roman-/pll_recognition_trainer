@@ -2,7 +2,8 @@
 import {useSettingsStore} from "@/stores/SettingsStore";
 import PllPic from "@/components/PllPic.vue";
 import {useRouter} from "vue-router";
-import {CubeColors, CubeViews, randomCrossColor, strokeWidthOptions} from "@/scripts/colors";
+import {CubeViews, randomCrossColor, strokeWidthOptions} from "@/scripts/colors";
+import CrossColorPicker from "@/components/CrossColorPicker.vue";
 import {computed, ref} from "vue";
 
 const router = useRouter();
@@ -33,15 +34,10 @@ const customizeColorsVisible = ref(false)
 
     <div class="row my-1">
       <div class="col-6 d-flex align-items-center justify-content-end">
-        <div class="text-end">
-          <div>Cross color</div>
-          <div class="text-secondary">(select multiple)</div>
-        </div>
+        Cross color
       </div>
       <div class="col-6 text-start">
-        <select v-model="settings.store.allowedCrossColors" size="6" class="w-25" multiple>
-          <option v-for="color in CubeColors" :value="color[0].toLowerCase()">{{color}}</option>
-        </select>
+        <CrossColorPicker v-model="settings.store.allowedCrossColors" />
       </div>
     </div>
 
