@@ -1,23 +1,44 @@
+<script setup>
+import PllShowcase from '@/components/PllShowcase.vue'
+</script>
+
 <template>
-  <div class="container py-5">
-    <div class="row justify-content-center">
-      <div class="col-12 col-md-8 col-lg-6">
-        <h1 class="text-center mb-4">PLL Recognition Trainer</h1>
-        <div class="ratio ratio-16x9 mb-4">
-          <iframe
+  <div class="container-fluid px-0">
+    <!-- Hero Section -->
+    <div class="container py-5">
+      <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6 text-center">
+          <h1 class="display-4 fw-bold mb-3 animate__animated animate__fadeInDown">PLL Recognition Trainer</h1>
+          <p class="lead text-secondary mb-4 animate__animated animate__fadeIn animate__delay-1s">
+            Practice recognizing all 21 PLL cases from any angle and color.
+            The trainer adapts to your weaknesses — cases you struggle with
+            come back more often until you nail them.
+          </p>
+          <div class="animate__animated animate__fadeInUp animate__delay-1s">
+            <router-link to="/trainer" class="btn btn-primary btn-lg px-4 py-2">
+              <i class="bi-lightning-charge-fill me-1"/>Start Training
+            </router-link>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PLL Showcase -->
+    <PllShowcase />
+
+    <!-- Video Section -->
+    <div class="container py-5">
+      <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6">
+          <h5 class="text-secondary text-center mb-3">What is PLL Recognition?</h5>
+          <div class="ratio ratio-16x9">
+            <iframe
               src="https://www.youtube.com/embed/lIjel-amSeg"
               title="PLL Recognition Explained"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
               allowfullscreen
-          ></iframe>
-        </div>
-        <p class="text-center mb-4">
-          Practice recognizing all 21 PLL cases from any angle and color.
-          The trainer adapts to your weaknesses — cases you struggle with
-          come back more often until you nail them.
-        </p>
-        <div class="text-center">
-          <router-link to="/trainer" class="btn btn-primary btn-lg"><i class="bi-lightning-charge-fill me-1"/>Start Training</router-link>
+            ></iframe>
+          </div>
         </div>
       </div>
     </div>
