@@ -1,6 +1,7 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
 import PllPic from '@/components/PllPic.vue'
+import CaseVariationsModal from '@/components/CaseVariationsModal.vue'
 import pllMap from '@/assets/algs/pll.json'
 import { keysToCases } from '@/scripts/pll_cases'
 import { shuffle, aufByDturn } from '@/scripts/helpers'
@@ -15,6 +16,7 @@ const generateRow = () => {
 
 const rows = ref([generateRow(), generateRow(), generateRow()])
 const paused = ref(false)
+const selectedCase = ref(null)
 
 const aufLabel = (pllCase) => {
   const auf = aufByDturn(pllCase.dTurn)
@@ -42,6 +44,7 @@ const aufLabel = (pllCase) => {
         v-for="(pllCase, i) in [...row, ...row]"
         :key="i"
         class="showcase-card"
+        @click="selectedCase = pllCase"
       >
         <div class="card-header-row">
           <span class="case-name">{{ pllCase.name }}</span>
@@ -63,6 +66,13 @@ const aufLabel = (pllCase) => {
         </div>
       </div>
     </div>
+    <Teleport to="body">
+      <CaseVariationsModal
+        v-if="selectedCase"
+        :pllCase="selectedCase"
+        :closeCallback="() => selectedCase = null"
+      />
+    </Teleport>
   </div>
 </template>
 
@@ -107,6 +117,7 @@ const aufLabel = (pllCase) => {
 }
 
 .showcase-card {
+  cursor: pointer;
   flex-shrink: 0;
   width: 150px;
   padding: 0.65rem;
