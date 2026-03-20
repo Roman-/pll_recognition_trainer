@@ -10,6 +10,7 @@ import { createPinia } from 'pinia'
 // bootstrap, icons and theme
 import "bootstrap"
 import "bootstrap-icons/font/bootstrap-icons.css"
+import "animate.css"
 // the .min.css file for specific Bootstrap theme will be loaded and applied in App.vue
 
 createApp(App)

@@ -20,6 +20,14 @@ const completed = computed(() => session.store.results.length)
 const progressPercent = computed(() => totalCases.value > 0 ? (completed.value / totalCases.value * 100) : 0)
 
 const pendingKey = ref(null)
+const shakeHint = ref(false)
+
+watch(() => session.store.mistake, (newVal, oldVal) => {
+  if (oldVal === "" && newVal) {
+    shakeHint.value = true
+    setTimeout(() => shakeHint.value = false, 2000)
+  }
+})
 
 // Clear pendingKey when the case changes (e.g. correct answer submitted)
 watch(() => session.currentCase, () => {
@@ -163,7 +171,8 @@ const keyPressHint = computed(() => {
       <div class="text-center">
         <PllPic :pllCase="session.currentCase" viewType="cube" :size="400" :clickable="false"/>
       </div>
-      <div class="text-secondary text-center my-3">
+      <div class="text-secondary text-center my-3"
+           :class="{ 'animate__animated animate__shakeX': shakeHint }">
         {{ keyPressHint }}
       </div>
       <OnScreenKeyboard/>
