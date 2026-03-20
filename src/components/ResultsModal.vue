@@ -1,6 +1,7 @@
 <script setup>
 import {onMounted, onUnmounted} from "vue";
 import ResultsList from "@/components/ResultsList.vue";
+import {useKeydown} from "@/composables/useKeydown";
 
 const props = defineProps(['results', 'totalCases', 'closeCallback']);
 
@@ -14,14 +15,14 @@ const handleEscape = (e) => {
   }
 }
 
+useKeydown(handleEscape, true)
+
 onMounted(() => {
   document.body.classList.add('overflow-hidden')
-  window.addEventListener('keydown', handleEscape, true)
 })
 
 onUnmounted(() => {
   document.body.classList.remove('overflow-hidden')
-  window.removeEventListener('keydown', handleEscape, true)
 })
 </script>
 

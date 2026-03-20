@@ -2,14 +2,13 @@
 import {computed, onMounted, onUnmounted, ref} from "vue";
 import {Modal} from 'bootstrap'
 import PllPic from "@/components/PllPic.vue";
-import {useNotesStore} from "@/stores/NotesStore";
 import Note from "@/components/Note.vue";
 import {colorNameByLetter, CubeColors} from "@/scripts/colors";
+import {D_TURN_OPTIONS, COLOR_SHIFTS} from "@/scripts/pll_cases";
 
 const props = defineProps(['pllCase', 'closeCallback']);
 
 const modal = ref(null)
-const notes = useNotesStore()
 
 // when the component is mounted (via v-if), show this modal right away and destroy (via callback) on close
 onMounted(() => {
@@ -21,10 +20,9 @@ onMounted(() => {
 const pllCases = computed(() => {
   // populate pllCase from pllcases by altering dTurn and colorShift
   let variations = []
-  const dTurns = ["", "d", "d2", "d\'"]
-  const colorShifts = [0, 1, 2, 3]
-  dTurns.forEach(dTurn => {
-    colorShifts.forEach(colorShift => {
+  const shifts = [...COLOR_SHIFTS]
+  D_TURN_OPTIONS.forEach(dTurn => {
+    shifts.forEach(colorShift => {
       variations.push({
         rotation: props.pllCase.rotation,
         name: props.pllCase.name,
@@ -34,7 +32,7 @@ const pllCases = computed(() => {
       })
     })
     // rotate colorshifts array 1 element to the left
-    colorShifts.push(colorShifts.shift())
+    shifts.push(shifts.shift())
   })
   return variations
 })

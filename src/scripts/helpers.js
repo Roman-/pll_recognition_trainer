@@ -27,17 +27,17 @@ export const aufByDturn = d => {
     }
 }
 
-export const isPllLetter = l => {
-    return new Set(['A', 'E', 'F', 'G', 'H', 'J', 'N', 'R', 'T', 'U', 'V', 'Y', 'Z']).has(l)
-}
+export const PLL_LETTERS = ['A', 'E', 'F', 'G', 'H', 'J', 'N', 'R', 'T', 'U', 'V', 'Y', 'Z']
 
-export const isSingleLetterPll = l => {
-    return new Set(['E', 'F', 'H', 'T', 'V', 'Y', 'Z']).has(l)
-}
+const PLL_LETTER_SET = new Set(PLL_LETTERS)
+const SINGLE_LETTER_PLL_SET = new Set(['E', 'F', 'H', 'T', 'V', 'Y', 'Z'])
+const TWO_LETTER_PLL_PREFIX_SET = new Set(['A', 'G', 'J', 'N', 'R', 'U'])
 
-export const isTwoLetterPllPrefix = l => {
-    return new Set(['A', 'G', 'J', 'N', 'R', 'U']).has(l)
-}
+export const isPllLetter = l => PLL_LETTER_SET.has(l)
+
+export const isSingleLetterPll = l => SINGLE_LETTER_PLL_SET.has(l)
+
+export const isTwoLetterPllPrefix = l => TWO_LETTER_PLL_PREFIX_SET.has(l)
 
 export const validPllSuffixes = {
     A: ['a', 'b'],

@@ -1,16 +1,14 @@
 import {reactive, watch} from 'vue'
 import {defineStore} from 'pinia'
 import {CubeViews, DefaultAllowedCrossColors, DefaultColorScheme, strokeWidthOptions} from "@/scripts/colors";
-
-const isMobileDevice = typeof window !== 'undefined' &&
-    ('ontouchstart' in window || navigator.maxTouchPoints > 0);
+import {isMobile} from "@/scripts/device";
 
 const defaultSettings = {
     puzzleRotations: CubeViews["Center"],
     strokeWidth: strokeWidthOptions["1"],
     colorScheme: DefaultColorScheme,
     allowedCrossColors: DefaultAllowedCrossColors,
-    showOnScreenKeyboard: isMobileDevice,
+    showOnScreenKeyboard: isMobile,
     fullNameMode: false
 }
 

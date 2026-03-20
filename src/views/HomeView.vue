@@ -1,22 +1,17 @@
 <script setup>
-import { onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import PllShowcase from '@/components/PllShowcase.vue'
+import { isMobile } from '@/scripts/device'
+import { useKeydown } from '@/composables/useKeydown'
 
 const router = useRouter()
 
-const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
-  || (navigator.maxTouchPoints > 0 && window.matchMedia('(pointer: coarse)').matches)
-
-function onKeydown(e) {
+useKeydown((e) => {
   if (e.code === 'Space' && !e.repeat) {
     e.preventDefault()
     router.push('/trainer')
   }
-}
-
-onMounted(() => window.addEventListener('keydown', onKeydown))
-onUnmounted(() => window.removeEventListener('keydown', onKeydown))
+})
 </script>
 
 <template>

@@ -3,12 +3,13 @@
 import PllPic from "@/components/PllPic.vue";
 import {GameState, useSessionStore} from "@/stores/SessionStore";
 import PllCaseInfo from "@/components/PllCaseInfo.vue";
-import {computed, onMounted, onUnmounted, ref, watch} from "vue";
+import {computed, onMounted, ref, watch} from "vue";
 import {isHelpKey, isPllLetter, isSingleLetterPll, isTwoLetterPllPrefix, validPllSuffixes} from "@/scripts/helpers";
 import ResultsList from "@/components/ResultsList.vue";
 import OnScreenKeyboard from "@/components/OnScreenKeyboard.vue";
 import ResultsModal from "@/components/ResultsModal.vue";
 import {useSettingsStore} from "@/stores/SettingsStore";
+import {useKeydown} from "@/composables/useKeydown";
 
 const session = useSessionStore()
 const settings = useSettingsStore()
@@ -121,13 +122,10 @@ const handleKeyPress = e => {
   }
 }
 
-onMounted(() => {
-  window.addEventListener("keydown", handleKeyPress)
-  session.setInitial()
-})
+useKeydown(handleKeyPress)
 
-onUnmounted(() => {
-  window.removeEventListener("keydown", handleKeyPress)
+onMounted(() => {
+  session.setInitial()
 })
 
 const keyPressHint = computed(() => {

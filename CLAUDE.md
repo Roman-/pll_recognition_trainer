@@ -10,7 +10,7 @@ Client-side Vue 3 web app for speedcubers to practice recognizing PLL (Permutati
 - **Build:** Vite 4
 - **State:** Pinia (4 stores)
 - **Routing:** Vue Router 4 (hash mode)
-- **UI:** Bootstrap 5 + 18 swappable themes
+- **UI:** Bootstrap 5 + 17 swappable themes (12 light + 5 dark)
 - **Cube rendering:** sr-puzzlegen (SVG output)
 
 ## Commands
@@ -25,33 +25,36 @@ Client-side Vue 3 web app for speedcubers to practice recognizing PLL (Permutati
 main.js → App.vue
               ├── NavBar (+ ThemeSwitcher)
               └── Router
-                   ├── / → MetaTrainerView
-                   │        ├── TrainerView (game active)
-                   │        │    ├── PllPic (cube SVG)
-                   │        │    ├── PllCaseInfo (mistake feedback + Note)
-                   │        │    ├── OnScreenKeyboard (mobile)
-                   │        │    └── ResultsList → ResultItem → PllPic + Note
-                   │        └── EvalResults (evaluation done)
-                   │             └── ResultsList → ResultItem
+                   ├── / → HomeView (landing page + PllShowcase)
+                   ├── /trainer → MetaTrainerView
+                   │                ├── TrainerView (game active)
+                   │                │    ├── PllPic (cube SVG)
+                   │                │    ├── PllCaseInfo (mistake feedback + Note)
+                   │                │    ├── OnScreenKeyboard (mobile)
+                   │                │    ├── ResultsList → ResultItem → PllPic + Note
+                   │                │    └── ResultsModal (mobile results overlay)
+                   │                └── EvalResults (evaluation done)
+                   │                     └── ResultsList → ResultItem
                    └── /settings → SettingsView (+ PllPic preview)
 ```
 
-CaseVariationsModal is a standalone modal showing all 16 AUF/color-shift variations of a case.
+- CaseVariationsModal — standalone modal showing all 16 AUF/color-shift variations of a case (opened by clicking a PllPic)
+- PllShowcase — grid of all 21 PLL cases on the home page, with selectable cases opening CaseVariationsModal
 
 ## State Management (4 Pinia Stores)
 
 | Store | localStorage Key | Purpose |
 |-------|-----------------|---------|
-| SessionStore | `pll_store` | Game state machine (Paused/Playing/EvaluationDone), case queue, results array, current mistake tracking |
-| SettingsStore | `pll_recognition_settings` | Cube view angle, stroke width, color scheme, allowed cross colors, on-screen keyboard toggle |
+| SessionStore | `pll_store` | Game state machine (Paused/Playing/EvaluationDone), case queue, results array, current mistake tracking, `lastSubmission` for button feedback |
+| SettingsStore | `pll_recognition_settings` | Cube view angle, stroke width, color scheme, allowed cross colors, on-screen keyboard toggle, fullNameMode |
 | NotesStore | `pll_notes` | Per-case user notes keyed by `"name/auf"` |
 | ThemeStore | `my_pll.*` | Dark/light mode, theme names |
 
 ## Core Game Loop
 
 1. **Queue generation** — `allPllKeys()` creates all 21 PLL case x rotation combos, `keysToCases()` assigns random AUF and color shifts
-2. **Playing** — A case is shown via PllPic (sr-puzzlegen SVG). User presses a letter key (13 valid PLL letters: A, E, F, G, H, J, N, R, T, U, V, Y, Z)
-3. **Answer processing** — `submitAnswer()` checks the letter against `currentCase.name[0]`, records timing and mistake status
+2. **Playing** — A case is shown via PllPic (sr-puzzlegen SVG). User presses a letter key (13 valid PLL letters: A, E, F, G, H, J, N, R, T, U, V, Y, Z). In fullNameMode, two-letter cases (Aa, Gb, etc.) require typing both letters.
+3. **Answer processing** — `submitAnswer()` checks the answer against `currentCase.name`, records timing and mistake status
 4. **Result** — `{pllCase, started, finished, mistake}` pushed to results array
 5. **Evaluation** — When queue empty, EvalResults shows performance breakdown
 
@@ -70,11 +73,12 @@ Sorts results worst-to-best, then: worst 15% repeated 4x, next 15% 3x, next 20% 
 ## Key Directories
 
 - `src/components/` — Vue components
+- `src/composables/` — Vue composables (useKeydown)
 - `src/stores/` — Pinia state management
 - `src/views/` — Page-level components
-- `src/scripts/` — Utility modules (helpers, colors, pll_cases, time_formatter)
+- `src/scripts/` — Utility modules (helpers, colors, pll_cases, time_formatter, device)
 - `src/assets/algs/` — PLL algorithm database (JSON)
-- `src/assets/bootstrap_themes/` — 18 pre-bundled Bootstrap theme CSS files
+- `src/assets/bootstrap_themes/` — 17 pre-bundled Bootstrap theme CSS files
 
 ## Rendering Pipeline
 
@@ -82,7 +86,7 @@ PllPic.vue calls sr-puzzlegen's `SVG()` with a scramble string (inverse of the P
 
 ## Keyboard Input
 
-Handled in TrainerView.vue via `@keydown`: Space (resume), Escape (pause), A-Z (submit answer filtered by isPllLetter), Minus/F1/? (give up), Shift+N (edit note). Mobile users get OnScreenKeyboard.vue with 13 buttons.
+Handled in TrainerView.vue via `useKeydown` composable: Space (resume / "Press Space to start" on HomeView), Escape (pause), A-Z (submit answer filtered by isPllLetter), Minus/F1/? (give up), Shift+N (edit note). Mobile users get OnScreenKeyboard.vue with 13 letter buttons (or 21 full-name buttons in fullNameMode).
 
 ## Design Decisions
 

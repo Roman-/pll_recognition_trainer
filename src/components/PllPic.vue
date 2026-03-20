@@ -43,8 +43,13 @@ const insertSvg = () => {
   SVG(cubeImgDiv.value, props.viewType, opts)
 }
 
-watch(() => props, insertSvg, {deep: true})
-watch(() => settings.store, insertSvg, {deep: true})
+watch(
+  () => [scramble.value, props.viewType, props.size,
+         settings.store.puzzleRotations, settings.store.strokeWidth,
+         settings.store.colorScheme],
+  insertSvg,
+  { deep: true }
+)
 
 onMounted(() => {
   insertSvg()

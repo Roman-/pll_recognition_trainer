@@ -14,7 +14,7 @@ const props = defineProps({
   <div class="resultList">
     <TransitionGroup enter-active-class="animate__animated animate__fadeIn result-enter-fast">
       <div v-for="r in props.results" :key="r.started">
-        <ResultItem :result="r" :pictureSize="props.pictureSize" :showNotes="props.showNotes" :showTopPicture="props.showNotes"/>
+        <ResultItem :result="r" :pictureSize="props.pictureSize" :showNotes="props.showNotes" :showTopPicture="props.showTopPicture"/>
       </div>
     </TransitionGroup>
   </div>

@@ -42,14 +42,15 @@
 </template>
 
 <script setup>
-import {ref, watch} from 'vue'
+import {onUnmounted, ref, watch} from 'vue'
 import {useSessionStore, GameState} from '@/stores/SessionStore'
 import {useSettingsStore} from '@/stores/SettingsStore'
+import {PLL_LETTERS} from '@/scripts/helpers'
 
 const session = useSessionStore()
 const settings = useSettingsStore()
 
-const letters = ['A','E','F','G','H','J','N','R','T','U','V','Y','Z']
+const letters = PLL_LETTERS
 
 const fullNameRow1 = ['Aa', 'Ab', 'E', 'F', 'Ga', 'Gb', 'Gc']
 const fullNameRow2 = ['Gd', 'H', 'Ja', 'Jb', 'Na', 'Nb', 'Ra']
@@ -66,6 +67,8 @@ watch(() => session.lastSubmission, (submission) => {
     buttonFeedback.value = { key: null, type: null }
   }, 300)
 }, { flush: 'sync' })
+
+onUnmounted(() => clearTimeout(feedbackTimer))
 
 function handleAnswer(answer, fullNameMode = false) {
   session.submitAnswer(answer, fullNameMode)

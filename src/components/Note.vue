@@ -1,7 +1,8 @@
 <script setup>
 import {useNotesStore} from "@/stores/NotesStore";
-import {computed, onMounted, onUnmounted, ref} from "vue";
+import {computed, ref} from "vue";
 import {caseToKey} from "@/scripts/pll_cases";
+import {useKeydown} from "@/composables/useKeydown";
 
 const noteHotkey = 'N'
 
@@ -57,16 +58,9 @@ const componentKeyDown = (e) => {
   }
 }
 
-onMounted(() => {
-  if (props.enableHotkeys) {
-    window.addEventListener("keydown", componentKeyDown)
-  }
-})
-onUnmounted(() => {
-  if (props.enableHotkeys) {
-    window.removeEventListener("keydown", componentKeyDown)
-  }
-})
+if (props.enableHotkeys) {
+  useKeydown(componentKeyDown)
+}
 
 </script>
 

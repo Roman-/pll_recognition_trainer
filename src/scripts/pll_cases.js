@@ -41,11 +41,14 @@ const keyToCase = (key, dTurn, colorShift, crossColor) => {
 
 export const caseToKey = pllCase => `${pllCase.name}/${pllCase.rotation}`
 
+export const D_TURN_OPTIONS = ['', 'd', 'd2', "d'"]
+export const COLOR_SHIFTS = [0, 1, 2, 3]
+
 export const keysToCases = (keys, allowedCrossColors, includeNoAuf = true) => {
-    const dTurnOptions = includeNoAuf ? ['', 'd', 'd2', 'd\''] : ['d', 'd2', 'd\'']
+    const dTurns = includeNoAuf ? D_TURN_OPTIONS : D_TURN_OPTIONS.slice(1)
     return keys.map(k => keyToCase(k,
-        random_element(dTurnOptions),
-        random_element([0, 1, 2, 3]),
+        random_element(dTurns),
+        random_element(COLOR_SHIFTS),
         randomCrossColor(allowedCrossColors)))
 }
 
@@ -81,9 +84,8 @@ export const evalResultsToNewQueue = (resultsSorted, allowedCrossColors) => {
     let queue = []
     const addCases = (key, numResults) => {
         // avoid including no-auf whenever possible
-        const dTurnsOptions = numResults === 4  ? ["", "d", "d2", "d'"] : ["d", "d2", "d'"]
-        const dTurns = shuffle(dTurnsOptions).slice(0, numResults)
-        const colorShifts = shuffle([0, 1, 2, 3]).slice(0, numResults)
+        const dTurns = shuffle(numResults === 4 ? [...D_TURN_OPTIONS] : [...D_TURN_OPTIONS.slice(1)]).slice(0, numResults)
+        const colorShifts = shuffle([...COLOR_SHIFTS]).slice(0, numResults)
         for (let i = 0; i < numResults; i++) {
             queue.push(keyToCase(key, dTurns[i], colorShifts[i], randomCrossColor(allowedCrossColors)))
         }
