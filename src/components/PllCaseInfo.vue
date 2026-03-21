@@ -24,7 +24,7 @@ const auf = computed(() => aufByDturn(props.pllCase.dTurn))
       <PllPic :pllCase="props.pllCase" viewType="cube-top" :size="200" :clickable="true"/>
     </div>
     <div class="col text-start">
-      <h3>{{props.pllCase.name}} perm, {{auf || "no"}} AUF</h3>
+      <h3>{{props.pllCase.name}} perm <span v-if="auf" class="badge bg-secondary" title="AUF">+{{auf}}</span></h3>
       <Note :pllCase="props.pllCase" :enableHotkeys="true"/>
     </div>
   </div>
