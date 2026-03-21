@@ -41,7 +41,7 @@ const insertSvg = () => {
     strokeWidth: settings.store.strokeWidth,
   }
 
-  if (props.viewType === "cube") {
+  if (props.viewType === "cube" || props.viewType === "cube-pll") {
     opts.puzzle.rotations = settings.store.puzzleRotations
   }
 

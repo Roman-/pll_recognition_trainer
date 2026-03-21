@@ -177,7 +177,7 @@ const keyPressHint = computed(() => {
         </div>
       </div>
       <div class="text-center">
-        <PllPic :pllCase="session.currentCase" viewType="cube" :size="400" :clickable="false"/>
+        <PllPic :pllCase="session.currentCase" :viewType="session.store.mistake ? 'cube-pll' : 'cube'" :size="400" :clickable="false"/>
       </div>
       <div class="text-secondary text-center my-3"
            :class="{ 'animate__animated animate__headShake': shakeHint }">
