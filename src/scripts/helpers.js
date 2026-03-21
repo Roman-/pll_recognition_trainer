@@ -58,7 +58,7 @@ export const isHelpKey = key => {
 export const scrambleForCase = (pllCase, crossColorOverride) => {
     if (!pllCase) return ""
     const crossColor = crossColorOverride ? crossColorOverride[0].toLowerCase() : pllCase.crossColor
-    const solution = pllMap[pllCase.name]["noAuf"][0] || ""
+    const solution = pllMap[pllCase.name]["noAuf"] || ""
     const crossColorChange = crossColorToCubeRotation(crossColor)
     const colorShift = "y ".repeat(parseInt(pllCase.colorShift)).trim()
     const inversedRotation = inverseScramble(pllCase.rotation)
