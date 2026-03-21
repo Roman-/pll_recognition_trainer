@@ -86,7 +86,7 @@ const onClick = () => { if (props.clickable) modalShown.value = true }
        @mouseenter="props.hovered === undefined && (localHovered = true)"
        @mouseleave="props.hovered === undefined && (localHovered = false)"
        @click="onClick">
-    <div ref="cubeImgDiv" class="pll-pic-layer pll-pic-base" :class="{ 'pll-pic-faded': isHovered }"></div>
+    <div ref="cubeImgDiv" class="pll-pic-layer pll-pic-base"></div>
     <div ref="hoverImgDiv" class="pll-pic-layer pll-pic-overlay" :class="{ 'pll-pic-visible': isHovered }"></div>
   </div>
 
@@ -109,19 +109,8 @@ const onClick = () => { if (props.clickable) modalShown.value = true }
   display: inline-block;
 }
 
-.pll-pic-layer {
-  transition: opacity 0.3s ease;
-}
-
-.pll-pic-base {
-  opacity: 1;
-}
-
-.pll-pic-base.pll-pic-faded {
-  opacity: 0;
-}
-
 .pll-pic-overlay {
+  transition: opacity 0.3s ease;
   position: absolute;
   top: 0;
   left: 0;
