@@ -1,0 +1,974 @@
+{
+  "meta": {
+    "source": "pll2side.pdf",
+    "page": 1,
+    "title": "Mark49152’s Two-Sided PLL Recognition Guide",
+    "version": "2014.05.31"
+  },
+  "notes": [
+    "Look for these features in order of precedence: (1) 3-bar (2) lights (3) 2-bar (4) bookends.",
+    "Choose the first pattern that matches, from the nine patterns below, and within that group find the first case that matches.",
+    "Remember that there are four color combinations for each case, and cases may also be mirrored.",
+    "Color rules are relative: \"opp\" = opposite, \"adj\" = adjacent, relative to the nearest pattern color."
+  ],
+  "precedence": [
+    "3-bar",
+    "lights",
+    "2-bar",
+    "bookends"
+  ],
+  "cellLegend": {
+    "g": "green",
+    "o": "orange",
+    "b": "blue",
+    "r": "red",
+    "x": "gray",
+    "!": "outlined sticker (thick black border)"
+  },
+  "layout": {
+    "type": "grid",
+    "columns": 3,
+    "rows": [
+      [
+        "three_bar",
+        "double_lights",
+        "lights_plus_2bar"
+      ],
+      [
+        "lone_lights",
+        "double_2bar",
+        "outside_2bar"
+      ],
+      [
+        "inside_2bar",
+        "bookends_no_bar",
+        "no_bookends"
+      ]
+    ],
+    "defaultPatternColumns": 6
+  },
+  "groups": [
+    {
+      "id": "three_bar",
+      "title": "3-BAR",
+      "gridRow": 0,
+      "gridCol": 0,
+      "header": {
+        "layers": [
+          {
+            "row": 0,
+            "col": 0,
+            "cells": [
+              "g!",
+              "g!",
+              "g!",
+              "x",
+              "x",
+              "x"
+            ]
+          }
+        ]
+      },
+      "rows": [
+        {
+          "pattern": {
+            "layers": [
+              {
+                "row": 0,
+                "col": 0,
+                "cells": [
+                  "g",
+                  "g",
+                  "g",
+                  "o!",
+                  "x",
+                  "o!"
+                ]
+              }
+            ]
+          },
+          "text": "headlights = U"
+        },
+        {
+          "pattern": {
+            "layers": [
+              {
+                "row": 0,
+                "col": 0,
+                "cells": [
+                  "g",
+                  "g",
+                  "g",
+                  "o!",
+                  "o!",
+                  "x"
+                ]
+              }
+            ]
+          },
+          "text": null,
+          "annotationRef": "three_bar_j"
+        },
+        {
+          "pattern": {
+            "layers": [
+              {
+                "row": 0,
+                "col": 0,
+                "cells": [
+                  "g",
+                  "g",
+                  "g",
+                  "x",
+                  "b!",
+                  "b!"
+                ]
+              }
+            ]
+          },
+          "text": null,
+          "annotationRef": "three_bar_j"
+        },
+        {
+          "pattern": {
+            "layers": [
+              {
+                "row": 0,
+                "col": 0,
+                "cells": [
+                  "g",
+                  "g",
+                  "g",
+                  "o!",
+                  "r!",
+                  "b!"
+                ]
+              }
+            ]
+          },
+          "text": "4 colors = F"
+        }
+      ],
+      "annotations": [
+        {
+          "id": "three_bar_j",
+          "type": "braceLabel",
+          "fromRow": 1,
+          "toRow": 2,
+          "text": "2-bar = J"
+        }
+      ]
+    },
+    {
+      "id": "double_lights",
+      "title": "DOUBLE LIGHTS",
+      "gridRow": 0,
+      "gridCol": 1,
+      "header": {
+        "layers": [
+          {
+            "row": 0,
+            "col": 0,
+            "cells": [
+              "g!",
+              "x",
+              "g!",
+              "o!",
+              "x",
+              "o!"
+            ]
+          }
+        ]
+      },
+      "rows": [
+        {
+          "pattern": {
+            "layers": [
+              {
+                "row": 0,
+                "col": 0,
+                "cells": [
+                  "g!",
+                  "o!",
+                  "g!",
+                  "o!",
+                  "g!",
+                  "o!"
+                ]
+              }
+            ]
+          },
+          "text": "2-color 6-checker = Z"
+        },
+        {
+          "pattern": {
+            "layers": [
+              {
+                "row": 0,
+                "col": 0,
+                "cells": [
+                  "g",
+                  "r!",
+                  "g",
+                  "o",
+                  "b!",
+                  "o"
+                ]
+              }
+            ]
+          },
+          "text": "adj edges & 4 colors = Z"
+        },
+        {
+          "pattern": {
+            "layers": [
+              {
+                "row": 0,
+                "col": 0,
+                "cells": [
+                  "g",
+                  "b!",
+                  "g",
+                  "o",
+                  "r!",
+                  "o"
+                ]
+              }
+            ]
+          },
+          "text": "opp edges = H"
+        },
+        {
+          "pattern": {
+            "layers": [
+              {
+                "row": 0,
+                "col": 0,
+                "cells": [
+                  "g!",
+                  "x",
+                  "g!",
+                  "o",
+                  "g!",
+                  "o"
+                ]
+              }
+            ]
+          },
+          "text": "2:1 pattern & 3 colors = U"
+        }
+      ]
+    },
+    {
+      "id": "lights_plus_2bar",
+      "title": "LIGHTS + 2-BAR",
+      "gridRow": 0,
+      "gridCol": 2,
+      "header": {
+        "layers": [
+          {
+            "row": 0,
+            "col": 0,
+            "cells": [
+              "g!",
+              "x",
+              "g!"
+            ]
+          },
+          {
+            "row": 0,
+            "col": 3,
+            "cells": [
+              "o!",
+              "o!",
+              "x"
+            ]
+          },
+          {
+            "row": 1,
+            "col": 3,
+            "cells": [
+              "x",
+              "b!",
+              "b!"
+            ]
+          }
+        ]
+      },
+      "rows": [
+        {
+          "pattern": {
+            "layers": [
+              {
+                "row": 0,
+                "col": 0,
+                "cells": [
+                  "g",
+                  "b!",
+                  "g",
+                  "o",
+                  "o",
+                  "b!"
+                ]
+              }
+            ]
+          },
+          "text": "inside bar & 3 colors = T"
+        },
+        {
+          "pattern": {
+            "layers": [
+              {
+                "row": 0,
+                "col": 0,
+                "cells": [
+                  "g",
+                  "r!",
+                  "g",
+                  "o",
+                  "o",
+                  "b!"
+                ]
+              }
+            ]
+          },
+          "text": "inside bar & 4 colors = R"
+        },
+        {
+          "pattern": {
+            "layers": [
+              {
+                "row": 0,
+                "col": 0,
+                "cells": [
+                  "g",
+                  "o!",
+                  "g",
+                  "o!",
+                  "b",
+                  "b"
+                ]
+              }
+            ]
+          },
+          "text": "outer bar & 3 colors = A"
+        },
+        {
+          "pattern": {
+            "layers": [
+              {
+                "row": 0,
+                "col": 0,
+                "cells": [
+                  "g",
+                  "r!",
+                  "g",
+                  "o!",
+                  "b",
+                  "b"
+                ]
+              }
+            ]
+          },
+          "text": "outer bar & 4 color = Ga/c"
+        }
+      ]
+    },
+    {
+      "id": "lone_lights",
+      "title": "LONE LIGHTS",
+      "gridRow": 1,
+      "gridCol": 0,
+      "header": {
+        "layers": [
+          {
+            "row": 0,
+            "col": 0,
+            "cells": [
+              "g!",
+              "x",
+              "g!",
+              "x",
+              "x",
+              "x"
+            ]
+          }
+        ]
+      },
+      "rows": [
+        {
+          "pattern": {
+            "layers": [
+              {
+                "row": 0,
+                "col": 0,
+                "cells": [
+                  "g!",
+                  "o!",
+                  "g!",
+                  "o!",
+                  "g!",
+                  "x"
+                ]
+              }
+            ]
+          },
+          "text": "5-checker = R"
+        },
+        {
+          "pattern": {
+            "layers": [
+              {
+                "row": 0,
+                "col": 0,
+                "cells": [
+                  "g!",
+                  "o!",
+                  "g!",
+                  "o!",
+                  "x",
+                  "x"
+                ]
+              }
+            ]
+          },
+          "text": "4-checker = Ga/c"
+        },
+        {
+          "pattern": {
+            "layers": [
+              {
+                "row": 0,
+                "col": 0,
+                "cells": [
+                  "g",
+                  "b!",
+                  "g",
+                  "x",
+                  "x",
+                  "x"
+                ]
+              }
+            ]
+          },
+          "text": "lights enclose opp = Gb/d"
+        },
+        {
+          "pattern": {
+            "layers": [
+              {
+                "row": 0,
+                "col": 0,
+                "cells": [
+                  "g",
+                  "r!",
+                  "g",
+                  "x",
+                  "x",
+                  "x"
+                ]
+              }
+            ]
+          },
+          "text": "lights enclose adj (but no checker) = A"
+        }
+      ]
+    },
+    {
+      "id": "double_2bar",
+      "title": "DOUBLE 2-BAR",
+      "gridRow": 1,
+      "gridCol": 1,
+      "header": {
+        "layers": [
+          {
+            "row": 0,
+            "col": 0,
+            "cells": [
+              "g!",
+              "g!",
+              "x"
+            ]
+          },
+          {
+            "row": 0,
+            "col": 3,
+            "cells": [
+              "x",
+              "o!",
+              "o!"
+            ]
+          },
+          {
+            "row": 1,
+            "col": 3,
+            "cells": [
+              "r!",
+              "r!",
+              "x"
+            ]
+          }
+        ]
+      },
+      "rows": [
+        {
+          "pattern": {
+            "layers": [
+              {
+                "row": 0,
+                "col": 0,
+                "cells": [
+                  "g!",
+                  "g!",
+                  "x",
+                  "x",
+                  "o!",
+                  "o!"
+                ]
+              }
+            ]
+          },
+          "text": "both outside = Y"
+        },
+        {
+          "pattern": {
+            "layers": [
+              {
+                "row": 0,
+                "col": 0,
+                "cells": [
+                  "b!",
+                  "g",
+                  "g",
+                  "o",
+                  "o",
+                  "b!"
+                ]
+              }
+            ]
+          },
+          "text": "both inside & bookends = A"
+        },
+        {
+          "pattern": {
+            "layers": [
+              {
+                "row": 0,
+                "col": 0,
+                "cells": [
+                  "b!",
+                  "g",
+                  "g",
+                  "o",
+                  "o",
+                  "r!"
+                ]
+              }
+            ]
+          },
+          "text": "inside & no bookends = V"
+        },
+        {
+          "pattern": {
+            "layers": [
+              {
+                "row": 0,
+                "col": 0,
+                "cells": [
+                  "g!",
+                  "g!",
+                  "x",
+                  "r",
+                  "r",
+                  "g!"
+                ]
+              }
+            ]
+          },
+          "text": "same side & bookend = J"
+        },
+        {
+          "pattern": {
+            "layers": [
+              {
+                "row": 0,
+                "col": 0,
+                "cells": [
+                  "g!",
+                  "g!",
+                  "x",
+                  "r",
+                  "r",
+                  "o!"
+                ]
+              }
+            ]
+          },
+          "text": "same side & no bookend = N"
+        }
+      ]
+    },
+    {
+      "id": "outside_2bar",
+      "title": "OUTSIDE 2-BAR",
+      "gridRow": 1,
+      "gridCol": 2,
+      "header": {
+        "layers": [
+          {
+            "row": 0,
+            "col": 0,
+            "cells": [
+              "g!",
+              "g!",
+              "x",
+              "x",
+              "x",
+              "x"
+            ]
+          }
+        ]
+      },
+      "rows": [
+        {
+          "pattern": {
+            "layers": [
+              {
+                "row": 0,
+                "col": 0,
+                "cells": [
+                  "g!",
+                  "g!",
+                  "x",
+                  "x",
+                  "x",
+                  "o!"
+                ]
+              }
+            ]
+          },
+          "text": "no bookend = V"
+        },
+        {
+          "pattern": {
+            "layers": [
+              {
+                "row": 0,
+                "col": 0,
+                "cells": [
+                  "g",
+                  "g",
+                  "o!",
+                  "x",
+                  "o!",
+                  "g"
+                ]
+              }
+            ]
+          },
+          "text": "adj appears twice = R"
+        },
+        {
+          "pattern": {
+            "layers": [
+              {
+                "row": 0,
+                "col": 0,
+                "cells": [
+                  "g",
+                  "g",
+                  "b!",
+                  "x",
+                  "b!",
+                  "g"
+                ]
+              }
+            ]
+          },
+          "text": "opp appears twice = Gb/d"
+        },
+        {
+          "pattern": {
+            "layers": [
+              {
+                "row": 0,
+                "col": 0,
+                "cells": [
+                  "g",
+                  "g",
+                  "o!",
+                  "x",
+                  "x",
+                  "g"
+                ]
+              }
+            ]
+          },
+          "text": "adj by bar & 4 colors = T"
+        },
+        {
+          "pattern": {
+            "layers": [
+              {
+                "row": 0,
+                "col": 0,
+                "cells": [
+                  "g",
+                  "g",
+                  "b!",
+                  "x",
+                  "x",
+                  "g"
+                ]
+              }
+            ]
+          },
+          "text": "opp by bar & 4 colors = A"
+        }
+      ]
+    },
+    {
+      "id": "inside_2bar",
+      "title": "INSIDE 2-BAR",
+      "gridRow": 2,
+      "gridCol": 0,
+      "header": {
+        "layers": [
+          {
+            "row": 0,
+            "col": 0,
+            "cells": [
+              "x",
+              "g!",
+              "g!",
+              "x",
+              "x",
+              "x"
+            ]
+          }
+        ]
+      },
+      "rows": [
+        {
+          "pattern": {
+            "layers": [
+              {
+                "row": 0,
+                "col": 0,
+                "cells": [
+                  "r!",
+                  "g",
+                  "g",
+                  "x",
+                  "x",
+                  "r!"
+                ]
+              }
+            ]
+          },
+          "text": "bookends adj color = Ga/c"
+        },
+        {
+          "pattern": {
+            "layers": [
+              {
+                "row": 0,
+                "col": 0,
+                "cells": [
+                  "b!",
+                  "g",
+                  "g",
+                  "x",
+                  "x",
+                  "b!"
+                ]
+              }
+            ]
+          },
+          "text": "bookends opp col = Gb/d"
+        },
+        {
+          "pattern": {
+            "layers": [
+              {
+                "row": 0,
+                "col": 0,
+                "cells": [
+                  "b!",
+                  "g",
+                  "g",
+                  "x",
+                  "x",
+                  "r!"
+                ]
+              }
+            ]
+          },
+          "text": "no bookends = Y"
+        }
+      ]
+    },
+    {
+      "id": "bookends_no_bar",
+      "title": "BOOKENDS NO BAR",
+      "gridRow": 2,
+      "gridCol": 1,
+      "header": {
+        "layers": [
+          {
+            "row": 0,
+            "col": 0,
+            "cells": [
+              "g!",
+              "x",
+              "x",
+              "x",
+              "x",
+              "g!"
+            ]
+          }
+        ]
+      },
+      "rows": [
+        {
+          "pattern": {
+            "layers": [
+              {
+                "row": 0,
+                "col": 0,
+                "cells": [
+                  "g",
+                  "r!",
+                  "b!",
+                  "r!",
+                  "b!",
+                  "g"
+                ]
+              }
+            ]
+          },
+          "text": "enclosed 4-checker = F"
+        },
+        {
+          "pattern": {
+            "layers": [
+              {
+                "row": 0,
+                "col": 0,
+                "cells": [
+                  "g",
+                  "r!",
+                  "x",
+                  "r!",
+                  "x",
+                  "g"
+                ]
+              }
+            ]
+          },
+          "text": "adj appears twice = R"
+        },
+        {
+          "pattern": {
+            "layers": [
+              {
+                "row": 0,
+                "col": 0,
+                "cells": [
+                  "g",
+                  "b!",
+                  "x",
+                  "b!",
+                  "x",
+                  "g"
+                ]
+              }
+            ]
+          },
+          "text": "opp appears twice = Ga/c"
+        }
+      ]
+    },
+    {
+      "id": "no_bookends",
+      "title": "NO BOOKENDS",
+      "gridRow": 2,
+      "gridCol": 2,
+      "header": {
+        "layers": [
+          {
+            "row": 0,
+            "col": 0,
+            "cells": [
+              "g!",
+              "x",
+              "x",
+              "x",
+              "x",
+              "o!"
+            ]
+          }
+        ]
+      },
+      "rows": [
+        {
+          "pattern": {
+            "layers": [
+              {
+                "row": 0,
+                "col": 0,
+                "cells": [
+                  "g",
+                  "r!",
+                  "b!",
+                  "r!",
+                  "b!",
+                  "o"
+                ]
+              }
+            ]
+          },
+          "text": "inner 4-checker = V"
+        },
+        {
+          "pattern": {
+            "layers": [
+              {
+                "row": 0,
+                "col": 0,
+                "cells": [
+                  "g!",
+                  "o!",
+                  "x",
+                  "x",
+                  "g!",
+                  "o!"
+                ]
+              }
+            ]
+          },
+          "text": "outer 4-checker = Y"
+        },
+        {
+          "pattern": {
+            "layers": [
+              {
+                "row": 0,
+                "col": 0,
+                "cells": [
+                  "g!",
+                  "r!",
+                  "b!",
+                  "r!",
+                  "g!",
+                  "o"
+                ]
+              }
+            ]
+          },
+          "text": "5-checker w/ opp middle = E"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+Schema choices are renderer-oriented: I used layers for stacked previews, annotations for the shared brace text, and compact cell tokens where g/o/b/r/x mean green/orange/blue/red/gray and ! means a thick black outline. The content itself is taken from page 1 of the PDF.
