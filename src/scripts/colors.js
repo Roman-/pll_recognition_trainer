@@ -54,6 +54,8 @@ export const topViewAdjustment = (puzzleRotations) => {
 
 export const strokeWidthOptions = {
     "0": 0,
+    "1/2": 0.005,
+    "1/4": 0.0025,
     "1": 0.01,
     "2": 0.02,
     "3": 0.03,
