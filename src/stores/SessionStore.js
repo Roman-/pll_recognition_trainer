@@ -132,7 +132,15 @@ export const useSessionStore = defineStore('session', () => {
         store.currentRecognitionStarted = new Date()
     }
 
-    const giveUpOnCase = () => store.mistake = "-"
+    const giveUpOnCase = () => {
+        store.results.unshift({
+            pllCase: currentCase.value,
+            started: store.currentRecognitionStarted,
+            finished: new Date(),
+            mistake: "-"
+        })
+        store.mistake = "-"
+    }
 
     const restartEvaluation = () => {
         store.queue = generateEvaluationQueue(store.allowedCrossColors)
