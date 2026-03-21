@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, reactive } from 'vue'
 import PllPic from '@/components/PllPic.vue'
 import CaseVariationsModal from '@/components/CaseVariationsModal.vue'
 import pllMap from '@/assets/algs/pll.json'
@@ -17,6 +17,7 @@ const generateRow = () => {
 const rows = ref([generateRow(), generateRow(), generateRow()])
 const paused = ref(false)
 const selectedCase = ref(null)
+const hoveredCards = reactive(new Set())
 
 const aufLabel = (pllCase) => {
   const auf = aufByDturn(pllCase.dTurn)
@@ -45,6 +46,8 @@ const aufLabel = (pllCase) => {
         :key="i"
         class="showcase-card"
         @click="selectedCase = pllCase"
+        @mouseenter="hoveredCards.add(`${rowIndex}-${i}`)"
+        @mouseleave="hoveredCards.delete(`${rowIndex}-${i}`)"
       >
         <div class="card-header-row">
           <span class="case-name">{{ pllCase.name }}</span>
@@ -54,8 +57,10 @@ const aufLabel = (pllCase) => {
           <PllPic
             :pllCase="pllCase"
             viewType="cube"
+            hoverViewType="cube-pll"
             :size="80"
             :clickable="false"
+            :hovered="hoveredCards.has(`${rowIndex}-${i}`)"
           />
           <PllPic
             :pllCase="pllCase"

@@ -6,17 +6,22 @@ import {topViewAdjustment} from "@/scripts/colors";
 import {useSettingsStore} from "@/stores/SettingsStore";
 import CaseVariationsModal from "@/components/CaseVariationsModal.vue";
 
-// viewType: "cube" or "cube-top"
 const props = defineProps({
   pllCase: Object,
   viewType: String,
   size: Number,
   clickable: Boolean,
-  crossColor: String
+  crossColor: String,
+  hoverViewType: String,
+  hovered: { type: Boolean, default: undefined }
 })
 
 const cubeImgDiv = ref(null)
+const hoverImgDiv = ref(null)
 const settings = useSettingsStore()
+
+const localHovered = ref(false)
+const isHovered = computed(() => props.hovered !== undefined ? props.hovered : localHovered.value)
 
 const scramble = computed(() => {
     const base = scrambleForCase(props.pllCase, props.crossColor)
@@ -27,9 +32,9 @@ const scramble = computed(() => {
     return base
 })
 
-// Image of a cube for which the SOLUTION is: rotation + pll_alg(with block on BL) + inverse d turn(or AUF by d turn). Pll case object:
-const insertSvg = () => {
-  cubeImgDiv.value.innerHTML = ''
+const insertSvgInto = (targetRef, viewType) => {
+  if (!targetRef.value) return
+  targetRef.value.innerHTML = ''
 
   let opts = {
     "puzzle": {
@@ -41,33 +46,53 @@ const insertSvg = () => {
     strokeWidth: settings.store.strokeWidth,
   }
 
-  if (props.viewType === "cube" || props.viewType === "cube-pll") {
+  if (viewType === "cube" || viewType === "cube-pll") {
     opts.puzzle.rotations = settings.store.puzzleRotations
   }
 
   if (!scramble.value) {
     opts.puzzle.mask = noCubePuzzleMask
   }
-  SVG(cubeImgDiv.value, props.viewType, opts)
+  SVG(targetRef.value, viewType, opts)
+}
+
+const insertSvg = () => insertSvgInto(cubeImgDiv, props.viewType)
+const insertHoverSvg = () => {
+  if (props.hoverViewType) insertSvgInto(hoverImgDiv, props.hoverViewType)
 }
 
 watch(
-  () => [scramble.value, props.viewType, props.size,
+  () => [scramble.value, props.viewType, props.hoverViewType, props.size,
          settings.store.puzzleRotations, settings.store.strokeWidth,
          settings.store.colorScheme],
-  insertSvg,
+  () => { insertSvg(); insertHoverSvg() },
   { deep: true }
 )
 
 onMounted(() => {
   insertSvg()
+  insertHoverSvg()
 })
 
 const modalShown = ref(false);
+const onClick = () => { if (props.clickable) modalShown.value = true }
 </script>
 
 <template>
-  <div ref="cubeImgDiv" :class="props.clickable ? 'clickable' : ''" @click="props.clickable && (modalShown = true)"></div>
+  <!-- Dual-layer mode: cross-fade between viewType and hoverViewType -->
+  <div v-if="hoverViewType"
+       class="pll-pic-hover-wrapper"
+       :class="props.clickable ? 'clickable' : ''"
+       @mouseenter="props.hovered === undefined && (localHovered = true)"
+       @mouseleave="props.hovered === undefined && (localHovered = false)"
+       @click="onClick">
+    <div ref="cubeImgDiv" class="pll-pic-layer pll-pic-base" :class="{ 'pll-pic-faded': isHovered }"></div>
+    <div ref="hoverImgDiv" class="pll-pic-layer pll-pic-overlay" :class="{ 'pll-pic-visible': isHovered }"></div>
+  </div>
+
+  <!-- Single-layer mode: original behavior -->
+  <div v-else ref="cubeImgDiv" :class="props.clickable ? 'clickable' : ''" @click="onClick"></div>
+
   <Teleport v-if="modalShown" to="body">
     <CaseVariationsModal :pllCase="props.pllCase" :closeCallback="() => modalShown=false"/>
   </Teleport>
@@ -77,5 +102,34 @@ const modalShown = ref(false);
 :deep(svg) {
   max-width: 100%;
   height: auto;
+}
+
+.pll-pic-hover-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.pll-pic-layer {
+  transition: opacity 0.3s ease;
+}
+
+.pll-pic-base {
+  opacity: 1;
+}
+
+.pll-pic-base.pll-pic-faded {
+  opacity: 0;
+}
+
+.pll-pic-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.pll-pic-overlay.pll-pic-visible {
+  opacity: 1;
 }
 </style>

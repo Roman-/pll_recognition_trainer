@@ -75,7 +75,7 @@ const crossColor = ref(colorNameByLetter(props.pllCase.crossColor))
           <hr>
           <div class="row gx-0">
             <div v-for="pllCase in pllCases" class="col-3 text-center">
-              <PllPic :pllCase="pllCase" viewType="cube" :size="150" :clickable="false" :crossColor="crossColor"/>
+              <PllPic :pllCase="pllCase" viewType="cube" hoverViewType="cube-pll" :size="150" :clickable="false" :crossColor="crossColor"/>
             </div>
           </div>
         </div>

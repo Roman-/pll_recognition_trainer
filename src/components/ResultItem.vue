@@ -1,7 +1,7 @@
 <script setup>
 import PllPic from "@/components/PllPic.vue";
 import {msToHumanReadable} from "@/scripts/time_formatter";
-import {computed} from "vue";
+import {computed, ref} from "vue";
 import {resultTimeMs} from "@/scripts/pll_cases";
 import Note from "@/components/Note.vue";
 
@@ -19,11 +19,13 @@ const timeText = computed(() => {
 })
 
 const resultIsPoor = computed(() => resultTimeMs(props.result) > 3000)
+
+const hovered = ref(false)
 </script>
 
 <template>
   <!-- Card layout for evaluation results -->
-  <div v-if="cardLayout" class="card mb-3">
+  <div v-if="cardLayout" class="card mb-3" @mouseenter="hovered = true" @mouseleave="hovered = false">
     <div class="card-body">
       <!-- Row 1: Name + Badge -->
       <div class="d-flex justify-content-between align-items-center mb-2">
@@ -41,7 +43,7 @@ const resultIsPoor = computed(() => resultTimeMs(props.result) > 3000)
           <PllPic :pllCase="props.result.pllCase" viewType="cube-top" :size="props.pictureSize" :clickable="true"/>
         </div>
         <div class="col-6">
-          <PllPic :pllCase="props.result.pllCase" viewType="cube" :size="props.pictureSize" :clickable="true"/>
+          <PllPic :pllCase="props.result.pllCase" viewType="cube" hoverViewType="cube-pll" :size="props.pictureSize" :clickable="true" :hovered="hovered"/>
         </div>
       </div>
       <!-- Row 3: Note -->
@@ -50,12 +52,12 @@ const resultIsPoor = computed(() => resultTimeMs(props.result) > 3000)
   </div>
 
   <!-- Compact layout (existing behavior) -->
-  <div v-else class="row align-items-center mx-0">
+  <div v-else class="row align-items-center mx-0" @mouseenter="hovered = true" @mouseleave="hovered = false">
     <div v-if="props.showTopPicture" class="col col-auto">
       <PllPic :pllCase="props.result.pllCase" viewType="cube-top" :size="Math.round(props.pictureSize * 0.8)" :clickable="true"/>
     </div>
     <div class="col col-auto">
-      <PllPic :pllCase="props.result.pllCase" viewType="cube" :size="props.pictureSize" :clickable="true"/>
+      <PllPic :pllCase="props.result.pllCase" viewType="cube" hoverViewType="cube-pll" :size="props.pictureSize" :clickable="true" :hovered="hovered"/>
     </div>
     <div class="col col-auto h4">
       {{props.result.pllCase.name}}
