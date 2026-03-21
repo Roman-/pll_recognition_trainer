@@ -194,8 +194,8 @@ const keyPressHint = computed(() => {
         <button class="btn btn-secondary me-2" @click="session.pausePlay()">
           Pause<span v-if="!isMobile"> (Esc)</span>
         </button>
-        <button class="btn btn-outline-secondary" @click="session.giveUpOnCase()">
-          Give up<span v-if="!isMobile"> (s or ?)</span>
+        <button v-if="!session.store.mistake" class="btn btn-outline-secondary" @click="session.giveUpOnCase()">
+          Give up<span v-if="!isMobile"> (S/?)</span>
         </button>
       </div>
       <div v-if="session.store.state === GameState.Playing && session.store.mistake">
