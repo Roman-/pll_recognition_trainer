@@ -10,6 +10,7 @@ import OnScreenKeyboard from "@/components/OnScreenKeyboard.vue";
 import ResultsModal from "@/components/ResultsModal.vue";
 import {useSettingsStore} from "@/stores/SettingsStore";
 import {useKeydown} from "@/composables/useKeydown";
+import {isMobile} from "@/scripts/device";
 
 const session = useSessionStore()
 const settings = useSettingsStore()
@@ -183,7 +184,20 @@ const keyPressHint = computed(() => {
            :class="{ 'animate__animated animate__headShake': shakeHint }">
         {{ keyPressHint }}
       </div>
+      <div v-if="session.store.state === GameState.Paused" class="text-center mb-3">
+        <button class="btn btn-primary" @click="session.resumePlay()">
+          {{ session.store.results.length === 0 ? 'Start' : 'Resume' }}<span v-if="!isMobile"> (Space)</span>
+        </button>
+      </div>
       <OnScreenKeyboard/>
+      <div v-if="session.store.state === GameState.Playing" class="text-center mb-3">
+        <button class="btn btn-secondary me-2" @click="session.pausePlay()">
+          Pause<span v-if="!isMobile"> (Esc)</span>
+        </button>
+        <button class="btn btn-outline-secondary" @click="session.giveUpOnCase()">
+          Give up<span v-if="!isMobile"> (s or ?)</span>
+        </button>
+      </div>
       <div v-if="session.store.state === GameState.Playing && session.store.mistake">
         <hr>
         <div class="d-flex justify-content-center">

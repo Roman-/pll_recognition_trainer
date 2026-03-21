@@ -1,11 +1,6 @@
 <template>
   <div v-if="settings.store.showOnScreenKeyboard" class="text-center my-2">
-    <div v-if="session.store.state === GameState.Paused">
-      <button class="btn btn-primary" @click="session.resumePlay()">
-        {{ session.store.results.length === 0 ? 'Start' : 'Resume' }}
-      </button>
-    </div>
-    <div v-else-if="session.store.state === GameState.Playing">
+    <div v-if="session.store.state === GameState.Playing">
       <template v-if="settings.store.fullNameMode">
         <div class="d-flex flex-nowrap justify-content-center mb-1 mx-1 fullname-row">
           <button v-for="name in fullNameRow1" :key="name" class="btn btn-fullname"
@@ -34,9 +29,6 @@
           </button>
         </div>
       </template>
-      <div class="mt-2">
-        <button class="btn btn-secondary" @click="session.pausePlay()">Pause</button>
-      </div>
     </div>
   </div>
 </template>

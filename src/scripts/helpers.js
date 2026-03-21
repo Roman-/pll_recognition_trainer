@@ -51,7 +51,7 @@ export const validPllSuffixes = {
 export const allPllCaseNames = new Set(Object.keys(pllMap))
 
 export const isHelpKey = key => {
-    return new Set(['-', 'F1', '?']).has(key)
+    return new Set(['-', 'F1', '?', 's', 'S', '/']).has(key)
 }
 
 // crossColorOverride - if not specified, cross color will be taken from pllCase
