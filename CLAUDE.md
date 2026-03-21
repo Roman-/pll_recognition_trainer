@@ -11,7 +11,7 @@ Client-side Vue 3 web app for speedcubers to practice recognizing PLL (Permutati
 - **State:** Pinia (4 stores)
 - **Routing:** Vue Router 4 (hash mode)
 - **UI:** Bootstrap 5 + 17 swappable themes (12 light + 5 dark)
-- **Cube rendering:** sr-puzzlegen (SVG output)
+- **Cube rendering:** sr-puzzlegen-pll (SVG output)
 
 ## Commands
 

@@ -12,7 +12,7 @@
     "bootstrap": "^5.2.3",
     "bootstrap-icons": "^1.10.3",
     "pinia": "^2.0.28",
-    "sr-puzzlegen": "^1.0.4",
+    "sr-puzzlegen-pll": "^1.0.4",
     "vue": "^3.2.46",
     "vue-router": "^4.1.6"
   },

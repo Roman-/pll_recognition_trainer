@@ -1,5 +1,5 @@
 <script setup>
-import { SVG } from "sr-puzzlegen"
+import { SVG } from "sr-puzzlegen-pll"
 import {computed, onMounted, ref, watch} from "vue";
 import {noCubePuzzleMask, scrambleForCase} from "@/scripts/helpers";
 import {topViewAdjustment} from "@/scripts/colors";
