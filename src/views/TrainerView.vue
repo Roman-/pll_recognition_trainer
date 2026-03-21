@@ -183,9 +183,6 @@ const keyPressHint = computed(() => {
            :class="{ 'animate__animated animate__headShake': shakeHint }">
         {{ keyPressHint }}
       </div>
-      <div v-if="session.store.state === GameState.Playing" class="text-center">
-        <button class="btn btn-link btn-sm text-muted" @click="cheat">Cheat</button>
-      </div>
       <OnScreenKeyboard/>
       <div v-if="session.store.state === GameState.Playing && session.store.mistake">
         <hr>
