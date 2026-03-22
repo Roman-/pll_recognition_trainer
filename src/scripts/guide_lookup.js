@@ -26,24 +26,13 @@ const L_CENTER = 40
 
 // Group precedence (lower = higher priority)
 const GROUP_PRECEDENCE = {
-  three_bar: 0,
-  double_lights: 1,
-  lights_plus_2bar: 1,
-  lone_lights: 1,
-  double_2bar: 2,
-  outside_2bar: 2,
-  inside_2bar: 2,
-  bookends_no_bar: 3,
-  no_bookends: 3
+  three_bar: 0, double_lights: 1, lights_plus_2bar: 1, lone_lights: 1,
+  double_2bar: 2, outside_2bar: 2, inside_2bar: 2,
+  bookends_no_bar: 3, no_bookends: 3
 }
 
 const FLIP = { g: 'o', o: 'g', b: 'r', r: 'b' }
 
-/**
- * Convert absolute sticker face ID to relative guide color.
- * On the left (F) side:  g=F, o=R, b=B(opp-F), r=L(opp-R)
- * On the right (R) side: o=R, g=F, b=L(opp-R), r=B(opp-F)
- */
 function toRelative(sticker, fc, rc, bc, lc, isRight) {
   if (!isRight) {
     if (sticker === fc) return 'g'
@@ -59,7 +48,6 @@ function toRelative(sticker, fc, rc, bc, lc, isRight) {
   return 'x'
 }
 
-/** Check if computed 6-cell pattern matches a guide row's cells (x = wildcard). */
 function matches(computed, guide) {
   for (let i = 0; i < 6; i++) {
     if (guide[i] !== 'x' && computed[i] !== guide[i]) return false
@@ -67,12 +55,10 @@ function matches(computed, guide) {
   return true
 }
 
-/** Flip pattern: swap left/right sides and swap color meanings. */
 function flip(p) {
   return [FLIP[p[3]], FLIP[p[4]], FLIP[p[5]], FLIP[p[0]], FLIP[p[1]], FLIP[p[2]]]
 }
 
-/** Check if a guide row's label text refers to a given case name. */
 function textMatchesCase(text, caseName) {
   if (!text) return false
   const m = text.match(/=\s*(.+)$/)
@@ -86,7 +72,6 @@ function textMatchesCase(text, caseName) {
   return caseName.startsWith(label)
 }
 
-/** Get effective text for a row (own text or annotation text). */
 function effectiveText(row, group) {
   if (row.text) return row.text
   if (row.annotationRef && group.annotations) {
@@ -99,7 +84,6 @@ function effectiveText(row, group) {
 function buildLookupTable() {
   const table = {}
 
-  // Pre-extract all guide rows with metadata
   const guideRows = []
   for (const group of guideData.groups) {
     for (let ri = 0; ri < group.rows.length; ri++) {
@@ -119,7 +103,6 @@ function buildLookupTable() {
     const name = key.slice(0, sep)
     const rotation = key.slice(sep + 1)
 
-    // Build minimal scramble (no dTurn/colorShift/crossColor)
     const alg = pllMap[name]['noAuf']
     const inv = rotation ? inverseScramble(rotation) : ''
     const scramble = inv ? `${alg} ${inv}` : alg
@@ -127,7 +110,6 @@ function buildLookupTable() {
     const state = createSolvedCube()
     applyAlgorithm(state, scramble)
 
-    // Read centers and visible stickers
     const fc = state[F_CENTER], rc = state[R_CENTER]
     const bc = state[B_CENTER], lc = state[L_CENTER]
 
@@ -137,7 +119,6 @@ function buildLookupTable() {
     ]
     const flipped = flip(pattern)
 
-    // Find all matching guide rows
     const hits = []
     for (const gr of guideRows) {
       if (matches(pattern, gr.cells) || matches(flipped, gr.cells)) {
@@ -145,12 +126,8 @@ function buildLookupTable() {
       }
     }
 
-    if (hits.length === 0) {
-      console.warn(`[guide_lookup] No guide match for ${key}, pattern: ${pattern.join(',')}`)
-      continue
-    }
+    if (hits.length === 0) continue
 
-    // Disambiguate: prefer name-matching text, then higher precedence
     let best
     if (hits.length === 1) {
       best = hits[0]
@@ -166,19 +143,15 @@ function buildLookupTable() {
   return table
 }
 
-// Pre-compute at module load
 const lookupTable = buildLookupTable()
-
 const groupsById = Object.fromEntries(guideData.groups.map(g => [g.id, g]))
 
-/** Look up the guide hint for a pllCase → { groupId, rowIndex } | null */
 export function lookupGuideHint(pllCase) {
   if (!pllCase) return null
   const key = `${pllCase.name}/${pllCase.rotation}`
   return lookupTable[key] || null
 }
 
-/** Get a guide group object by its ID. */
 export function getGuideGroup(groupId) {
   return groupsById[groupId] || null
 }
