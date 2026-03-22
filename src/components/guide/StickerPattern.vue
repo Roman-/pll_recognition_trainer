@@ -5,7 +5,9 @@ import { useThemeStore } from '@/stores/ThemeStore'
 const props = defineProps({
   layers: { type: Array, required: true },
   cellSize: { type: Number, default: 22 },
-  gap: { type: Number, default: 4 },
+  gap: { type: Number, default: 0 },
+  groupGap: { type: Number, default: 6 },
+  groupSize: { type: Number, default: 3 },
   minColumns: { type: Number, default: 6 }
 })
 
@@ -35,7 +37,16 @@ const bounds = computed(() => {
   return { rows: maxRow + 1, cols: maxCol }
 })
 
-const svgWidth = computed(() => bounds.value.cols * props.cellSize + (bounds.value.cols - 1) * props.gap)
+function groupGaps(col) {
+  if (props.groupSize <= 0) return 0
+  const groups = Math.floor(col / props.groupSize)
+  return groups * props.groupGap
+}
+
+const svgWidth = computed(() => {
+  const cols = bounds.value.cols
+  return cols * props.cellSize + (cols - 1) * props.gap + groupGaps(cols - 1)
+})
 const svgHeight = computed(() => bounds.value.rows * props.cellSize + (bounds.value.rows - 1) * props.gap)
 
 const rects = computed(() => {
@@ -43,14 +54,19 @@ const rects = computed(() => {
   for (const layer of props.layers) {
     for (let i = 0; i < layer.cells.length; i++) {
       const { colorKey, outlined } = parseCell(layer.cells[i])
+      const col = layer.col + i
+      const sw = outlined ? 2.5 : 1
+      const logicalX = col * (props.cellSize + props.gap) + groupGaps(col)
+      const logicalY = layer.row * (props.cellSize + props.gap)
       result.push({
-        x: (layer.col + i) * (props.cellSize + props.gap),
-        y: layer.row * (props.cellSize + props.gap),
-        width: props.cellSize,
-        height: props.cellSize,
+        x: logicalX + sw / 2,
+        y: logicalY + sw / 2,
+        width: props.cellSize - sw,
+        height: props.cellSize - sw,
         rx: 1.5,
         fill: colorMap.value[colorKey],
-        outlined
+        outlined,
+        sw
       })
     }
   }
@@ -75,7 +91,7 @@ const rects = computed(() => {
       :rx="r.rx"
       :fill="r.fill"
       :stroke="r.outlined ? 'var(--bs-body-color)' : 'var(--bs-border-color)'"
-      :stroke-width="r.outlined ? 2.5 : 0.5"
+      :stroke-width="r.sw"
     />
   </svg>
 </template>
