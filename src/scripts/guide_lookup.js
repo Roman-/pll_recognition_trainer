@@ -14,16 +14,12 @@ import { allPllKeys } from '@/scripts/pll_cases'
 import pllMap from '@/assets/algs/pll.json'
 import guideData from '@/assets/guide/pll_two_sided_page1.json'
 
-// 4 two-sided viewing angles around the top layer.
-// Each view: left/right = sticker indices (top row, L-to-R from viewer),
-// fc/rc = left/right face center, bc/lc = opposite-of-left/opposite-of-right center.
-// Corner adjacencies: left[2] and right[0] are on the same corner piece.
-const VIEWS = [
-  { left: [18,19,20], right: [9,10,11],  fc: 22, rc: 13, bc: 49, lc: 40 }, // F+R
-  { left: [9,10,11],  right: [45,46,47], fc: 13, rc: 49, bc: 40, lc: 22 }, // R+B
-  { left: [45,46,47], right: [36,37,38], fc: 49, rc: 40, bc: 22, lc: 13 }, // B+L
-  { left: [36,37,38], right: [18,19,20], fc: 40, rc: 22, bc: 13, lc: 49 }, // L+F
-]
+// Camera-visible sticker indices: F face top row (left) + R face top row (right).
+// The inversedRotation in the scramble ensures the correct faces land at F+R.
+const VIEW = {
+  left: [18, 19, 20], right: [9, 10, 11],  // F[0,1,2], R[0,1,2]
+  fc: 22, rc: 13, bc: 49, lc: 40           // face centers: F, R, B, L
+}
 
 // Group precedence (lower = higher priority)
 const GROUP_PRECEDENCE = {
@@ -31,8 +27,6 @@ const GROUP_PRECEDENCE = {
   double_2bar: 2, outside_2bar: 2, inside_2bar: 2,
   bookends_no_bar: 3, no_bookends: 3
 }
-
-const FLIP = { g: 'o', o: 'g', b: 'r', r: 'b', x: 'x' }
 
 function toRelative(sticker, fc, rc, bc, lc) {
   if (sticker === fc) return 'g'
@@ -42,25 +36,28 @@ function toRelative(sticker, fc, rc, bc, lc) {
   return 'x'
 }
 
-function matches(computed, guide) {
+// Structural match: check if there's a consistent injective mapping
+// from guide colors to computed colors (wildcards match anything).
+function structuralMatch(computed, guide) {
+  const fwd = {}   // guide_color -> computed_color
+  const rev = {}   // computed_color -> guide_color (injective check)
   for (let i = 0; i < 6; i++) {
-    if (guide[i] !== 'x' && computed[i] !== guide[i]) return false
+    if (guide[i] === 'x') continue
+    const gc = guide[i], cc = computed[i]
+    if (gc in fwd) {
+      if (fwd[gc] !== cc) return false
+    } else {
+      if (cc in rev) return false
+      fwd[gc] = cc
+      rev[cc] = gc
+    }
   }
   return true
-}
-
-function flip(p) {
-  return [FLIP[p[3]], FLIP[p[4]], FLIP[p[5]], FLIP[p[0]], FLIP[p[1]], FLIP[p[2]]]
 }
 
 // Mirror: spatial reversal (looking from the other end of the same two faces)
 function mirror(cells) {
   return [cells[5], cells[4], cells[3], cells[2], cells[1], cells[0]]
-}
-
-// Color-swap: g↔o, b↔r (left/right face roles are interchangeable)
-function colorswap(cells) {
-  return cells.map(c => FLIP[c])
 }
 
 function textMatchesCase(text, caseName) {
@@ -93,11 +90,11 @@ function buildLookupTable() {
     for (let ri = 0; ri < group.rows.length; ri++) {
       const row = group.rows[ri]
       const cells = row.pattern.layers[0].cells.map(c => c.replace('!', ''))
-      const m = mirror(cells)
       guideRows.push({
         groupId: group.id,
         rowIndex: ri,
-        variants: [cells, m, colorswap(cells), colorswap(m)],
+        cells,
+        mirrorCells: mirror(cells),
         text: effectiveText(row, group),
         precedence: GROUP_PRECEDENCE[group.id]
       })
@@ -116,25 +113,18 @@ function buildLookupTable() {
     const state = createSolvedCube()
     applyAlgorithm(state, scramble)
 
-    // Only check F+R angle — the camera-visible faces.
-    // The inversedRotation already rotates the cube so the correct faces are at F+R.
-    const view = VIEWS[0]
-    const fc = state[view.fc], rc = state[view.rc]
-    const bc = state[view.bc], lc = state[view.lc]
+    const fc = state[VIEW.fc], rc = state[VIEW.rc]
+    const bc = state[VIEW.bc], lc = state[VIEW.lc]
 
     const pattern = [
-      ...view.left.map(i => toRelative(state[i], fc, rc, bc, lc)),
-      ...view.right.map(i => toRelative(state[i], fc, rc, bc, lc))
+      ...VIEW.left.map(i => toRelative(state[i], fc, rc, bc, lc)),
+      ...VIEW.right.map(i => toRelative(state[i], fc, rc, bc, lc))
     ]
-    const flipped = flip(pattern)
 
     const hits = []
     for (const gr of guideRows) {
-      for (const v of gr.variants) {
-        if (matches(pattern, v) || matches(flipped, v)) {
-          hits.push(gr)
-          break
-        }
+      if (structuralMatch(pattern, gr.cells) || structuralMatch(pattern, gr.mirrorCells)) {
+        hits.push(gr)
       }
     }
 
