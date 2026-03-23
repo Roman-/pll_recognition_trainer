@@ -132,6 +132,13 @@ useKeydown((e) => {
       </div>
     </section>
 
+    <!-- CTA -->
+    <div class="text-center py-4">
+      <router-link to="/trainer" class="btn btn-primary btn-lg px-4 py-2 start-btn">
+        <i class="bi-lightning-charge-fill me-1"/>Start Training
+      </router-link>
+    </div>
+
     <!-- Footer -->
     <footer class="home-footer text-center mt-5">
       <div class="container py-4">
@@ -147,7 +154,7 @@ useKeydown((e) => {
             by <a href="https://roman.bz" target="_blank" rel="noopener" class="footer-link">Roman Strakhov</a>
           </small>
         </div>
-        <small class="text-secondary opacity-50">&copy; 2025 PLL Recognition Trainer</small>
+        <small class="text-secondary opacity-50">&copy; {{ new Date().getFullYear() }} PLL Recognition Trainer</small>
       </div>
     </footer>
   </div>
