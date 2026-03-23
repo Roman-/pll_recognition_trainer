@@ -47,7 +47,7 @@ const renderSegments = computed(() => {
       <template v-for="(seg, si) in renderSegments" :key="si">
         <!-- Normal row -->
         <div v-if="seg.type === 'normal'" class="guide-case-row"
-             :class="{ 'guide-row-highlight': seg.originalIndex === highlightRowIndex }">
+             :class="{ 'guide-row-highlight animate__animated animate__heartBeat': seg.originalIndex === highlightRowIndex }">
           <StickerPattern :layers="seg.row.pattern.layers" :minColumns="defaultPatternColumns" />
           <span class="guide-case-text">{{ seg.row.text }}</span>
         </div>
@@ -56,7 +56,7 @@ const renderSegments = computed(() => {
         <div v-else class="guide-annotated-group">
           <div class="guide-annotated-patterns">
             <div v-for="(r, ri) in seg.rows" :key="ri"
-                 :class="{ 'guide-row-highlight': r.originalIndex === highlightRowIndex }">
+                 :class="{ 'guide-row-highlight animate__animated animate__heartBeat': r.originalIndex === highlightRowIndex }">
               <StickerPattern :layers="r.pattern.layers" :minColumns="defaultPatternColumns" />
             </div>
           </div>
@@ -84,25 +84,29 @@ const renderSegments = computed(() => {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 4px 0;
+  padding: 4px 4px;
+}
+
+.guide-case-row :deep(svg) {
+  flex-shrink: 0;
 }
 
 .guide-case-text {
   font-size: 0.85rem;
-  white-space: nowrap;
 }
 
 .guide-annotated-group {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 4px 0;
+  padding: 4px 4px;
 }
 
 .guide-annotated-patterns {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  flex-shrink: 0;
 }
 
 .guide-brace-container {
@@ -124,7 +128,6 @@ const renderSegments = computed(() => {
 .guide-row-highlight {
   background: var(--bs-warning-bg-subtle, rgba(255, 193, 7, 0.15));
   border-radius: 4px;
-  padding: 2px 4px;
 }
 
 .guide-row-highlight-text {
