@@ -42,8 +42,8 @@ function toRelative(sticker, fc, rc, bc, lc, isRight) {
   } else {
     if (sticker === rc) return 'o'
     if (sticker === fc) return 'g'
-    if (sticker === lc) return 'b'
-    if (sticker === bc) return 'r'
+    if (sticker === bc) return 'b'
+    if (sticker === lc) return 'r'
   }
   return 'x'
 }

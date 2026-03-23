@@ -8,6 +8,7 @@ import {isHelpKey, isPllLetter, isSingleLetterPll, isTwoLetterPllPrefix, validPl
 import ResultsList from "@/components/ResultsList.vue";
 import OnScreenKeyboard from "@/components/OnScreenKeyboard.vue";
 import ResultsModal from "@/components/ResultsModal.vue";
+import GuideHint from "@/components/GuideHint.vue";
 import {useSettingsStore} from "@/stores/SettingsStore";
 import {useKeydown} from "@/composables/useKeydown";
 import {isMobile} from "@/scripts/device";
@@ -202,6 +203,9 @@ const keyPressHint = computed(() => {
         <hr>
         <div class="d-flex justify-content-center">
           <PllCaseInfo :pllCase="session.currentCase"/>
+        </div>
+        <div class="d-flex justify-content-center mt-2">
+          <GuideHint :pllCase="session.currentCase"/>
         </div>
       </div>
     </div>
