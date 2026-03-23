@@ -18,7 +18,6 @@ const route = useRoute();
 const isSettings = computed(() => route.name === "Settings")
 const isHome = computed(() => route.name === "Home")
 const isTrainer = computed(() => route.name === "Meta")
-const isGuide = computed(() => route.name === "Guide")
 
 const showResults = computed(() =>
     !isSettings.value && (session.store.state === GameState.Playing || session.store.results.length > 0)
@@ -45,14 +44,6 @@ const resultsCount = computed(() => session.store.results.length)
         >
           <i class="bi-list-ol font-bigger"/>
           <span class="badge bg-secondary align-top">{{ resultsCount }}</span>
-        </button>
-        <button v-if="!isGuide"
-            class="btn btn-link text-info"
-            @click="router.push('/guide')"
-            title="Recognition Guide"
-            tabindex="-1"
-        >
-          <i class="bi-book font-bigger"/>
         </button>
         <button v-if="!isSettings"
             class="btn btn-link text-info"
