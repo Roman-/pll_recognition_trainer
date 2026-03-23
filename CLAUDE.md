@@ -29,8 +29,8 @@ main.js → App.vue
                    ├── /trainer → MetaTrainerView
                    │                ├── TrainerView (game active)
                    │                │    ├── PllPic (cube SVG)
-                   │                │    ├── PllCaseInfo (mistake feedback + Note)
                    │                │    ├── GuideHint → GuideGroupCard (recognition guide card)
+                   │                │    ├── Note (per-case user notes)
                    │                │    ├── OnScreenKeyboard (mobile)
                    │                │    ├── ResultsList → ResultItem → PllPic + Note
                    │                │    └── ResultsModal (mobile results overlay)

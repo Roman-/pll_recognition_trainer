@@ -2,9 +2,9 @@
 
 import PllPic from "@/components/PllPic.vue";
 import {GameState, useSessionStore} from "@/stores/SessionStore";
-import PllCaseInfo from "@/components/PllCaseInfo.vue";
 import {computed, onMounted, onUnmounted, ref, watch} from "vue";
-import {isHelpKey, isPllLetter, isSingleLetterPll, isTwoLetterPllPrefix, validPllSuffixes} from "@/scripts/helpers";
+import {aufByDturn, isHelpKey, isPllLetter, isSingleLetterPll, isTwoLetterPllPrefix, validPllSuffixes} from "@/scripts/helpers";
+import Note from "@/components/Note.vue";
 import ResultsList from "@/components/ResultsList.vue";
 import OnScreenKeyboard from "@/components/OnScreenKeyboard.vue";
 import ResultsModal from "@/components/ResultsModal.vue";
@@ -28,6 +28,8 @@ const shakeHint = ref(false)
 const showMistake = computed(() =>
     session.store.state === GameState.Playing && !!session.store.mistake
 )
+
+const auf = computed(() => session.currentCase ? aufByDturn(session.currentCase.dTurn) : '')
 
 const xlQuery = window.matchMedia('(min-width: 1200px)')
 const isXl = ref(xlQuery.matches)
@@ -191,14 +193,18 @@ const keyPressHint = computed(() => {
       <!-- Cube zone: 3-column grid on xl+, single column below -->
       <div class="trainer-cube-zone">
         <div class="trainer-side trainer-side-left">
-          <GuideHint v-if="isXl && showMistake" :pllCase="session.currentCase"/>
+          <template v-if="isXl && showMistake">
+            <h5 class="text-center mb-2">{{ session.currentCase.name }} perm <span v-if="auf" class="badge bg-secondary" title="AUF">+{{ auf }}</span></h5>
+            <GuideHint :pllCase="session.currentCase"/>
+            <div class="mt-2">
+              <Note :pllCase="session.currentCase" :enableHotkeys="true"/>
+            </div>
+          </template>
         </div>
         <div class="trainer-center">
           <PllPic :pllCase="session.currentCase" :viewType="session.store.mistake ? 'cube-pll' : 'cube'" :size="400" :clickable="false"/>
         </div>
-        <div class="trainer-side trainer-side-right">
-          <PllCaseInfo v-if="isXl && showMistake" :pllCase="session.currentCase"/>
-        </div>
+        <div class="trainer-side trainer-side-right"></div>
       </div>
       <!-- Hint: show here when NOT mobile-mistake (desktop always, mobile no-mistake) -->
       <div v-if="isXl || !showMistake" class="text-secondary text-center my-3"
@@ -206,9 +212,12 @@ const keyPressHint = computed(() => {
         {{ keyPressHint }}
       </div>
       <!-- Mobile/tablet mistake section (below xl) -->
-      <div v-if="!isXl && showMistake" class="d-flex flex-wrap justify-content-center gap-3 mx-2 mb-3">
-        <PllCaseInfo :pllCase="session.currentCase"/>
+      <div v-if="!isXl && showMistake" class="text-center mx-2 mb-3">
+        <h5>{{ session.currentCase.name }} perm <span v-if="auf" class="badge bg-secondary" title="AUF">+{{ auf }}</span></h5>
         <GuideHint :pllCase="session.currentCase"/>
+        <div class="mt-2">
+          <Note :pllCase="session.currentCase" :enableHotkeys="true"/>
+        </div>
       </div>
       <div v-if="session.store.state === GameState.Paused" class="text-center mb-3">
         <button class="btn btn-primary" @click="session.resumePlay()">
