@@ -14,15 +14,16 @@ import { allPllKeys } from '@/scripts/pll_cases'
 import pllMap from '@/assets/algs/pll.json'
 import guideData from '@/assets/guide/pll_two_sided_page1.json'
 
-// Sticker indices for two-sided recognition (F top row + R top row)
-const LEFT = [18, 19, 20]   // F face positions 0,1,2
-const RIGHT = [9, 10, 11]   // R face positions 0,1,2
-
-// Face center indices
-const F_CENTER = 22
-const R_CENTER = 13
-const B_CENTER = 49
-const L_CENTER = 40
+// 4 two-sided viewing angles around the top layer.
+// Each view: left/right = sticker indices (top row, L-to-R from viewer),
+// fc/rc = left/right face center, bc/lc = opposite-of-left/opposite-of-right center.
+// Corner adjacencies: left[2] and right[0] are on the same corner piece.
+const VIEWS = [
+  { left: [18,19,20], right: [9,10,11],  fc: 22, rc: 13, bc: 49, lc: 40 }, // F+R
+  { left: [9,10,11],  right: [45,46,47], fc: 13, rc: 49, bc: 40, lc: 22 }, // R+B
+  { left: [45,46,47], right: [36,37,38], fc: 49, rc: 40, bc: 22, lc: 13 }, // B+L
+  { left: [36,37,38], right: [18,19,20], fc: 40, rc: 22, bc: 13, lc: 49 }, // L+F
+]
 
 // Group precedence (lower = higher priority)
 const GROUP_PRECEDENCE = {
@@ -33,18 +34,11 @@ const GROUP_PRECEDENCE = {
 
 const FLIP = { g: 'o', o: 'g', b: 'r', r: 'b' }
 
-function toRelative(sticker, fc, rc, bc, lc, isRight) {
-  if (!isRight) {
-    if (sticker === fc) return 'g'
-    if (sticker === rc) return 'o'
-    if (sticker === bc) return 'b'
-    if (sticker === lc) return 'r'
-  } else {
-    if (sticker === rc) return 'o'
-    if (sticker === fc) return 'g'
-    if (sticker === bc) return 'b'
-    if (sticker === lc) return 'r'
-  }
+function toRelative(sticker, fc, rc, bc, lc) {
+  if (sticker === fc) return 'g'
+  if (sticker === rc) return 'o'
+  if (sticker === bc) return 'b'
+  if (sticker === lc) return 'r'
   return 'x'
 }
 
@@ -110,12 +104,15 @@ function buildLookupTable() {
     const state = createSolvedCube()
     applyAlgorithm(state, scramble)
 
-    const fc = state[F_CENTER], rc = state[R_CENTER]
-    const bc = state[B_CENTER], lc = state[L_CENTER]
+    // Only check F+R angle — the camera-visible faces.
+    // The inversedRotation already rotates the cube so the correct faces are at F+R.
+    const view = VIEWS[0]
+    const fc = state[view.fc], rc = state[view.rc]
+    const bc = state[view.bc], lc = state[view.lc]
 
     const pattern = [
-      ...LEFT.map(i => toRelative(state[i], fc, rc, bc, lc, false)),
-      ...RIGHT.map(i => toRelative(state[i], fc, rc, bc, lc, true))
+      ...view.left.map(i => toRelative(state[i], fc, rc, bc, lc)),
+      ...view.right.map(i => toRelative(state[i], fc, rc, bc, lc))
     ]
     const flipped = flip(pattern)
 
