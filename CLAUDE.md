@@ -30,6 +30,7 @@ main.js → App.vue
                    │                ├── TrainerView (game active)
                    │                │    ├── PllPic (cube SVG)
                    │                │    ├── PllCaseInfo (mistake feedback + Note)
+                   │                │    ├── GuideHint → GuideGroupCard (recognition guide card)
                    │                │    ├── OnScreenKeyboard (mobile)
                    │                │    ├── ResultsList → ResultItem → PllPic + Note
                    │                │    └── ResultsModal (mobile results overlay)
@@ -76,9 +77,11 @@ Sorts results worst-to-best, then: worst 15% repeated 4x, next 15% 3x, next 20% 
 - `src/composables/` — Vue composables (useKeydown)
 - `src/stores/` — Pinia state management
 - `src/views/` — Page-level components
-- `src/scripts/` — Utility modules (helpers, colors, pll_cases, time_formatter, device)
+- `src/scripts/` — Utility modules (helpers, colors, pll_cases, cube_sim, guide_lookup, time_formatter, device)
 - `src/assets/algs/` — PLL algorithm database (JSON)
+- `src/assets/guide/` — Two-sided PLL recognition guide data (JSON)
 - `src/assets/bootstrap_themes/` — 17 pre-bundled Bootstrap theme CSS files
+- `docs/` — Technical documentation (guide integration, cube simulator)
 
 ## Rendering Pipeline
 
@@ -87,6 +90,14 @@ PllPic.vue calls sr-puzzlegen's `SVG()` with a scramble string (inverse of the P
 ## Keyboard Input
 
 Handled in TrainerView.vue via `useKeydown` composable: Space (resume / "Press Space to start" on HomeView), Escape (pause), A-Z (submit answer filtered by isPllLetter), Minus/F1/? (give up), Shift+N (edit note). Mobile users get OnScreenKeyboard.vue with 13 letter buttons (or 21 full-name buttons in fullNameMode).
+
+## Recognition Guide Integration
+
+On a wrong answer, `GuideHint` shows the matching card from Mark49152's Two-Sided PLL Recognition Guide with the relevant row highlighted. A pre-computed lookup table (built at module load) maps every `(caseName, rotation)` to a guide group + row.
+
+The lookup uses `cube_sim.js` to simulate the PLL algorithm on a solved cube, reads the 6 camera-visible top-row stickers (F+R faces), converts to relative colors, and matches against guide patterns using **structural matching** — an injective mapping check that accepts any consistent color reassignment, plus mirror (spatial reversal). This achieves 73/73 coverage with 0 conflicts.
+
+See `docs/guide_integration.md` for full details and `docs/cube_sim.md` for the simulator.
 
 ## Design Decisions
 
