@@ -194,7 +194,7 @@ const keyPressHint = computed(() => {
       <div class="trainer-cube-zone">
         <div class="trainer-side trainer-side-left">
           <template v-if="isXl && showMistake">
-            <h5 class="text-center mb-2">{{ session.currentCase.name }} perm <span v-if="auf" class="badge bg-secondary" title="AUF">+{{ auf }}</span></h5>
+            <h2 class="text-center mb-2">{{ session.currentCase.name }} perm <span v-if="auf" class="badge bg-secondary" title="AUF">+{{ auf }}</span></h2>
             <GuideHint :pllCase="session.currentCase"/>
             <div class="mt-2">
               <Note :pllCase="session.currentCase" :enableHotkeys="true"/>
@@ -213,7 +213,7 @@ const keyPressHint = computed(() => {
       </div>
       <!-- Mobile/tablet mistake section (below xl) -->
       <div v-if="!isXl && showMistake" class="text-center mx-2 mb-3">
-        <h5>{{ session.currentCase.name }} perm <span v-if="auf" class="badge bg-secondary" title="AUF">+{{ auf }}</span></h5>
+        <h2>{{ session.currentCase.name }} perm <span v-if="auf" class="badge bg-secondary" title="AUF">+{{ auf }}</span></h2>
         <GuideHint :pllCase="session.currentCase"/>
         <div class="mt-2">
           <Note :pllCase="session.currentCase" :enableHotkeys="true"/>
@@ -231,8 +231,8 @@ const keyPressHint = computed(() => {
       </div>
       <OnScreenKeyboard/>
       <div v-if="session.store.state === GameState.Playing" class="text-center mb-3">
-        <button class="btn btn-secondary me-2" @click="session.pausePlay()">
-          Pause<span v-if="!isMobile"> (Esc)</span>
+        <button v-if="isMobile" class="btn btn-secondary me-2" @click="session.pausePlay()">
+          Pause
         </button>
         <button v-if="!session.store.mistake" class="btn btn-outline-secondary" @click="session.giveUpOnCase()">
           Give up<span v-if="!isMobile"> (S/?)</span>
