@@ -3,8 +3,10 @@ import {computed, onMounted, onUnmounted, ref} from "vue";
 import {Modal} from 'bootstrap'
 import PllPic from "@/components/PllPic.vue";
 import Note from "@/components/Note.vue";
+import GuideGroupCard from "@/components/guide/GuideGroupCard.vue";
 import {colorNameByLetter, CubeColors} from "@/scripts/colors";
 import {D_TURN_OPTIONS, COLOR_SHIFTS} from "@/scripts/pll_cases";
+import {lookupGuideHint, getGuideGroup} from "@/scripts/guide_lookup";
 
 const props = defineProps(['pllCase', 'closeCallback']);
 
@@ -43,6 +45,9 @@ const title = computed(() => {
 
 const crossColor = ref(colorNameByLetter(props.pllCase.crossColor))
 
+const hint = computed(() => lookupGuideHint(props.pllCase))
+const guideGroup = computed(() => hint.value ? getGuideGroup(hint.value.groupId) : null)
+
 </script>
 
 <template>
@@ -67,6 +72,9 @@ const crossColor = ref(colorNameByLetter(props.pllCase.crossColor))
               <div>
                 <Note :pllCase="props.pllCase" :enableHotkeys="true"/>
               </div>
+            </div>
+            <div v-if="hint && guideGroup" class="ms-2" style="flex-shrink: 0;">
+              <GuideGroupCard :group="guideGroup" :highlightRowIndex="hint.rowIndex" :defaultPatternColumns="6"/>
             </div>
             <div>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
