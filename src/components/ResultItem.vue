@@ -24,8 +24,10 @@ const hovered = ref(false)
 </script>
 
 <template>
+  <template v-if="!props.result.pllCase"></template>
+
   <!-- Card layout for evaluation results -->
-  <div v-if="cardLayout" class="card mb-3" @mouseenter="hovered = true" @mouseleave="hovered = false">
+  <div v-else-if="cardLayout" class="card mb-3" @mouseenter="hovered = true" @mouseleave="hovered = false">
     <div class="card-body">
       <!-- Row 1: Name + Badge -->
       <div class="d-flex justify-content-between align-items-center mb-2">

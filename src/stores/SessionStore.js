@@ -133,7 +133,7 @@ export const useSessionStore = defineStore('session', () => {
     }
 
     const giveUpOnCase = () => {
-        if (store.mistake === "-") return
+        if (store.mistake === "-" || !currentCase.value) return
         store.results.unshift({
             pllCase: currentCase.value,
             started: store.currentRecognitionStarted,
