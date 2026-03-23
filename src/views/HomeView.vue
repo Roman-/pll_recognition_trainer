@@ -126,9 +126,7 @@ useKeydown((e) => {
 
         <div class="text-center mt-4">
           <small class="text-secondary">
-            Guide by Mark Rivers
-            | <a href="https://www.speedsolving.com/threads/two-sided-pll-recognition-guide.41108" target="_blank" rel="noopener">speedsolving post</a>
-            | <a href="https://cubing.pt/wp-content/uploads/2017/03/pll2side-20140531.pdf" target="_blank" rel="noopener">Download original PDF</a>
+            Guide by <a href="https://www.speedsolving.com/threads/two-sided-pll-recognition-guide.41108" target="_blank" rel="noopener">Mark Rivers</a>
           </small>
         </div>
       </div>
