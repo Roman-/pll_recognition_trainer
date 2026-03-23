@@ -32,7 +32,7 @@ const GROUP_PRECEDENCE = {
   bookends_no_bar: 3, no_bookends: 3
 }
 
-const FLIP = { g: 'o', o: 'g', b: 'r', r: 'b' }
+const FLIP = { g: 'o', o: 'g', b: 'r', r: 'b', x: 'x' }
 
 function toRelative(sticker, fc, rc, bc, lc) {
   if (sticker === fc) return 'g'
@@ -51,6 +51,16 @@ function matches(computed, guide) {
 
 function flip(p) {
   return [FLIP[p[3]], FLIP[p[4]], FLIP[p[5]], FLIP[p[0]], FLIP[p[1]], FLIP[p[2]]]
+}
+
+// Mirror: spatial reversal (looking from the other end of the same two faces)
+function mirror(cells) {
+  return [cells[5], cells[4], cells[3], cells[2], cells[1], cells[0]]
+}
+
+// Color-swap: g↔o, b↔r (left/right face roles are interchangeable)
+function colorswap(cells) {
+  return cells.map(c => FLIP[c])
 }
 
 function textMatchesCase(text, caseName) {
@@ -82,10 +92,12 @@ function buildLookupTable() {
   for (const group of guideData.groups) {
     for (let ri = 0; ri < group.rows.length; ri++) {
       const row = group.rows[ri]
+      const cells = row.pattern.layers[0].cells.map(c => c.replace('!', ''))
+      const m = mirror(cells)
       guideRows.push({
         groupId: group.id,
         rowIndex: ri,
-        cells: row.pattern.layers[0].cells.map(c => c.replace('!', '')),
+        variants: [cells, m, colorswap(cells), colorswap(m)],
         text: effectiveText(row, group),
         precedence: GROUP_PRECEDENCE[group.id]
       })
@@ -118,8 +130,11 @@ function buildLookupTable() {
 
     const hits = []
     for (const gr of guideRows) {
-      if (matches(pattern, gr.cells) || matches(flipped, gr.cells)) {
-        hits.push(gr)
+      for (const v of gr.variants) {
+        if (matches(pattern, v) || matches(flipped, v)) {
+          hits.push(gr)
+          break
+        }
       }
     }
 
