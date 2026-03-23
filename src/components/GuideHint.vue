@@ -10,7 +10,7 @@ const guideGroup = computed(() => hint.value ? getGuideGroup(hint.value.groupId)
 </script>
 
 <template>
-  <div v-if="hint && guideGroup" class="guide-hint mt-3">
+  <div v-if="hint && guideGroup" class="guide-hint">
     <GuideGroupCard
       :group="guideGroup"
       :highlightRowIndex="hint.rowIndex"

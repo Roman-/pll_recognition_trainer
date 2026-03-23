@@ -3,7 +3,7 @@
 import PllPic from "@/components/PllPic.vue";
 import {GameState, useSessionStore} from "@/stores/SessionStore";
 import PllCaseInfo from "@/components/PllCaseInfo.vue";
-import {computed, onMounted, ref, watch} from "vue";
+import {computed, onMounted, onUnmounted, ref, watch} from "vue";
 import {isHelpKey, isPllLetter, isSingleLetterPll, isTwoLetterPllPrefix, validPllSuffixes} from "@/scripts/helpers";
 import ResultsList from "@/components/ResultsList.vue";
 import OnScreenKeyboard from "@/components/OnScreenKeyboard.vue";
@@ -24,6 +24,16 @@ const progressPercent = computed(() => totalCases.value > 0 ? (completed.value /
 
 const pendingKey = ref(null)
 const shakeHint = ref(false)
+
+const showMistake = computed(() =>
+    session.store.state === GameState.Playing && !!session.store.mistake
+)
+
+const xlQuery = window.matchMedia('(min-width: 1200px)')
+const isXl = ref(xlQuery.matches)
+const updateXl = (e) => { isXl.value = e.matches }
+xlQuery.addEventListener('change', updateXl)
+onUnmounted(() => xlQuery.removeEventListener('change', updateXl))
 
 watch(() => session.store.mistake, (newVal, oldVal) => {
   if (oldVal === "" && newVal) {
@@ -178,17 +188,37 @@ const keyPressHint = computed(() => {
           </div>
         </div>
       </div>
-      <div class="text-center">
-        <PllPic :pllCase="session.currentCase" :viewType="session.store.mistake ? 'cube-pll' : 'cube'" :size="400" :clickable="false"/>
+      <!-- Cube zone: 3-column grid on xl+, single column below -->
+      <div class="trainer-cube-zone">
+        <div class="trainer-side trainer-side-left">
+          <GuideHint v-if="isXl && showMistake" :pllCase="session.currentCase"/>
+        </div>
+        <div class="trainer-center">
+          <PllPic :pllCase="session.currentCase" :viewType="session.store.mistake ? 'cube-pll' : 'cube'" :size="400" :clickable="false"/>
+        </div>
+        <div class="trainer-side trainer-side-right">
+          <PllCaseInfo v-if="isXl && showMistake" :pllCase="session.currentCase"/>
+        </div>
       </div>
-      <div class="text-secondary text-center my-3"
+      <!-- Hint: show here when NOT mobile-mistake (desktop always, mobile no-mistake) -->
+      <div v-if="isXl || !showMistake" class="text-secondary text-center my-3"
            :class="{ 'animate__animated animate__headShake': shakeHint }">
         {{ keyPressHint }}
+      </div>
+      <!-- Mobile/tablet mistake section (below xl) -->
+      <div v-if="!isXl && showMistake" class="d-flex flex-wrap justify-content-center gap-3 mx-2 mb-3">
+        <PllCaseInfo :pllCase="session.currentCase"/>
+        <GuideHint :pllCase="session.currentCase"/>
       </div>
       <div v-if="session.store.state === GameState.Paused" class="text-center mb-3">
         <button class="btn btn-primary" @click="session.resumePlay()">
           {{ session.store.results.length === 0 ? 'Start' : 'Resume' }}<span v-if="!isMobile"> (Space)</span>
         </button>
+      </div>
+      <!-- Hint: show here when mobile-mistake (just above keyboard) -->
+      <div v-if="!isXl && showMistake" class="text-secondary text-center mb-2"
+           :class="{ 'animate__animated animate__headShake': shakeHint }">
+        {{ keyPressHint }}
       </div>
       <OnScreenKeyboard/>
       <div v-if="session.store.state === GameState.Playing" class="text-center mb-3">
@@ -198,15 +228,6 @@ const keyPressHint = computed(() => {
         <button v-if="!session.store.mistake" class="btn btn-outline-secondary" @click="session.giveUpOnCase()">
           Give up<span v-if="!isMobile"> (S/?)</span>
         </button>
-      </div>
-      <div v-if="session.store.state === GameState.Playing && session.store.mistake">
-        <hr>
-        <div class="d-flex justify-content-center">
-          <PllCaseInfo :pllCase="session.currentCase"/>
-        </div>
-        <div class="d-flex justify-content-center mt-2">
-          <GuideHint :pllCase="session.currentCase"/>
-        </div>
       </div>
     </div>
 
@@ -241,5 +262,44 @@ const keyPressHint = computed(() => {
 .resultsContainer {
   overflow-y: auto;
   overflow-x: hidden;
+}
+
+.trainer-cube-zone {
+  display: block;
+  text-align: center;
+}
+
+.trainer-side {
+  display: none;
+}
+
+@media (min-width: 1200px) {
+  .trainer-cube-zone {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: start;
+  }
+
+  .trainer-side {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 0;
+    overflow: hidden;
+    padding-top: 1rem;
+  }
+
+  .trainer-side-left {
+    justify-self: end;
+  }
+
+  .trainer-side-right {
+    justify-self: start;
+  }
+
+  .trainer-center {
+    width: 400px;
+    max-width: 100%;
+  }
 }
 </style>

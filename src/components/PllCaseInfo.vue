@@ -18,13 +18,10 @@ const auf = computed(() => aufByDturn(props.pllCase.dTurn))
 </script>
 
 <template>
-  <hr/>
-  <div v-if="props.pllCase" class="row">
-    <div class="col-auto">
-      <PllPic :pllCase="props.pllCase" viewType="cube-top" :size="200" :clickable="true"/>
-    </div>
-    <div class="col text-start">
-      <h3>{{props.pllCase.name}} perm <span v-if="auf" class="badge bg-secondary" title="AUF">+{{auf}}</span></h3>
+  <div v-if="props.pllCase" class="text-center">
+    <h5>{{props.pllCase.name}} perm <span v-if="auf" class="badge bg-secondary" title="AUF">+{{auf}}</span></h5>
+    <PllPic :pllCase="props.pllCase" viewType="cube-top" :size="200" :clickable="true"/>
+    <div class="mt-2">
       <Note :pllCase="props.pllCase" :enableHotkeys="true"/>
     </div>
   </div>
