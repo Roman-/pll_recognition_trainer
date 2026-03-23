@@ -211,11 +211,6 @@ useKeydown((e) => {
 
 /* Guide section */
 .guide-section {
-  background: radial-gradient(
-    ellipse at 50% 100%,
-    rgba(var(--bs-primary-rgb), 0.05) 0%,
-    transparent 60%
-  );
 }
 
 .guide-grid {
