@@ -88,9 +88,19 @@ export const useThemeStore = defineStore('theme', () => {
   function setDarkTheme(name){ setThemeName(name, true) }
   function setLightTheme(name){ setThemeName(name, false); }
 
+  function reset() {
+    isDark.value = defaultIsDark;
+    lightThemeName.value = defaultLightName;
+    darkThemeName.value = defaultDarkName;
+    applyCurrentTheme();
+    localStorage.removeItem(isDarkKey);
+    localStorage.removeItem(darkNameKey);
+    localStorage.removeItem(lightNameKey);
+  }
+
   const getThemeCssUrl = (name) => {
     return new URL(`../assets/bootstrap_themes/${name}.min.css`, import.meta.url).href
   }
 
-  return { isDark, lightThemeName, darkThemeName, icon, toggleDayNight, applyCurrentTheme, setDarkTheme, setLightTheme}
+  return { isDark, lightThemeName, darkThemeName, icon, toggleDayNight, applyCurrentTheme, setDarkTheme, setLightTheme, reset}
 });

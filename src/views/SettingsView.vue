@@ -1,5 +1,6 @@
 <script setup>
 import {useSettingsStore} from "@/stores/SettingsStore";
+import {useThemeStore, lightThemesSet, darkThemesSet} from "@/stores/ThemeStore";
 import PllPic from "@/components/PllPic.vue";
 import {CubeViews, randomCrossColor, strokeWidthOptions} from "@/scripts/colors";
 import CrossColorPicker from "@/components/CrossColorPicker.vue";
@@ -7,6 +8,8 @@ import ColorToneEditor from "@/components/ColorToneEditor.vue";
 import {computed} from "vue";
 
 const settings = useSettingsStore()
+const themeStore = useThemeStore()
+const capitalize = (s) => s.charAt(0).toUpperCase() + s.slice(1)
 const pllCaseForPicture = {
   rotation: "y2",
   name: "Ja",
@@ -18,6 +21,7 @@ const pllCaseForPicture = {
 const resetSettings = () => {
   if (confirm("Reset to defaults?")) {
     settings.reset()
+    themeStore.reset()
   }
 }
 
@@ -71,6 +75,29 @@ const pictureCrossColor = computed(() => randomCrossColor(settings.store.allowed
             <label class="form-check-label" for="fullNameMode">Full name mode</label>
           </div>
           <small class="text-secondary">Type full case name (e.g. Ga instead of just G)</small>
+        </div>
+
+        <hr/>
+
+        <div class="mb-3">
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="nightMode" :checked="themeStore.isDark" @change="themeStore.toggleDayNight()" />
+            <label class="form-check-label" for="nightMode">Night mode</label>
+          </div>
+        </div>
+
+        <div class="d-flex align-items-center gap-2 mb-3">
+          <label class="form-label mb-0 flex-shrink-0">Day theme</label>
+          <select class="form-select themed" :value="themeStore.lightThemeName" @change="themeStore.setLightTheme($event.target.value)">
+            <option v-for="t in lightThemesSet" :value="t">{{ capitalize(t) }}</option>
+          </select>
+        </div>
+
+        <div class="d-flex align-items-center gap-2 mb-3">
+          <label class="form-label mb-0 flex-shrink-0">Night theme</label>
+          <select class="form-select themed" :value="themeStore.darkThemeName" @change="themeStore.setDarkTheme($event.target.value)">
+            <option v-for="t in darkThemesSet" :value="t">{{ capitalize(t) }}</option>
+          </select>
         </div>
 
         <div class="d-flex justify-content-center gap-3">
