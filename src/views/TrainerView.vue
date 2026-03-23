@@ -240,7 +240,7 @@ const keyPressHint = computed(() => {
       </div>
     </div>
 
-    <div class="d-none d-md-block">
+    <div class="d-none d-md-block results-sidebar">
       <div class="d-flex h-100">
         <div class="card my-2">
           <div class="card-body overflow-auto">
@@ -266,6 +266,11 @@ const keyPressHint = computed(() => {
 <style scoped>
 .flex-grow-1 {
   min-width: 0;
+}
+
+.results-sidebar {
+  width: 290px;
+  flex-shrink: 0;
 }
 
 .resultsContainer {
