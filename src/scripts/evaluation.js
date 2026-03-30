@@ -59,3 +59,13 @@ export const evalResultsToNewQueue = (resultsSorted, allowedCrossColors, pool = 
 
     return shuffle(queue)
 }
+
+export const evalQueueSize = (resultsSorted, pool = null) => {
+    let remainingKeys = new Set(pool || allPllKeys())
+    resultsSorted.forEach(r => remainingKeys.delete(`${r.pllCase.name}/${r.pllCase.rotation}`))
+    const n = resultsSorted.length
+    const top15 = Math.ceil(n * 0.15)
+    const top30 = Math.ceil(n * 0.3)
+    const top50 = Math.ceil(n * 0.5)
+    return top15 * 4 + (top30 - top15) * 3 + (top50 - top30) * 2 + (n - top50) * 1 + remainingKeys.size
+}

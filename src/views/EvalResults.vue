@@ -1,11 +1,14 @@
 <script setup>
 import {useSessionStore} from "@/stores/SessionStore";
 import {computed} from "vue";
-import {resultsToEvalResults} from "@/scripts/evaluation";
+import {resultsToEvalResults, evalQueueSize} from "@/scripts/evaluation";
 import ResultsList from "@/components/ResultsList.vue";
+import AppFooter from "@/components/AppFooter.vue";
 import {msToHumanReadable} from "@/scripts/time_formatter";
+import {useRouter} from "vue-router";
 
 const session = useSessionStore()
+const router = useRouter()
 const evalResults = computed(() => resultsToEvalResults(session.store.results))
 const totalTimeSpent = computed(() => {
   let ms = 0
@@ -19,6 +22,12 @@ const subtitle1 = computed(() => {
 const subtitle2 = computed(() => {
   return `${msToHumanReadable(totalTimeSpent.value / session.store.results.length)} per case`
 })
+const personalizedCount = computed(() => evalQueueSize(evalResults.value, session.store.pool))
+
+const startPersonalizedTraining = () => {
+  session.startPersonalized()
+  router.push('/trainer')
+}
 
 </script>
 
@@ -27,8 +36,11 @@ const subtitle2 = computed(() => {
     <h1>Evaluation results</h1>
     <h4>{{subtitle1}}</h4>
     <h4>{{subtitle2}}</h4>
-    <button class="btn btn-primary btn-lg px-4 py-2 m-2 start-btn" @click="session.startPersonalized()">
-      <i class="bi-lightning-charge-fill me-1"/>Start personalized training
+    <button class="btn btn-primary btn-lg px-4 py-2 m-2 start-btn" @click="startPersonalizedTraining">
+      <i class="bi-lightning-charge-fill me-1"/>Start personalized training ({{ personalizedCount }})
+    </button>
+    <button class="btn btn-outline-primary btn-lg px-4 py-2 m-2" @click="router.push('/setup')">
+      <i class="bi-plus-circle me-1"/>Start new session
     </button>
     <div class="col-12 col-md-8 col-lg-6 mx-auto p-2 pt-3">
       <p>
@@ -42,6 +54,7 @@ const subtitle2 = computed(() => {
     <div class="col-12 col-md-8 col-lg-6 mx-auto">
       <ResultsList :results="evalResults" :pictureSize="220" :showNotes="true" :showTopPicture="true" :cardLayout="true"/>
     </div>
+    <AppFooter/>
   </div>
 </template>
 

@@ -10,6 +10,9 @@ const navBarClass = computed(() => themeStore.isDark ? "navbar-dark bg-dark" : "
 const resetSessionClicked = () => {
   if (confirm("Restart evaluation?")) {
     session.restartEvaluation()
+    if (isResults.value) {
+      router.push('/trainer')
+    }
   }
 }
 import {useRoute, useRouter} from "vue-router";
@@ -18,7 +21,8 @@ const route = useRoute();
 const isSettings = computed(() => route.name === "Settings")
 const isHome = computed(() => route.name === "Home")
 const isSetup = computed(() => route.name === "Setup")
-const isTrainer = computed(() => route.name === "Meta")
+const isTrainer = computed(() => route.name === "Trainer")
+const isResults = computed(() => route.name === "Results")
 
 const showResults = computed(() =>
     !isSettings.value && (session.store.state === GameState.Playing || session.store.results.length > 0)
@@ -37,7 +41,7 @@ const resultsCount = computed(() => session.store.results.length)
         </span>
       </div>
       <div class="col-auto">
-        <button v-if="showResults && !isHome"
+        <button v-if="showResults && !isHome && !isResults"
                 class="btn btn-link text-info d-md-none"
                 @click="session.store.showResultsModal = true"
                 title="Results"

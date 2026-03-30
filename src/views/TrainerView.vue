@@ -13,9 +13,11 @@ import {useSettingsStore} from "@/stores/SettingsStore";
 import {isMobile} from "@/scripts/device";
 import {useBreakpoint} from "@/composables/useBreakpoint";
 import {useTrainerKeyboard} from "@/composables/useTrainerKeyboard";
+import {useRouter} from "vue-router";
 
 const session = useSessionStore()
 const settings = useSettingsStore()
+const router = useRouter()
 
 const totalCases = computed(() =>
     session.store.queue.length + session.store.results.length - (session.store.mistake === "" ? 0 : 1)
@@ -32,6 +34,12 @@ const showMistake = computed(() =>
 const auf = computed(() => session.currentCase ? aufByDturn(session.currentCase.dTurn) : '')
 
 const isXl = useBreakpoint('(min-width: 1200px)')
+
+watch(() => session.store.state, (newState) => {
+  if (newState === GameState.EvaluationDone) {
+    router.replace('/results')
+  }
+})
 
 watch(() => session.store.mistake, (newVal, oldVal) => {
   if (oldVal === "" && newVal) {

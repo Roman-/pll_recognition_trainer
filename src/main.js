@@ -14,6 +14,6 @@ import "animate.css"
 // the .min.css file for specific Bootstrap theme will be loaded and applied in App.vue
 
 createApp(App)
-  .use(router)
   .use(createPinia())
+  .use(router)
   .mount('#app')
