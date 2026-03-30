@@ -17,6 +17,7 @@ const router = useRouter();
 const route = useRoute();
 const isSettings = computed(() => route.name === "Settings")
 const isHome = computed(() => route.name === "Home")
+const isSetup = computed(() => route.name === "Setup")
 const isTrainer = computed(() => route.name === "Meta")
 
 const showResults = computed(() =>
@@ -53,10 +54,10 @@ const resultsCount = computed(() => session.store.results.length)
         >
           <i class="bi-gear font-bigger"/>
         </button>
-        <button v-if="!isTrainer"
+        <button v-if="!isTrainer && !isSetup"
             class="btn btn-link text-info"
-            @click="router.push('/trainer')"
-            title="Start Training"
+            @click="router.push('/setup')"
+            title="New Session"
             tabindex="-1"
         >
           <i class="bi-lightning-charge-fill font-bigger"/>

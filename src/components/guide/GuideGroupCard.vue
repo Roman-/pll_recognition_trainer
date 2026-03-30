@@ -2,10 +2,13 @@
 import { computed } from 'vue'
 import StickerPattern from './StickerPattern.vue'
 
+defineEmits(['practice'])
+
 const props = defineProps({
   group: { type: Object, required: true },
   defaultPatternColumns: { type: Number, default: 6 },
-  highlightRowIndex: { type: Number, default: -1 }
+  highlightRowIndex: { type: Number, default: -1 },
+  showPracticeButton: { type: Boolean, default: false }
 })
 
 const renderSegments = computed(() => {
@@ -69,6 +72,11 @@ const renderSegments = computed(() => {
           </span>
         </div>
       </template>
+      <div v-if="showPracticeButton" class="text-center mt-2 mb-1">
+        <button class="btn btn-sm btn-outline-primary" @click.stop="$emit('practice')">
+          <i class="bi-lightning-charge-fill me-1"/>Practice
+        </button>
+      </div>
     </div>
   </article>
 </template>

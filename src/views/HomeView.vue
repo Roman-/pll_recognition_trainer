@@ -18,7 +18,7 @@ const groupMap = computed(() => {
 useKeydown((e) => {
   if (e.code === 'Space' && !e.repeat) {
     e.preventDefault()
-    router.push('/trainer')
+    router.push('/setup')
   }
 })
 </script>
@@ -38,7 +38,7 @@ useKeydown((e) => {
               drilling the patterns you miss until they click.
             </p>
             <div class="animate__animated animate__fadeInUp animate__delay-1s">
-              <router-link to="/trainer" class="btn btn-primary btn-lg px-4 py-2 start-btn">
+              <router-link to="/setup" class="btn btn-primary btn-lg px-4 py-2 start-btn">
                 <i class="bi-lightning-charge-fill me-1"/>Start Training
               </router-link>
               <div v-if="!isMobile" class="text-secondary small mt-2 opacity-50">Press Space to start</div>
@@ -53,7 +53,7 @@ useKeydown((e) => {
 
     <!-- CTA -->
     <div class="text-center py-4">
-      <router-link to="/trainer" class="btn btn-primary btn-lg px-4 py-2 start-btn">
+      <router-link to="/setup" class="btn btn-primary btn-lg px-4 py-2 start-btn">
         <i class="bi-lightning-charge-fill me-1"/>Start Training
       </router-link>
     </div>
@@ -87,7 +87,7 @@ useKeydown((e) => {
 
     <!-- CTA -->
     <div class="text-center py-4">
-      <router-link to="/trainer" class="btn btn-primary btn-lg px-4 py-2 start-btn">
+      <router-link to="/setup" class="btn btn-primary btn-lg px-4 py-2 start-btn">
         <i class="bi-lightning-charge-fill me-1"/>Start Training
       </router-link>
     </div>
@@ -120,6 +120,8 @@ useKeydown((e) => {
               :key="groupId"
               :group="groupMap.get(groupId)"
               :defaultPatternColumns="guideData.layout.defaultPatternColumns"
+              :showPracticeButton="true"
+              @practice="router.push({ path: '/setup', query: { groups: groupId } })"
             />
           </template>
         </div>
@@ -134,7 +136,7 @@ useKeydown((e) => {
 
     <!-- CTA -->
     <div class="text-center py-4">
-      <router-link to="/trainer" class="btn btn-primary btn-lg px-4 py-2 start-btn">
+      <router-link to="/setup" class="btn btn-primary btn-lg px-4 py-2 start-btn">
         <i class="bi-lightning-charge-fill me-1"/>Start Training
       </router-link>
     </div>
