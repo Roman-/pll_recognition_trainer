@@ -25,22 +25,27 @@ Client-side Vue 3 web app for speedcubers to practice recognizing PLL (Permutati
 main.js → App.vue
               ├── NavBar (+ ThemeSwitcher)
               └── Router
-                   ├── / → HomeView (landing page + PllShowcase)
-                   ├── /trainer → MetaTrainerView
-                   │                ├── TrainerView (game active)
-                   │                │    ├── PllPic (cube SVG)
-                   │                │    ├── GuideHint → GuideGroupCard (recognition guide card)
-                   │                │    ├── Note (per-case user notes)
-                   │                │    ├── OnScreenKeyboard (mobile)
-                   │                │    ├── ResultsList → ResultItem → PllPic + Note
-                   │                │    └── ResultsModal (mobile results overlay)
-                   │                └── EvalResults (evaluation done)
-                   │                     └── ResultsList → ResultItem
-                   └── /settings → SettingsView (+ PllPic preview)
+                   ├── / → HomeView (landing + PllShowcase + GuideGroupCard grid)
+                   ├── /setup → SessionSetupView (session config + PresetCard)
+                   ├── /trainer → TrainerView (game active)
+                   │                ├── PllPic (cube SVG)
+                   │                ├── GuideHint → GuideGroupCard
+                   │                ├── Note (per-case user notes)
+                   │                ├── OnScreenKeyboard (mobile)
+                   │                ├── ResultsList → ResultItem → PllPic + Note
+                   │                └── ResultsModal (mobile results overlay)
+                   ├── /results → EvalResults (evaluation done)
+                   │                ├── ResultsList → ResultItem
+                   │                └── AppFooter
+                   └── /settings → SettingsView
+                                    ├── PllPic (preview)
+                                    ├── CrossColorPicker
+                                    └── ColorToneEditor
 ```
 
 - CaseVariationsModal — standalone modal showing all 16 AUF/color-shift variations of a case (opened by clicking a PllPic)
 - PllShowcase — grid of all 21 PLL cases on the home page, with selectable cases opening CaseVariationsModal
+- StickerPattern — mini sticker pattern visualization used in GuideGroupCard and PresetCard
 
 ## State Management (4 Pinia Stores)
 
@@ -53,13 +58,14 @@ main.js → App.vue
 
 ## Core Game Loop
 
-1. **Queue generation** — `allPllKeys()` creates all 21 PLL case x rotation combos, `keysToCases()` assigns random AUF and color shifts
-2. **Playing** — A case is shown via PllPic (sr-puzzlegen SVG). User presses a letter key (13 valid PLL letters: A, E, F, G, H, J, N, R, T, U, V, Y, Z). In fullNameMode, two-letter cases (Aa, Gb, etc.) require typing both letters.
-3. **Answer processing** — `submitAnswer()` checks the answer against `currentCase.name`, records timing and mistake status
-4. **Result** — `{pllCase, started, finished, mistake}` pushed to results array
-5. **Evaluation** — When queue empty, EvalResults shows performance breakdown
+1. **Session setup** — SessionSetupView lets the user pick pattern-group presets or custom case subsets, and choose session size (multiplier on case count)
+2. **Queue generation** — `allPllKeys()` creates all 21 PLL case x rotation combos, `keysToCases()` assigns random AUF and color shifts
+3. **Playing** — A case is shown via PllPic (sr-puzzlegen SVG). User presses a letter key (13 valid PLL letters: A, E, F, G, H, J, N, R, T, U, V, Y, Z). In fullNameMode, two-letter cases (Aa, Gb, etc.) require typing both letters.
+4. **Answer processing** — `submitAnswer()` checks the answer against `currentCase.name`, records timing and mistake status
+5. **Result** — `{pllCase, started, finished, mistake}` pushed to results array
+6. **Evaluation** — When queue empty, EvalResults shows performance breakdown
 
-### Adaptive Algorithm (pll_cases.js:evalResultsToNewQueue)
+### Adaptive Algorithm (evaluation.js:evalResultsToNewQueue)
 
 Sorts results worst-to-best, then: worst 15% repeated 4x, next 15% 3x, next 20% 2x, remaining 1x, unattempted cases 1x. Queue is shuffled with fresh random AUF/color shifts.
 
@@ -74,14 +80,14 @@ Sorts results worst-to-best, then: worst 15% repeated 4x, next 15% 3x, next 20% 
 ## Key Directories
 
 - `src/components/` — Vue components
-- `src/composables/` — Vue composables (useKeydown)
+- `src/composables/` — Vue composables (useKeydown, useBreakpoint, useTrainerKeyboard, useHorizontalScroll)
 - `src/stores/` — Pinia state management
 - `src/views/` — Page-level components
-- `src/scripts/` — Utility modules (helpers, colors, pll_cases, cube_sim, guide_lookup, time_formatter, device)
+- `src/scripts/` — Utility modules (helpers, colors, pll_cases, pll_constants, scramble, cube_sim, guide_lookup, session_presets, evaluation, time_formatter, device)
 - `src/assets/algs/` — PLL algorithm database (JSON)
 - `src/assets/guide/` — Two-sided PLL recognition guide data (JSON)
 - `src/assets/bootstrap_themes/` — 17 pre-bundled Bootstrap theme CSS files
-- `docs/` — Technical documentation (guide integration, cube simulator)
+- `docs/` — Technical documentation (guide integration, cube simulator, improvement suggestions)
 
 ## Rendering Pipeline
 
