@@ -157,12 +157,6 @@ for (const [key, info] of Object.entries(lookupTable)) {
   inverseTable[info.groupId].add(key)
 }
 
-export const ALL_GROUP_IDS = guideData.groups.map(g => g.id)
-
-export function keysForGroup(groupId) {
-  return inverseTable[groupId] ? [...inverseTable[groupId]] : []
-}
-
 export function keysForGroups(groupIds) {
   const result = new Set()
   for (const id of groupIds) {

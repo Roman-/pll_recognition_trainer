@@ -1,13 +1,5 @@
 import pllMap from "@/assets/algs/pll.json";
 
-export const llPuzzleMask = {
-    "F": [3,4,5,6,7,8],
-    "B": [3,4,5,6,7,8],
-    "R": [3,4,5,6,7,8],
-    "L": [3,4,5,6,7,8],
-    "D": [0,1,2,3,4,5,6,7,8]
-}
-
 export const noCubePuzzleMask = {
     "U": [0,1,2,3,4,5,6,7,8],
     "F": [0,1,2,3,4,5,6,7,8],
@@ -17,7 +9,7 @@ export const noCubePuzzleMask = {
     "D": [0,1,2,3,4,5,6,7,8]
 }
 
-export const crossColorToCubeRotation = c => {
+const crossColorToCubeRotation = c => {
     // sr-puzzlegen default orientation is yellow top blue front
     switch (c) {
         case 'y': return 'x2'

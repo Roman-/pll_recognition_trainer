@@ -103,7 +103,7 @@ export function createSolvedCube() {
   return state
 }
 
-export function applyMove(state, token) {
+function applyMove(state, token) {
   const base = token[0]
   const mod = token.length > 1 ? token[1] : ''
   const cycles = MOVES[base]
