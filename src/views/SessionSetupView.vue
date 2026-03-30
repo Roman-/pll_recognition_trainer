@@ -13,9 +13,13 @@ const session = useSessionStore()
 
 const presets = [
   { id: 'all', label: 'All Cases', groups: null },
+  { id: 'no_obvious_clues', label: 'No obvious clues', exclude: ['three_bar', 'double_lights', 'double_2bar'] },
+  { id: 'no_lights', label: 'No Lights', exclude: ['double_lights', 'lone_lights', 'lights_plus_2bar'] },
+  { id: 'no_bars', label: 'No Bars', exclude: ['three_bar', 'double_2bar', 'outside_2bar', 'inside_2bar', 'lights_plus_2bar'] },
+  { id: 'all_lights', label: 'All Lights', groups: ['double_lights', 'lone_lights', 'lights_plus_2bar'] },
+  { id: 'all_bars', label: 'All Bars', groups: ['three_bar', 'double_2bar', 'outside_2bar', 'inside_2bar'] },
   { id: 'double_lights', label: 'Double Lights', groups: ['double_lights'] },
-  { id: 'lights', label: 'Lights', groups: ['lone_lights', 'lights_plus_2bar'] },
-  { id: 'no_lights_no_bars', label: 'No Lights, No Bars', groups: ['bookends_no_bar', 'no_bookends'] },
+  { id: 'bookends_no_bookends', label: 'Bookends/No Bookends', groups: ['bookends_no_bar', 'no_bookends'] },
 ]
 
 const selectedPresetId = ref('all')
@@ -43,8 +47,13 @@ function getGroups(groupIds) {
   return groupIds.map(id => getGuideGroup(id)).filter(Boolean)
 }
 
-function countKeys(preset) {
-  return preset.groups ? keysForGroups(preset.groups).length : allPllKeys().length
+function presetKeys(preset) {
+  if (preset.groups) return keysForGroups(preset.groups)
+  if (preset.exclude) {
+    const excludeSet = new Set(keysForGroups(preset.exclude))
+    return allPllKeys().filter(k => !excludeSet.has(k))
+  }
+  return allPllKeys()
 }
 
 const customKeys = computed(() => customGroupIds.value ? keysForGroups(customGroupIds.value) : [])
@@ -56,10 +65,13 @@ const customLabel = computed(() =>
 const poolKeys = computed(() => {
   if (selectedPresetId.value === 'custom') return customKeys.value
   const preset = presets.find(p => p.id === selectedPresetId.value)
-  return preset ? (preset.groups ? keysForGroups(preset.groups) : allPllKeys()) : allPllKeys()
+  return preset ? presetKeys(preset) : allPllKeys()
 })
 
 function subtitle(preset) {
+  if (preset.exclude) {
+    return 'Without ' + getGroups(preset.exclude).map(g => g.title).join(', ')
+  }
   if (!preset.groups || preset.groups.length <= 1) return null
   return getGroups(preset.groups).map(g => g.title).join(' + ')
 }
@@ -135,11 +147,11 @@ useKeydown((e) => {
             />
           </div>
           <div v-else class="preset-icon mb-2">
-            <i class="bi-grid-3x3-gap-fill"></i>
+            <i :class="preset.exclude ? 'bi-dash-circle' : 'bi-grid-3x3-gap-fill'"></i>
           </div>
           <h6 class="card-title mb-1">{{ preset.label }}</h6>
           <small v-if="subtitle(preset)" class="text-secondary d-block mb-2">{{ subtitle(preset) }}</small>
-          <span class="badge text-bg-secondary mt-auto">{{ countKeys(preset) }} cases</span>
+          <span class="badge text-bg-secondary mt-auto">{{ presetKeys(preset).length }} cases</span>
         </div>
       </div>
     </div>
