@@ -5,6 +5,7 @@ import { useSessionStore } from '@/stores/SessionStore'
 import { allPllKeys } from '@/scripts/pll_cases'
 import { keysForGroups } from '@/scripts/guide_lookup'
 import { presets, getGroups, presetKeys, subtitle } from '@/scripts/session_presets'
+import { shuffle } from '@/scripts/helpers'
 import StickerPattern from '@/components/guide/StickerPattern.vue'
 import { useKeydown } from '@/composables/useKeydown'
 
@@ -14,6 +15,7 @@ const session = useSessionStore()
 
 const selectedPresetId = ref('all')
 const customGroupIds = ref(null)
+const sizeOption = ref(0)
 
 // Initialize from query params (e.g., /setup?groups=three_bar)
 const groupsParam = route.query.groups
@@ -44,13 +46,26 @@ const poolKeys = computed(() => {
   return preset ? presetKeys(preset) : allPllKeys()
 })
 
+const sizeOptions = [0, 0.15, 0.40, 1]
+
+const extraCount = computed(() => Math.round(poolKeys.value.length * sizeOption.value))
+const sessionCaseCount = computed(() => poolKeys.value.length + extraCount.value)
+
 function selectPreset(id) {
   selectedPresetId.value = id
 }
 
+function buildSessionPool() {
+  const keys = poolKeys.value
+  if (sizeOption.value === 0) {
+    return selectedPresetId.value === 'all' ? null : keys
+  }
+  if (sizeOption.value === 1) return [...keys, ...keys]
+  return [...keys, ...shuffle([...keys]).slice(0, extraCount.value)]
+}
+
 function startSession() {
-  const pool = selectedPresetId.value === 'all' ? null : poolKeys.value
-  session.startSession(pool)
+  session.startSession(buildSessionPool())
   router.push('/trainer')
 }
 
@@ -125,8 +140,21 @@ useKeydown((e) => {
     </div>
 
     <div class="text-center mt-4">
+      <div class="text-secondary small mb-2">Session size</div>
+      <div class="btn-group" role="group">
+        <template v-for="opt in sizeOptions" :key="opt">
+          <input type="radio" class="btn-check" :id="'size-' + opt" v-model="sizeOption" :value="opt">
+          <label class="btn btn-outline-secondary" :for="'size-' + opt">
+            {{ poolKeys.length + Math.round(poolKeys.length * opt) }}
+          </label>
+        </template>
+      </div>
+      <div class="text-secondary small mt-1 opacity-50">Extra cases are random duplicates from the same set to make it less predictable</div>
+    </div>
+
+    <div class="text-center mt-3">
       <button class="btn btn-primary btn-lg px-5 py-2 start-btn" @click="startSession">
-        <i class="bi-lightning-charge-fill me-1"/>Start Session ({{ poolKeys.length }})
+        <i class="bi-lightning-charge-fill me-1"/>Start Session ({{ sessionCaseCount }})
       </button>
       <div class="text-secondary small mt-2 opacity-50">Press Space to start</div>
     </div>
