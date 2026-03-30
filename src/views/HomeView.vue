@@ -109,6 +109,7 @@ useKeydown((e) => {
               Match the first pattern you find, then identify the case within that group.
               Each case appears in four color combos and may be mirrored.
               Color labels (opp/adj) are relative to the nearest pattern color.
+              Guide by <a href="https://www.speedsolving.com/threads/two-sided-pll-recognition-guide.41108" target="_blank" rel="noopener" class="text-secondary" style="text-decoration: underline;">Mark Rivers</a>.
             </p>
           </div>
         </div>
@@ -124,12 +125,6 @@ useKeydown((e) => {
               @practice="router.push({ path: '/setup', query: { groups: groupId } })"
             />
           </template>
-        </div>
-
-        <div class="text-center mt-4">
-          <small class="text-secondary">
-            Guide by <a href="https://www.speedsolving.com/threads/two-sided-pll-recognition-guide.41108" target="_blank" rel="noopener">Mark Rivers</a>
-          </small>
         </div>
       </div>
     </section>
