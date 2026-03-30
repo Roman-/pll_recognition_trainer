@@ -2,20 +2,8 @@
   <div v-if="settings.store.showOnScreenKeyboard" class="text-center my-2">
     <div v-if="session.store.state === GameState.Playing">
       <template v-if="settings.store.fullNameMode">
-        <div class="d-flex flex-nowrap justify-content-center mb-1 mx-1 fullname-row">
-          <button v-for="name in fullNameRow1" :key="name" class="btn btn-fullname"
-                  :class="buttonClass(name)" @click="handleAnswer(name, true)">
-            {{ name }}
-          </button>
-        </div>
-        <div class="d-flex flex-nowrap justify-content-center mb-1 mx-1 fullname-row">
-          <button v-for="name in fullNameRow2" :key="name" class="btn btn-fullname"
-                  :class="buttonClass(name)" @click="handleAnswer(name, true)">
-            {{ name }}
-          </button>
-        </div>
-        <div class="d-flex flex-nowrap justify-content-center mb-1 mx-1 fullname-row">
-          <button v-for="name in fullNameRow3" :key="name" class="btn btn-fullname"
+        <div v-for="(row, i) in fullNameRows" :key="i" class="d-flex flex-nowrap justify-content-center mb-1 mx-1 fullname-row">
+          <button v-for="name in row" :key="name" class="btn btn-fullname"
                   :class="buttonClass(name)" @click="handleAnswer(name, true)">
             {{ name }}
           </button>
@@ -37,16 +25,18 @@
 import {onUnmounted, ref, watch} from 'vue'
 import {useSessionStore, GameState} from '@/stores/SessionStore'
 import {useSettingsStore} from '@/stores/SettingsStore'
-import {PLL_LETTERS} from '@/scripts/helpers'
+import {PLL_LETTERS} from '@/scripts/pll_constants'
 
 const session = useSessionStore()
 const settings = useSettingsStore()
 
 const letters = PLL_LETTERS
 
-const fullNameRow1 = ['Aa', 'Ab', 'E', 'F', 'Ga', 'Gb', 'Gc']
-const fullNameRow2 = ['Gd', 'H', 'Ja', 'Jb', 'Na', 'Nb', 'Ra']
-const fullNameRow3 = ['Rb', 'T', 'Ua', 'Ub', 'V', 'Y', 'Z']
+const fullNameRows = [
+  ['Aa', 'Ab', 'E', 'F', 'Ga', 'Gb', 'Gc'],
+  ['Gd', 'H', 'Ja', 'Jb', 'Na', 'Nb', 'Ra'],
+  ['Rb', 'T', 'Ua', 'Ub', 'V', 'Y', 'Z'],
+]
 
 const buttonFeedback = ref({ key: null, type: null })
 

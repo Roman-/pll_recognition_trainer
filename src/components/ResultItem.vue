@@ -2,7 +2,7 @@
 import PllPic from "@/components/PllPic.vue";
 import {msToHumanReadable} from "@/scripts/time_formatter";
 import {computed, ref} from "vue";
-import {resultTimeMs} from "@/scripts/pll_cases";
+import {resultTimeMs} from "@/scripts/evaluation";
 import Note from "@/components/Note.vue";
 
 const props = defineProps({

@@ -9,7 +9,7 @@
  */
 
 import { createSolvedCube, applyAlgorithm } from '@/scripts/cube_sim'
-import { inverseScramble } from '@/scripts/helpers'
+import { inverseScramble } from '@/scripts/scramble'
 import { allPllKeys } from '@/scripts/pll_cases'
 import pllMap from '@/assets/algs/pll.json'
 import guideData from '@/assets/guide/pll_two_sided_page1.json'

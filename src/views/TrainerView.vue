@@ -2,16 +2,17 @@
 
 import PllPic from "@/components/PllPic.vue";
 import {GameState, useSessionStore} from "@/stores/SessionStore";
-import {computed, onMounted, onUnmounted, ref, watch} from "vue";
-import {aufByDturn, isHelpKey, isPllLetter, isSingleLetterPll, isTwoLetterPllPrefix, validPllSuffixes} from "@/scripts/helpers";
+import {computed, onMounted, ref, watch} from "vue";
+import {aufByDturn} from "@/scripts/pll_constants";
 import Note from "@/components/Note.vue";
 import ResultsList from "@/components/ResultsList.vue";
 import OnScreenKeyboard from "@/components/OnScreenKeyboard.vue";
 import ResultsModal from "@/components/ResultsModal.vue";
 import GuideHint from "@/components/GuideHint.vue";
 import {useSettingsStore} from "@/stores/SettingsStore";
-import {useKeydown} from "@/composables/useKeydown";
 import {isMobile} from "@/scripts/device";
+import {useBreakpoint} from "@/composables/useBreakpoint";
+import {useTrainerKeyboard} from "@/composables/useTrainerKeyboard";
 
 const session = useSessionStore()
 const settings = useSettingsStore()
@@ -22,7 +23,6 @@ const totalCases = computed(() =>
 const completed = computed(() => session.store.results.length)
 const progressPercent = computed(() => totalCases.value > 0 ? (completed.value / totalCases.value * 100) : 0)
 
-const pendingKey = ref(null)
 const shakeHint = ref(false)
 
 const showMistake = computed(() =>
@@ -31,11 +31,7 @@ const showMistake = computed(() =>
 
 const auf = computed(() => session.currentCase ? aufByDturn(session.currentCase.dTurn) : '')
 
-const xlQuery = window.matchMedia('(min-width: 1200px)')
-const isXl = ref(xlQuery.matches)
-const updateXl = (e) => { isXl.value = e.matches }
-xlQuery.addEventListener('change', updateXl)
-onUnmounted(() => xlQuery.removeEventListener('change', updateXl))
+const isXl = useBreakpoint('(min-width: 1200px)')
 
 watch(() => session.store.mistake, (newVal, oldVal) => {
   if (oldVal === "" && newVal) {
@@ -44,108 +40,7 @@ watch(() => session.store.mistake, (newVal, oldVal) => {
   }
 })
 
-// Clear pendingKey when the case changes (e.g. correct answer submitted)
-watch(() => session.currentCase, () => {
-  pendingKey.value = null
-})
-
-const handleKeyPress = e => {
-  // if bs modal (.modal.show) or note input (.noteInput) is present, ignore
-  if (document.querySelector(".modal.show")
-      || session.store.showResultsModal
-      || document.querySelector(".noteInput:focus")) {
-    return
-  }
-
-  const withModifiers = e.altKey || e.ctrlKey || e.metaKey || e.shiftKey
-
-  if (settings.store.fullNameMode && pendingKey.value) {
-    // We have a buffered prefix key — handle second keystroke
-    if (!withModifiers && e.key === "Escape") {
-      pendingKey.value = null
-      session.pausePlay()
-      e.preventDefault()
-      return
-    }
-    if (!withModifiers && e.key === "Backspace") {
-      pendingKey.value = null
-      e.preventDefault()
-      return
-    }
-    if (!withModifiers && isHelpKey(e.key)) {
-      pendingKey.value = null
-      session.giveUpOnCase()
-      e.preventDefault()
-      return
-    }
-    if (!withModifiers) {
-      const suffix = e.key.toLowerCase()
-      const suffixes = validPllSuffixes[pendingKey.value]
-      if (suffixes && suffixes.includes(suffix)) {
-        const fullName = pendingKey.value + suffix
-        session.submitAnswer(fullName, true)
-        pendingKey.value = null
-        e.preventDefault()
-        return
-      }
-      // Invalid suffix — ignore
-      e.preventDefault()
-      return
-    }
-  }
-
-  if (!withModifiers && e.key === "Escape") {
-    pendingKey.value = null
-    session.pausePlay()
-    e.preventDefault()
-    return
-  }
-  if (!withModifiers && e.key === " ") {
-    session.resumePlay()
-    e.preventDefault()
-    return
-  }
-  if (!withModifiers && isPllLetter(e.key.toUpperCase())) {
-    const letter = e.key.toUpperCase()
-    if (settings.store.fullNameMode) {
-      if (isSingleLetterPll(letter)) {
-        session.submitAnswer(letter, true)
-      } else if (isTwoLetterPllPrefix(letter)) {
-        pendingKey.value = letter
-      }
-    } else {
-      session.submitAnswer(letter)
-    }
-    e.preventDefault()
-    return
-  }
-  if (!withModifiers && isHelpKey(e.key)) {
-    session.giveUpOnCase()
-    e.preventDefault()
-    return
-  }
-  if (e.shiftKey && e.key === 'C' && !e.altKey && !e.ctrlKey && !e.metaKey && session.currentCase) {
-    // Shift+C = cheat (for debugging purposes)
-    if (settings.store.fullNameMode) {
-      session.submitAnswer(session.currentCase.name, true)
-    } else {
-      session.submitAnswer(session.currentCase.name[0])
-    }
-    e.preventDefault()
-    return
-  }
-}
-
-const cheat = () => {
-  if (!session.currentCase) return
-  if (settings.store.fullNameMode) {
-    session.submitAnswer(session.currentCase.name, true)
-  } else {
-    session.submitAnswer(session.currentCase.name[0])
-  }
-}
-
-useKeydown(handleKeyPress)
+const { pendingKey } = useTrainerKeyboard(session, settings)
 
 onMounted(() => {
   session.setInitial()

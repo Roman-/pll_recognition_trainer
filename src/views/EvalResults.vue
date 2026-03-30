@@ -1,7 +1,7 @@
 <script setup>
 import {useSessionStore} from "@/stores/SessionStore";
 import {computed} from "vue";
-import {resultsToEvalResults} from "@/scripts/pll_cases";
+import {resultsToEvalResults} from "@/scripts/evaluation";
 import ResultsList from "@/components/ResultsList.vue";
 import {msToHumanReadable} from "@/scripts/time_formatter";
 

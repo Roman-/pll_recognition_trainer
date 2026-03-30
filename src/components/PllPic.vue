@@ -1,7 +1,7 @@
 <script setup>
 import { SVG } from "sr-puzzlegen-pll"
 import {computed, onMounted, ref, watch} from "vue";
-import {noCubePuzzleMask, scrambleForCase} from "@/scripts/helpers";
+import {noCubePuzzleMask, scrambleForCase} from "@/scripts/scramble";
 import {topViewAdjustment} from "@/scripts/colors";
 import {useSettingsStore} from "@/stores/SettingsStore";
 import CaseVariationsModal from "@/components/CaseVariationsModal.vue";

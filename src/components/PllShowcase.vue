@@ -4,7 +4,8 @@ import PllPic from '@/components/PllPic.vue'
 import CaseVariationsModal from '@/components/CaseVariationsModal.vue'
 import pllMap from '@/assets/algs/pll.json'
 import { keysToCases } from '@/scripts/pll_cases'
-import { shuffle, aufByDturn } from '@/scripts/helpers'
+import { shuffle } from '@/scripts/helpers'
+import { aufByDturn } from '@/scripts/pll_constants'
 import { DefaultAllowedCrossColors } from '@/scripts/colors'
 
 const pllNames = Object.keys(pllMap)
