@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useSessionStore } from '@/stores/SessionStore'
 import { allPllKeys } from '@/scripts/pll_cases'
@@ -75,6 +75,32 @@ useKeydown((e) => {
     startSession()
   }
 })
+
+const scrollRef = ref(null)
+const canScrollLeft = ref(false)
+const canScrollRight = ref(false)
+
+function updateScrollState() {
+  const el = scrollRef.value
+  if (!el) return
+  canScrollLeft.value = el.scrollLeft > 0
+  canScrollRight.value = el.scrollLeft + el.clientWidth < el.scrollWidth - 1
+}
+
+function scrollBy(dir) {
+  scrollRef.value?.scrollBy({ left: dir * 200, behavior: 'smooth' })
+}
+
+onMounted(() => {
+  updateScrollState()
+  scrollRef.value?.addEventListener('scroll', updateScrollState, { passive: true })
+  window.addEventListener('resize', updateScrollState)
+})
+
+onUnmounted(() => {
+  scrollRef.value?.removeEventListener('scroll', updateScrollState)
+  window.removeEventListener('resize', updateScrollState)
+})
 </script>
 
 <template>
@@ -84,6 +110,14 @@ useKeydown((e) => {
       <p class="text-secondary mb-0">Choose which patterns to practice</p>
     </div>
 
+    <div class="preset-scroll-wrapper">
+      <button v-show="canScrollLeft" class="scroll-arrow scroll-arrow-left" @click="scrollBy(-1)">
+        <i class="bi-chevron-left"></i>
+      </button>
+      <button v-show="canScrollRight" class="scroll-arrow scroll-arrow-right" @click="scrollBy(1)">
+        <i class="bi-chevron-right"></i>
+      </button>
+    <div class="preset-scroll" ref="scrollRef">
     <div class="preset-grid">
       <!-- Custom card (from guide "Practice" button) -->
       <div v-if="customGroupIds"
@@ -138,6 +172,8 @@ useKeydown((e) => {
         </div>
       </div>
     </div>
+    </div>
+    </div>
 
     <div class="text-center mt-4">
       <div class="text-secondary small mb-2">Session size</div>
@@ -162,15 +198,61 @@ useKeydown((e) => {
 </template>
 
 <style scoped>
-.preset-grid {
+.preset-scroll-wrapper {
+  position: relative;
+}
+
+.scroll-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  border: none;
+  background: var(--bs-body-bg, #fff);
+  color: var(--bs-body-color);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
   display: flex;
-  flex-wrap: wrap;
+  align-items: center;
   justify-content: center;
-  gap: 1rem;
+  cursor: pointer;
+  opacity: 0.85;
+  transition: opacity 0.15s;
+}
+
+.scroll-arrow:hover {
+  opacity: 1;
+}
+
+.scroll-arrow-left {
+  left: 4px;
+}
+
+.scroll-arrow-right {
+  right: 4px;
+}
+
+.preset-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.preset-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.preset-grid {
+  display: inline-flex;
+  gap: 0.75rem;
+  padding: 0.5rem 0.25rem;
 }
 
 .preset-card {
-  width: 210px;
+  width: 180px;
+  flex-shrink: 0;
   cursor: pointer;
   transition: border-color 0.2s, box-shadow 0.2s;
   position: relative;
