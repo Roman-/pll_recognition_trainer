@@ -80,7 +80,7 @@ export const resultsToEvalResults = results => {
 }
 
 /// @param resultsSorted - results sorted worst to best with no duplicate keys
-export const evalResultsToNewQueue = (resultsSorted, allowedCrossColors) => {
+export const evalResultsToNewQueue = (resultsSorted, allowedCrossColors, pool = null) => {
     let queue = []
     const addCases = (key, numResults) => {
         // avoid including no-auf whenever possible
@@ -94,7 +94,7 @@ export const evalResultsToNewQueue = (resultsSorted, allowedCrossColors) => {
     const resultKey = r => `${r.pllCase.name}/${r.pllCase.rotation}`
 
     // in case resultsSorted missing some keys, add them to queue (in single instance each) as well
-    let remainingKeysSet = new Set(allPllKeys())
+    let remainingKeysSet = new Set(pool || allPllKeys())
     resultsSorted.forEach(r => remainingKeysSet.delete(resultKey(r)))
 
     const top15 = Math.ceil(resultsSorted.length * 0.15)

@@ -6,8 +6,8 @@ import {DefaultAllowedCrossColors, randomCrossColor} from "@/scripts/colors";
 
 const storeKey = 'pll_store';
 const includeNoAufInInitialQueue = false // cases with no AUF might be easier to guess, we don't want this in evaluation
-const generateEvaluationQueue = (allowedCrossColors) => {
-    return shuffle(keysToCases(allPllKeys(), allowedCrossColors, includeNoAufInInitialQueue))
+const generateEvaluationQueue = (allowedCrossColors, pool = null) => {
+    return shuffle(keysToCases(pool || allPllKeys(), allowedCrossColors, includeNoAufInInitialQueue))
 }
 
 export const GameState = Object.freeze({
@@ -18,6 +18,9 @@ export const GameState = Object.freeze({
 
 const defaultStore = {
     state: GameState.Paused,
+
+    // null = all 73 keys; array of key strings when restricted to a subset
+    pool: null,
 
     // pending cases to practice:
     queue: [],
@@ -59,7 +62,7 @@ export const useSessionStore = defineStore('session', () => {
         shiftMistakeIfAny()
         store.showResultsModal = false
         if (store.queue.length === 0 && store.results.length === 0) {
-            store.queue = generateEvaluationQueue(DefaultAllowedCrossColors)
+            store.queue = generateEvaluationQueue(DefaultAllowedCrossColors, store.pool)
         }
         store.state = store.queue.length === 0 ? GameState.EvaluationDone : GameState.Paused
         shuffle(store.queue)
@@ -143,15 +146,26 @@ export const useSessionStore = defineStore('session', () => {
         store.mistake = "-"
     }
 
-    const restartEvaluation = () => {
-        store.queue = generateEvaluationQueue(store.allowedCrossColors)
+    const restartEvaluation = (newPool = undefined) => {
+        if (newPool !== undefined) {
+            store.pool = newPool
+        }
+        store.queue = generateEvaluationQueue(store.allowedCrossColors, store.pool)
+        store.results = []
+        store.mistake = ""
+        store.state = GameState.Paused
+    }
+
+    const startSession = (pool = null) => {
+        store.pool = pool
+        store.queue = generateEvaluationQueue(store.allowedCrossColors, store.pool)
         store.results = []
         store.mistake = ""
         store.state = GameState.Paused
     }
 
     const startPersonalized = () => {
-        store.queue = evalResultsToNewQueue(resultsToEvalResults(store.results), store.allowedCrossColors)
+        store.queue = evalResultsToNewQueue(resultsToEvalResults(store.results), store.allowedCrossColors, store.pool)
         store.results = []
         store.mistake = ""
         store.state = GameState.Paused
@@ -162,6 +176,6 @@ export const useSessionStore = defineStore('session', () => {
     }, {deep: true})
 
     return {store, currentCase, lastSubmission, setInitial,
-        restartEvaluation, startPersonalized, setAllowedCrossColors,
+        startSession, restartEvaluation, startPersonalized, setAllowedCrossColors,
         pausePlay, resumePlay, submitAnswer, giveUpOnCase}
 });

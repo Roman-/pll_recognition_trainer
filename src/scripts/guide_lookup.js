@@ -148,6 +148,30 @@ function buildLookupTable() {
 const lookupTable = buildLookupTable()
 const groupsById = Object.fromEntries(guideData.groups.map(g => [g.id, g]))
 
+// Inverse lookup: groupId -> Set<key>
+const inverseTable = {}
+for (const [key, info] of Object.entries(lookupTable)) {
+  if (!inverseTable[info.groupId]) {
+    inverseTable[info.groupId] = new Set()
+  }
+  inverseTable[info.groupId].add(key)
+}
+
+export const ALL_GROUP_IDS = guideData.groups.map(g => g.id)
+
+export function keysForGroup(groupId) {
+  return inverseTable[groupId] ? [...inverseTable[groupId]] : []
+}
+
+export function keysForGroups(groupIds) {
+  const result = new Set()
+  for (const id of groupIds) {
+    const keys = inverseTable[id]
+    if (keys) keys.forEach(k => result.add(k))
+  }
+  return [...result]
+}
+
 export function lookupGuideHint(pllCase) {
   if (!pllCase) return null
   const key = `${pllCase.name}/${pllCase.rotation}`
