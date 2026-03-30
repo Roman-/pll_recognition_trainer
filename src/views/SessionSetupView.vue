@@ -13,13 +13,15 @@ const session = useSessionStore()
 
 const presets = [
   { id: 'all', label: 'All Cases', groups: null },
-  { id: 'no_obvious_clues', label: 'No obvious clues', exclude: ['three_bar', 'double_lights', 'double_2bar'] },
-  { id: 'no_lights', label: 'No Lights', exclude: ['double_lights', 'lone_lights', 'lights_plus_2bar'] },
-  { id: 'no_bars', label: 'No Bars', exclude: ['three_bar', 'double_2bar', 'outside_2bar', 'inside_2bar', 'lights_plus_2bar'] },
+  { id: 'bookends', label: 'Bookends', groups: ['bookends_no_bar'] },
+  { id: 'no_bookends', label: 'No Bookends', groups: ['no_bookends'] },
+  { id: 'look_around', label: 'Look Around', groups: ['bookends_no_bar', 'no_bookends'] },
   { id: 'all_lights', label: 'All Lights', groups: ['double_lights', 'lone_lights', 'lights_plus_2bar'] },
   { id: 'all_bars', label: 'All Bars', groups: ['three_bar', 'double_2bar', 'outside_2bar', 'inside_2bar'] },
   { id: 'double_lights', label: 'Double Lights', groups: ['double_lights'] },
-  { id: 'bookends_no_bookends', label: 'Bookends/No Bookends', groups: ['bookends_no_bar', 'no_bookends'] },
+  { id: 'no_obvious_clues', label: 'No obvious clues', exclude: ['three_bar', 'double_lights', 'double_2bar'] },
+  { id: 'no_lights', label: 'No Lights', exclude: ['double_lights', 'lone_lights', 'lights_plus_2bar'] },
+  { id: 'no_bars', label: 'No Bars', exclude: ['three_bar', 'double_2bar', 'outside_2bar', 'inside_2bar', 'lights_plus_2bar'] },
 ]
 
 const selectedPresetId = ref('all')
