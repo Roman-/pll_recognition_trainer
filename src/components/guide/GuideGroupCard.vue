@@ -50,7 +50,7 @@ const renderSegments = computed(() => {
       <template v-for="(seg, si) in renderSegments" :key="si">
         <!-- Normal row -->
         <div v-if="seg.type === 'normal'" class="guide-case-row"
-             :class="{ 'guide-row-highlight animate__animated animate__heartBeat': seg.originalIndex === highlightRowIndex }">
+             :class="{ 'guide-row-highlight animate__animated animate__headShake': seg.originalIndex === highlightRowIndex }">
           <StickerPattern :layers="seg.row.pattern.layers" :minColumns="defaultPatternColumns" />
           <span class="guide-case-text">{{ seg.row.text }}</span>
         </div>
@@ -59,7 +59,7 @@ const renderSegments = computed(() => {
         <div v-else class="guide-annotated-group">
           <div class="guide-annotated-patterns">
             <div v-for="(r, ri) in seg.rows" :key="ri"
-                 :class="{ 'guide-row-highlight animate__animated animate__heartBeat': r.originalIndex === highlightRowIndex }">
+                 :class="{ 'guide-row-highlight animate__animated animate__headShake': r.originalIndex === highlightRowIndex }">
               <StickerPattern :layers="r.pattern.layers" :minColumns="defaultPatternColumns" />
             </div>
           </div>

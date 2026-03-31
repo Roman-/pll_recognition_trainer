@@ -2,7 +2,7 @@
 
 import PllPic from "@/components/PllPic.vue";
 import {GameState, useSessionStore} from "@/stores/SessionStore";
-import {computed, onMounted, ref, watch} from "vue";
+import {computed, onMounted, watch} from "vue";
 import {aufByDturn} from "@/scripts/pll_constants";
 import Note from "@/components/Note.vue";
 import ResultsList from "@/components/ResultsList.vue";
@@ -25,8 +25,6 @@ const totalCases = computed(() =>
 const completed = computed(() => session.store.results.length)
 const progressPercent = computed(() => totalCases.value > 0 ? (completed.value / totalCases.value * 100) : 0)
 
-const shakeHint = ref(false)
-
 const showMistake = computed(() =>
     session.store.state === GameState.Playing && !!session.store.mistake
 )
@@ -38,13 +36,6 @@ const isXl = useBreakpoint('(min-width: 1200px)')
 watch(() => session.store.state, (newState) => {
   if (newState === GameState.EvaluationDone) {
     router.replace('/results')
-  }
-})
-
-watch(() => session.store.mistake, (newVal, oldVal) => {
-  if (oldVal === "" && newVal) {
-    shakeHint.value = true
-    setTimeout(() => shakeHint.value = false, 2000)
   }
 })
 
@@ -110,8 +101,7 @@ const keyPressHint = computed(() => {
         <div class="trainer-side trainer-side-right"></div>
       </div>
       <!-- Hint: show here when NOT mobile-mistake (desktop always, mobile no-mistake) -->
-      <div v-if="isXl || !showMistake" class="text-secondary text-center my-3"
-           :class="{ 'animate__animated animate__headShake': shakeHint }">
+      <div v-if="isXl || !showMistake" class="text-secondary text-center my-3">
         {{ keyPressHint }}
       </div>
       <!-- Mobile/tablet mistake section (below xl) -->
@@ -128,8 +118,7 @@ const keyPressHint = computed(() => {
         </button>
       </div>
       <!-- Hint: show here when mobile-mistake (just above keyboard) -->
-      <div v-if="!isXl && showMistake" class="text-secondary text-center mb-2"
-           :class="{ 'animate__animated animate__headShake': shakeHint }">
+      <div v-if="!isXl && showMistake" class="text-secondary text-center mb-2">
         {{ keyPressHint }}
       </div>
       <OnScreenKeyboard/>
