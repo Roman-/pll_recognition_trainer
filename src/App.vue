@@ -1,6 +1,7 @@
 <script setup>
 import { RouterView } from 'vue-router'
 import NavBar from "@/components/nav/NavBar.vue";
+import AppFooter from "@/components/AppFooter.vue";
 import "@/assets/global.css"
 
 import {useThemeStore} from "@/stores/ThemeStore";
@@ -19,10 +20,18 @@ watch(settings.store, () => session.setAllowedCrossColors(settings.store.allowed
       <NavBar/>
     </div>
     <div class="flex-grow-1 overflow-auto">
-      <RouterView/>
+      <div class="app-content">
+        <RouterView/>
+        <AppFooter/>
+      </div>
     </div>
   </div>
 </template>
 
 <style scoped>
+.app-content {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
 </style>

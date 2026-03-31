@@ -82,7 +82,7 @@ const keyPressHint = computed(() => {
 </script>
 
 <template>
-  <div class="d-flex h-100">
+  <div class="d-flex flex-grow-1">
     <div class="flex-grow-1 d-flex flex-column">
       <div class="d-md-none mx-3 mt-2">
         <div class="progress" style="height: 22px;">

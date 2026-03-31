@@ -3,7 +3,6 @@ import {useSessionStore} from "@/stores/SessionStore";
 import {computed} from "vue";
 import {resultsToEvalResults, evalQueueSize} from "@/scripts/evaluation";
 import ResultsList from "@/components/ResultsList.vue";
-import AppFooter from "@/components/AppFooter.vue";
 import {msToHumanReadable} from "@/scripts/time_formatter";
 import {useRouter} from "vue-router";
 
@@ -54,7 +53,6 @@ const startPersonalizedTraining = () => {
     <div class="col-12 col-md-8 col-lg-6 mx-auto">
       <ResultsList :results="evalResults" :pictureSize="220" :showNotes="true" :showTopPicture="true" :cardLayout="true"/>
     </div>
-    <AppFooter/>
   </div>
 </template>
 

@@ -6,7 +6,7 @@ import GuideGroupCard from '@/components/guide/GuideGroupCard.vue'
 import guideData from '@/assets/guide/pll_two_sided_page1.json'
 import { isMobile } from '@/scripts/device'
 import { useKeydown } from '@/composables/useKeydown'
-import AppFooter from '@/components/AppFooter.vue'
+
 
 const router = useRouter()
 
@@ -137,7 +137,6 @@ useKeydown((e) => {
       </router-link>
     </div>
 
-    <AppFooter/>
   </div>
 </template>
 

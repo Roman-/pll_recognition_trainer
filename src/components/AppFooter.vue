@@ -1,5 +1,5 @@
 <template>
-  <footer class="app-footer text-center mt-5">
+  <footer class="app-footer text-center mt-auto">
     <div class="container py-4">
       <div class="footer-tagline mb-3">Train your eyes. Trust your hands.</div>
       <div class="mb-2">
