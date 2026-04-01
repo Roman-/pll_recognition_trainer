@@ -50,6 +50,14 @@ const resultsCount = computed(() => session.store.results.length)
           <i class="bi-list-ol font-bigger"/>
           <span class="badge bg-secondary align-top">{{ resultsCount }}</span>
         </button>
+        <button v-if="!isSetup && !isResults && !isHome"
+            class="btn btn-link text-info"
+            @click="newSessionClicked"
+            title="New Session"
+            tabindex="-1"
+        >
+          <i class="bi-lightning-charge-fill font-bigger"/>
+        </button>
         <button v-if="!isHistory"
             class="btn btn-link text-info"
             @click="router.push('/history')"
@@ -65,14 +73,6 @@ const resultsCount = computed(() => session.store.results.length)
             tabindex="-1"
         >
           <i class="bi-gear font-bigger"/>
-        </button>
-        <button v-if="!isSetup && !isResults"
-            class="btn btn-link text-info"
-            @click="newSessionClicked"
-            title="New Session"
-            tabindex="-1"
-        >
-          <i class="bi-lightning-charge-fill font-bigger"/>
         </button>
         <ThemeSwitcher/>
       </div>
