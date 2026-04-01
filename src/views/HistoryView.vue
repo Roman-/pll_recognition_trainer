@@ -1,14 +1,17 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
+import { useSessionStore } from '@/stores/SessionStore'
 import { getAllSessions } from '@/scripts/session_history'
 import { msToHumanReadable } from '@/scripts/time_formatter'
+import { shuffle } from '@/scripts/helpers'
 
 const router = useRouter()
+const session = useSessionStore()
 const sessions = ref([])
 const selectedType = ref('all')
 const currentPage = ref(1)
-const PAGE_SIZE = 20
+const PAGE_SIZE = 10
 
 onMounted(async () => {
   sessions.value = await getAllSessions()
@@ -113,6 +116,19 @@ function formatDate(date) {
 function formatAccuracy(s) {
   return ((s.correctCount / s.totalCases) * 100).toFixed(1) + '%'
 }
+
+function repeatSession(s) {
+  const keys = s.poolKey.split(',')
+  let pool = keys
+  if (s.sizeOption === 1) {
+    pool = [...keys, ...keys]
+  } else if (s.sizeOption > 0) {
+    const extra = Math.round(keys.length * s.sizeOption)
+    pool = [...keys, ...shuffle([...keys]).slice(0, extra)]
+  }
+  session.startSession(pool, s.sizeOption, s.presetLabel)
+  router.push('/trainer')
+}
 </script>
 
 <template>
@@ -153,7 +169,7 @@ function formatAccuracy(s) {
           <div class="list-group">
             <div v-for="s in paginatedSessions" :key="s.id" class="list-group-item">
               <div class="d-flex justify-content-between align-items-start">
-                <div>
+                <div class="flex-grow-1">
                   <div class="fw-bold">
                     {{ s.presetLabel }}
                     <i v-if="trendMap.get(sessionTypeKey(s)) === 'up'" class="bi-arrow-up-short text-success"></i>
@@ -161,7 +177,12 @@ function formatAccuracy(s) {
                   </div>
                   <div class="text-secondary small">{{ formatDate(s.completedAt) }}</div>
                 </div>
-                <span v-if="pbMap.has(s.id)" class="badge bg-success">PB</span>
+                <div class="d-flex align-items-center gap-2">
+                  <span v-if="pbMap.has(s.id)" class="badge bg-success">PB</span>
+                  <button class="btn btn-sm btn-outline-primary repeat-btn" @click="repeatSession(s)" title="Repeat this session">
+                    <i class="bi-lightning-charge-fill"></i>
+                  </button>
+                </div>
               </div>
               <div class="d-flex gap-3 mt-1 small">
                 <span>
@@ -197,4 +218,9 @@ function formatAccuracy(s) {
 </template>
 
 <style scoped>
+.repeat-btn {
+  padding: 0.2rem 0.4rem;
+  line-height: 1;
+  font-size: 0.85rem;
+}
 </style>

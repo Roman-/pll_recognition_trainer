@@ -39,9 +39,11 @@ function formatAccuracy(val) {
         </div>
         <h6 class="card-title mb-1">{{ customLabel }}</h6>
         <div v-if="pb" class="preset-stats mt-1">
-          <div class="text-success small fw-bold">
+          <div v-if="pb.bestAccuracy < 1" class="text-success small fw-bold">
             <i class="bi-bullseye me-1"/>{{ formatAccuracy(pb.bestAccuracy) }}
-            <i v-if="pb.bestAccuracy === 1" class="bi-star-fill text-warning ms-1"></i>
+          </div>
+          <div v-else class="text-warning small fw-bold">
+            <i class="bi-star-fill me-1"/>Mastered
           </div>
           <div class="text-secondary small"><i class="bi-stopwatch me-1"/>{{ msToHumanReadable(pb.bestAvgTimeMs) }}/case</div>
           <div class="text-secondary small opacity-75">{{ pb.totalSessions }} session{{ pb.totalSessions !== 1 ? 's' : '' }}</div>
@@ -66,9 +68,11 @@ function formatAccuracy(val) {
         <h6 class="card-title mb-1">{{ preset.label }}</h6>
         <small v-if="subtitle(preset)" class="text-secondary d-block mb-2">{{ subtitle(preset) }}</small>
         <div v-if="pb" class="preset-stats mt-1">
-          <div class="text-success small fw-bold">
+          <div v-if="pb.bestAccuracy < 1" class="text-success small fw-bold">
             <i class="bi-bullseye me-1"/>{{ formatAccuracy(pb.bestAccuracy) }}
-            <i v-if="pb.bestAccuracy === 1" class="bi-star-fill text-warning ms-1"></i>
+          </div>
+          <div v-else class="text-warning small fw-bold">
+            <i class="bi-star-fill me-1"/>Mastered
           </div>
           <div class="text-secondary small"><i class="bi-stopwatch me-1"/>{{ msToHumanReadable(pb.bestAvgTimeMs) }}/case</div>
           <div class="text-secondary small opacity-75">{{ pb.totalSessions }} session{{ pb.totalSessions !== 1 ? 's' : '' }}</div>
