@@ -1,6 +1,7 @@
 import {reactive, watch} from 'vue'
 import {defineStore} from 'pinia'
-import {CubeViews, DefaultAllowedCrossColors, DefaultColorScheme, strokeWidthOptions} from "@/scripts/colors";
+import {DefaultAllowedCrossColors} from "@/scripts/colors";
+import {CubeViews, DefaultColorScheme, strokeWidthOptions} from "@/scripts/cube_display";
 import {isMobile} from "@/scripts/device";
 
 const defaultSettings = {

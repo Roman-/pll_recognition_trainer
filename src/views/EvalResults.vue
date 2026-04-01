@@ -1,11 +1,12 @@
 <script setup>
 import {useSessionStore} from "@/stores/SessionStore";
-import {computed, ref, onMounted} from "vue";
+import {computed} from "vue";
 import {resultsToEvalResults, evalQueueSize} from "@/scripts/evaluation";
 import ResultsList from "@/components/ResultsList.vue";
 import {msToHumanReadable} from "@/scripts/time_formatter";
+import {formatAccuracy} from "@/scripts/formatters";
 import {useRouter} from "vue-router";
-import {computePoolKey, getPersonalBests} from "@/scripts/session_history";
+import {useSessionPB} from "@/composables/usePersonalBests";
 
 const session = useSessionStore()
 const router = useRouter()
@@ -36,34 +37,9 @@ const repeatSession = () => {
   router.push('/trainer')
 }
 
-// Personal bests
-const pb = ref(null)
-const sessionNumber = ref(0)
-const isNewBestAccuracy = computed(() => pb.value && accuracy.value >= pb.value.bestAccuracy)
-const isNewBestTime = computed(() => {
-  if (!pb.value) return false
-  // Only compare time if accuracy matches best accuracy
-  return accuracy.value >= pb.value.bestAccuracy && avgTimeMs.value <= pb.value.bestAvgTimeMs
-})
-
-onMounted(async () => {
-  const poolKey = computePoolKey(session.store.pool)
-  const bests = await getPersonalBests(poolKey, session.store.sizeOption)
-  if (bests) {
-    // Current session is already saved, so totalSessions includes it
-    sessionNumber.value = bests.totalSessions
-    // Check if this session IS the new PB (compare against previous bests excluding current)
-    if (bests.totalSessions > 1) {
-      pb.value = bests
-    }
-  } else {
-    sessionNumber.value = 1
-  }
-})
-
-function formatAccuracy(val) {
-  return (val * 100).toFixed(1) + '%'
-}
+const { pb, sessionNumber, isNewBestAccuracy, isNewBestTime } = useSessionPB(
+  session.store.pool, session.store.sizeOption, accuracy, avgTimeMs
+)
 
 </script>
 

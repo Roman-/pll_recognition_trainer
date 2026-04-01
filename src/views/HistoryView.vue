@@ -1,121 +1,26 @@
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useSessionStore } from '@/stores/SessionStore'
-import { getAllSessions } from '@/scripts/session_history'
 import { msToHumanReadable } from '@/scripts/time_formatter'
+import { formatAccuracy, formatDate, sessionTypeKey } from '@/scripts/formatters'
 import { buildSessionPool } from '@/scripts/session_sizing'
+import { useSessionHistory } from '@/composables/useSessionHistory'
 
 const router = useRouter()
 const session = useSessionStore()
-const sessions = ref([])
-const selectedType = ref('all')
-const currentPage = ref(1)
-const PAGE_SIZE = 10
 
-onMounted(async () => {
-  sessions.value = await getAllSessions()
-})
-
-const sessionTypes = computed(() => {
-  const types = new Map()
-  sessions.value.forEach(s => {
-    const key = `${s.poolKey}|${s.sizeOption}`
-    if (!types.has(key)) {
-      types.set(key, { label: s.presetLabel, caseCount: s.caseCount, key })
-    }
-  })
-  return [...types.values()]
-})
-
-const filteredSessions = computed(() => {
-  if (selectedType.value === 'all') return sessions.value
-  return sessions.value.filter(s => `${s.poolKey}|${s.sizeOption}` === selectedType.value)
-})
-
-const totalPages = computed(() => Math.ceil(filteredSessions.value.length / PAGE_SIZE))
-
-const paginatedSessions = computed(() => {
-  const start = (currentPage.value - 1) * PAGE_SIZE
-  return filteredSessions.value.slice(start, start + PAGE_SIZE)
-})
-
-const showingRange = computed(() => {
-  const total = filteredSessions.value.length
-  if (total === 0) return ''
-  const start = (currentPage.value - 1) * PAGE_SIZE + 1
-  const end = Math.min(currentPage.value * PAGE_SIZE, total)
-  return `${start}\u2013${end} of ${total}`
-})
-
-watch(selectedType, () => { currentPage.value = 1 })
-
-// Compute PB flags per session type
-const pbMap = computed(() => {
-  const map = new Map()
-  // Group by type, process in chronological order
-  const byType = new Map()
-  ;[...sessions.value].reverse().forEach(s => {
-    const key = `${s.poolKey}|${s.sizeOption}`
-    if (!byType.has(key)) byType.set(key, [])
-    byType.get(key).push(s)
-  })
-  byType.forEach((typeSessions) => {
-    let bestAccuracy = -1
-    let bestAvgTime = Infinity
-    typeSessions.forEach(s => {
-      const acc = s.correctCount / s.totalCases
-      const isPbAccuracy = acc > bestAccuracy
-      const isPbTime = acc >= bestAccuracy && s.avgTimeMs < bestAvgTime
-      if (isPbAccuracy || isPbTime) {
-        map.set(s.id, true)
-      }
-      if (acc > bestAccuracy) bestAccuracy = acc
-      if (acc >= bestAccuracy && s.avgTimeMs < bestAvgTime) bestAvgTime = s.avgTimeMs
-    })
-  })
-  return map
-})
-
-// Trend per session type: compare avg accuracy of last 3 vs previous 3
-const trendMap = computed(() => {
-  const map = new Map()
-  const byType = new Map()
-  sessions.value.forEach(s => {
-    const key = `${s.poolKey}|${s.sizeOption}`
-    if (!byType.has(key)) byType.set(key, [])
-    byType.get(key).push(s)
-  })
-  byType.forEach((typeSessions, key) => {
-    if (typeSessions.length < 4) return
-    // sessions are already newest-first
-    const recent3 = typeSessions.slice(0, 3)
-    const prev3 = typeSessions.slice(3, 6)
-    if (prev3.length === 0) return
-    const avgAcc = arr => arr.reduce((sum, s) => sum + s.correctCount / s.totalCases, 0) / arr.length
-    const recentAcc = avgAcc(recent3)
-    const prevAcc = avgAcc(prev3)
-    const diff = recentAcc - prevAcc
-    if (diff > 0.02) map.set(key, 'up')
-    else if (diff < -0.02) map.set(key, 'down')
-  })
-  return map
-})
-
-function sessionTypeKey(s) {
-  return `${s.poolKey}|${s.sizeOption}`
-}
-
-function formatDate(date) {
-  return new Date(date).toLocaleDateString(undefined, {
-    month: 'short', day: 'numeric', year: 'numeric',
-    hour: '2-digit', minute: '2-digit'
-  })
-}
-
-function formatAccuracy(s) {
-  return ((s.correctCount / s.totalCases) * 100).toFixed(1) + '%'
-}
+const {
+  sessions,
+  sessionTypes,
+  selectedType,
+  filteredSessions,
+  currentPage,
+  totalPages,
+  paginatedSessions,
+  showingRange,
+  pbMap,
+  trendMap,
+} = useSessionHistory()
 
 function repeatSession(s) {
   const keys = s.poolKey.split(',')
@@ -180,7 +85,7 @@ function repeatSession(s) {
               </div>
               <div class="d-flex gap-3 mt-1 small">
                 <span>
-                  <i class="bi-bullseye me-1"/>{{ formatAccuracy(s) }}
+                  <i class="bi-bullseye me-1"/>{{ formatAccuracy(s.correctCount / s.totalCases) }}
                 </span>
                 <span>
                   <i class="bi-stopwatch me-1"/>{{ msToHumanReadable(s.avgTimeMs) }}/case

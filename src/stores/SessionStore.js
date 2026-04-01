@@ -1,24 +1,15 @@
 import {computed, reactive, ref, watch} from 'vue'
 import {defineStore} from 'pinia'
-import {keysToCases, allPllKeys} from "@/scripts/pll_cases";
-import {resultsToEvalResults, evalResultsToNewQueue} from "@/scripts/evaluation";
+import {resultsToEvalResults, evalResultsToNewQueue, generateEvaluationQueue} from "@/scripts/evaluation";
 import {isPllLetter, allPllCaseNames} from "@/scripts/pll_constants";
 import {shuffle} from "@/scripts/helpers";
 import {DefaultAllowedCrossColors, randomCrossColor} from "@/scripts/colors";
 import {saveSession} from "@/scripts/session_history";
 import {SIZE_DEFAULT, SIZE_OPTIONS} from "@/scripts/session_sizing";
+export {GameState} from "@/scripts/game_constants";
+import {GameState} from "@/scripts/game_constants";
 
 const storeKey = 'pll_store';
-const includeNoAufInInitialQueue = false // cases with no AUF might be easier to guess, we don't want this in evaluation
-const generateEvaluationQueue = (allowedCrossColors, pool = null) => {
-    return shuffle(keysToCases(pool || allPllKeys(), allowedCrossColors, includeNoAufInInitialQueue))
-}
-
-export const GameState = Object.freeze({
-    Paused: 0,
-    Playing: 1, // including "staring at my mistake"
-    EvaluationDone: 2,
-});
 
 const defaultStore = {
     state: GameState.Paused,

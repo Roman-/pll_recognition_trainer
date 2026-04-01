@@ -13,12 +13,10 @@
 import {computed, ref} from 'vue'
 import { defineStore } from 'pinia'
 
-// local storage keys
 const isDarkKey = "my_pll.is_dark";
 const darkNameKey = "my_pll.dark_name";
 const lightNameKey = "my_pll.light_name";
 
-// defaults
 const defaultIsDark = false;
 const defaultLightName = "flatly";
 const defaultDarkName = "darkly";
@@ -29,36 +27,25 @@ const isAvailable = (themeName, isDark) => {
   return (isDark ? darkThemesSet : lightThemesSet).includes(themeName);
 }
 
-const getInitialIsDark = ()=>{
-  if (!localStorage || !localStorage.getItem(isDarkKey)) {
-    return defaultIsDark;
-  }
-  return localStorage.getItem(isDarkKey) === "true";
-}
-
-const getInitialThemeName = (isDark) => {
-  const key = isDark ? darkNameKey : lightNameKey;
-  const defaultName = isDark ? defaultDarkName : defaultLightName;
-  if (!localStorage || !localStorage.getItem(key)) {
-    return defaultName;
-  }
-  const loadedName = localStorage.getItem(key);
-  return isAvailable(loadedName, isDark) ? loadedName : defaultName;
-}
-
-const biIconByTheme = (isDark) => {
-  return isDark ? "bi-moon" : "bi-sun";
+function loadFromStorage(key, defaultValue, validator) {
+  const stored = localStorage?.getItem(key);
+  if (stored == null) return defaultValue;
+  return validator ? (validator(stored) ? stored : defaultValue) : stored;
 }
 
 export const useThemeStore = defineStore('theme', () => {
-  const isDark = ref(getInitialIsDark())
-  const lightThemeName = ref(getInitialThemeName(false));
-  const darkThemeName = ref(getInitialThemeName(true));
+  const isDark = ref(localStorage?.getItem(isDarkKey) === "true")
+  const lightThemeName = ref(loadFromStorage(lightNameKey, defaultLightName, n => isAvailable(n, false)));
+  const darkThemeName = ref(loadFromStorage(darkNameKey, defaultDarkName, n => isAvailable(n, true)));
   const name = computed(()=> isDark.value ? darkThemeName.value : lightThemeName.value);
-  const icon = computed(()=>biIconByTheme(isDark.value));
+  const icon = computed(() => isDark.value ? "bi-moon" : "bi-sun");
+
+  const getThemeCssUrl = (name) => {
+    return new URL(`../assets/bootstrap_themes/${name}.min.css`, import.meta.url).href
+  }
+
   function applyCurrentTheme() {
     const link_id = "bootstrap_stylesheet";
-    // find link with id="bootstrap_stylesheet"; if not found, create one
     const link = document.getElementById(link_id);
     if (!link) {
       const link = document.createElement('link');
@@ -76,6 +63,7 @@ export const useThemeStore = defineStore('theme', () => {
       localStorage.setItem(isDarkKey, ""+isDark.value);
     }
   }
+
   function setThemeName(name, isDark) {
     if (!isAvailable(name, isDark)) {
       return console.error("setThemeName("+isDark+"): " + name + " not available in themes set");
@@ -96,10 +84,6 @@ export const useThemeStore = defineStore('theme', () => {
     localStorage.removeItem(isDarkKey);
     localStorage.removeItem(darkNameKey);
     localStorage.removeItem(lightNameKey);
-  }
-
-  const getThemeCssUrl = (name) => {
-    return new URL(`../assets/bootstrap_themes/${name}.min.css`, import.meta.url).href
   }
 
   return { isDark, lightThemeName, darkThemeName, icon, toggleDayNight, applyCurrentTheme, setDarkTheme, setLightTheme, reset}

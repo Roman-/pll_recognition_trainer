@@ -1,39 +1,20 @@
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useSessionStore } from '@/stores/SessionStore'
 import { allPllKeys } from '@/scripts/pll_cases'
 import { keysForGroups } from '@/scripts/guide_lookup'
 import { presets, getGroups, presetKeys } from '@/scripts/session_presets'
-import { computePoolKey, getPersonalBests } from '@/scripts/session_history'
 import { SIZE_OPTIONS, SIZE_DEFAULT, SIZE_UNIQUE, computeSessionTotal, computeExtraCount, buildSessionPool as buildPool, sizeHelpText } from '@/scripts/session_sizing'
 import { useKeydown } from '@/composables/useKeydown'
 import { useHorizontalScroll } from '@/composables/useHorizontalScroll'
+import { usePresetPBs } from '@/composables/usePersonalBests'
 import PresetCard from '@/components/PresetCard.vue'
 
 const router = useRouter()
 const route = useRoute()
 const session = useSessionStore()
 const { scrollRef, canScrollLeft, canScrollRight, scrollBy } = useHorizontalScroll()
-
-const presetPBs = ref(new Map())
-
-async function loadPresetPBs() {
-  const map = new Map()
-  for (const preset of presets) {
-    const keys = presetKeys(preset)
-    const poolKey = computePoolKey(keys)
-    const pb = await getPersonalBests(poolKey, sizeOption.value)
-    if (pb) map.set(preset.id, pb)
-  }
-  if (customGroupIds.value) {
-    const keys = keysForGroups(customGroupIds.value)
-    const poolKey = computePoolKey(keys)
-    const pb = await getPersonalBests(poolKey, sizeOption.value)
-    if (pb) map.set('custom', pb)
-  }
-  presetPBs.value = map
-}
 
 const selectedPresetId = ref('all')
 const customGroupIds = ref(null)
@@ -69,8 +50,7 @@ const poolKeys = computed(() => {
 const extraCount = computed(() => computeExtraCount(poolKeys.value.length, sizeOption.value))
 const sessionCaseCount = computed(() => computeSessionTotal(poolKeys.value.length, sizeOption.value))
 
-onMounted(loadPresetPBs)
-watch(sizeOption, loadPresetPBs)
+const { presetPBs } = usePresetPBs(sizeOption, customGroupIds)
 
 function selectPreset(id) {
   selectedPresetId.value = id

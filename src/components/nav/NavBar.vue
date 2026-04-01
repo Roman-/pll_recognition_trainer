@@ -2,7 +2,8 @@
 import {useThemeStore} from "@/stores/ThemeStore";
 import ThemeSwitcher from "@/components/nav/ThemeSwitcher.vue";
 import {computed} from "vue";
-import {GameState, useSessionStore} from "@/stores/SessionStore";
+import {GameState} from "@/scripts/game_constants";
+import {useSessionStore} from "@/stores/SessionStore";
 const session = useSessionStore()
 
 const themeStore = useThemeStore();

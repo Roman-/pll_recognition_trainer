@@ -2,7 +2,7 @@
 import { SVG } from "sr-puzzlegen-pll"
 import {computed, onMounted, ref, watch} from "vue";
 import {noCubePuzzleMask, scrambleForCase} from "@/scripts/scramble";
-import {topViewAdjustment} from "@/scripts/colors";
+import {topViewAdjustment} from "@/scripts/cube_display";
 import {useSettingsStore} from "@/stores/SettingsStore";
 import CaseVariationsModal from "@/components/CaseVariationsModal.vue";
 

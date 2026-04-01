@@ -5,7 +5,8 @@ import TrainerView from "@/views/TrainerView.vue";
 import EvalResults from "@/views/EvalResults.vue";
 import SettingsView from "@/views/SettingsView.vue";
 import HistoryView from "@/views/HistoryView.vue";
-import {GameState, useSessionStore} from "@/stores/SessionStore";
+import {GameState} from "@/scripts/game_constants";
+import {useSessionStore} from "@/stores/SessionStore";
 
 const router = createRouter({
     history: createWebHashHistory(),

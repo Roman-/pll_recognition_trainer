@@ -1,6 +1,11 @@
-import {allPllKeys, keyToCase, D_TURN_OPTIONS, COLOR_SHIFTS} from "@/scripts/pll_cases";
+import {allPllKeys, keyToCase, keysToCases, D_TURN_OPTIONS, COLOR_SHIFTS} from "@/scripts/pll_cases";
 import {shuffle} from "@/scripts/helpers";
 import {randomCrossColor} from "@/scripts/colors";
+
+const includeNoAufInInitialQueue = false // cases with no AUF might be easier to guess, we don't want this in evaluation
+export const generateEvaluationQueue = (allowedCrossColors, pool = null) => {
+    return shuffle(keysToCases(pool || allPllKeys(), allowedCrossColors, includeNoAufInInitialQueue))
+}
 
 export const resultTimeMs = r => {
     return new Date(r.finished) - new Date(r.started)

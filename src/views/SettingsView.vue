@@ -2,7 +2,8 @@
 import {useSettingsStore} from "@/stores/SettingsStore";
 import {useThemeStore, lightThemesSet, darkThemesSet} from "@/stores/ThemeStore";
 import PllPic from "@/components/PllPic.vue";
-import {CubeViews, randomCrossColor, strokeWidthOptions} from "@/scripts/colors";
+import {randomCrossColor} from "@/scripts/colors";
+import {CubeViews, strokeWidthOptions} from "@/scripts/cube_display";
 import CrossColorPicker from "@/components/CrossColorPicker.vue";
 import ColorToneEditor from "@/components/ColorToneEditor.vue";
 import {computed} from "vue";

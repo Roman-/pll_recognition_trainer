@@ -1,6 +1,6 @@
 <script setup>
 import {ref} from 'vue'
-import {DefaultColorScheme} from '@/scripts/colors'
+import {DefaultColorScheme} from '@/scripts/cube_display'
 
 const props = defineProps({
   colorScheme: {

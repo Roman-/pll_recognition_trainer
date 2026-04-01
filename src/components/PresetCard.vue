@@ -1,7 +1,7 @@
 <script setup>
 import { getGroups, presetKeys, subtitle } from '@/scripts/session_presets'
-import { msToHumanReadable } from '@/scripts/time_formatter'
 import StickerPattern from '@/components/guide/StickerPattern.vue'
+import PbStats from '@/components/PbStats.vue'
 
 const props = defineProps({
   preset: { type: Object, default: null },
@@ -12,10 +12,6 @@ const props = defineProps({
 })
 
 defineEmits(['select'])
-
-function formatAccuracy(val) {
-  return (val * 100).toFixed(1) + '%'
-}
 </script>
 
 <template>
@@ -38,16 +34,7 @@ function formatAccuracy(val) {
           />
         </div>
         <h6 class="card-title mb-1">{{ customLabel }}</h6>
-        <div v-if="pb" class="preset-stats mt-1">
-          <div v-if="pb.bestAccuracy < 1" class="text-success small fw-bold">
-            <i class="bi-bullseye me-1"/>{{ formatAccuracy(pb.bestAccuracy) }}
-          </div>
-          <div v-else class="text-warning small fw-bold">
-            <i class="bi-star-fill me-1"/>Mastered
-          </div>
-          <div class="text-secondary small"><i class="bi-stopwatch me-1"/>{{ msToHumanReadable(pb.bestAvgTimeMs) }}/case</div>
-          <div class="text-secondary small opacity-75">{{ pb.totalSessions }} session{{ pb.totalSessions !== 1 ? 's' : '' }}</div>
-        </div>
+        <PbStats v-if="pb" :pb="pb"/>
         <span class="badge text-bg-secondary mt-auto">{{ presetKeys({ groups: customGroupIds }).length }} cases</span>
       </template>
 
@@ -67,16 +54,7 @@ function formatAccuracy(val) {
         </div>
         <h6 class="card-title mb-1">{{ preset.label }}</h6>
         <small v-if="subtitle(preset)" class="text-secondary d-block mb-2">{{ subtitle(preset) }}</small>
-        <div v-if="pb" class="preset-stats mt-1">
-          <div v-if="pb.bestAccuracy < 1" class="text-success small fw-bold">
-            <i class="bi-bullseye me-1"/>{{ formatAccuracy(pb.bestAccuracy) }}
-          </div>
-          <div v-else class="text-warning small fw-bold">
-            <i class="bi-star-fill me-1"/>Mastered
-          </div>
-          <div class="text-secondary small"><i class="bi-stopwatch me-1"/>{{ msToHumanReadable(pb.bestAvgTimeMs) }}/case</div>
-          <div class="text-secondary small opacity-75">{{ pb.totalSessions }} session{{ pb.totalSessions !== 1 ? 's' : '' }}</div>
-        </div>
+        <PbStats v-if="pb" :pb="pb"/>
         <span class="badge text-bg-secondary mt-auto">{{ presetKeys(preset).length }} cases</span>
       </template>
     </div>

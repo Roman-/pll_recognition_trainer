@@ -23,7 +23,8 @@
 
 <script setup>
 import {onUnmounted, ref, watch} from 'vue'
-import {useSessionStore, GameState} from '@/stores/SessionStore'
+import {GameState} from '@/scripts/game_constants'
+import {useSessionStore} from '@/stores/SessionStore'
 import {useSettingsStore} from '@/stores/SettingsStore'
 import {PLL_LETTERS} from '@/scripts/pll_constants'
 

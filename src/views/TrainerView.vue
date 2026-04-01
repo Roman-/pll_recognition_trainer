@@ -1,7 +1,8 @@
 <script setup>
 
 import PllPic from "@/components/PllPic.vue";
-import {GameState, useSessionStore} from "@/stores/SessionStore";
+import {GameState} from "@/scripts/game_constants";
+import {useSessionStore} from "@/stores/SessionStore";
 import {computed, onMounted, watch} from "vue";
 import {aufByDturn} from "@/scripts/pll_constants";
 import Note from "@/components/Note.vue";
