@@ -43,9 +43,9 @@ export const topViewAdjustment = (puzzleRotations) => {
 export function randomRotationOffset(baseRotations) {
     if (!baseRotations || baseRotations.length === 0) return baseRotations
     return baseRotations.map(rot => ({
-        x: rot.x + (Math.random() * 12 - 6),
-        y: rot.y + (Math.random() * 24 - 12),
-        z: rot.z + (Math.random() * 6 - 3),
+        x: rot.x + (Math.random() * 14 - 7),
+        y: rot.y + (Math.random() * 26 - 13),
+        z: rot.z + (Math.random() * 8 - 4),
     }))
 }
 
