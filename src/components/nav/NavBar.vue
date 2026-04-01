@@ -50,7 +50,7 @@ const resultsCount = computed(() => session.store.results.length)
           <i class="bi-list-ol font-bigger"/>
           <span class="badge bg-secondary align-top">{{ resultsCount }}</span>
         </button>
-        <button v-if="!isSetup && !isResults && !isHome"
+        <button v-if="!isSetup && !isResults && !isHome && !isTrainer"
             class="btn btn-link text-info"
             @click="newSessionClicked"
             title="New Session"
