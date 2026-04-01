@@ -40,6 +40,15 @@ export const topViewAdjustment = (puzzleRotations) => {
     return "y"
 }
 
+export function randomRotationOffset(baseRotations) {
+    if (!baseRotations || baseRotations.length === 0) return baseRotations
+    return baseRotations.map(rot => ({
+        x: rot.x + (Math.random() * 12 - 6),
+        y: rot.y + (Math.random() * 24 - 12),
+        z: rot.z + (Math.random() * 6 - 3),
+    }))
+}
+
 export const strokeWidthOptions = {
     "0": 0,
     "1/2": 0.005,

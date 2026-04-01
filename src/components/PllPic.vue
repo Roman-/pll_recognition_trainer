@@ -13,7 +13,9 @@ const props = defineProps({
   clickable: Boolean,
   crossColor: String,
   hoverViewType: String,
-  hovered: { type: Boolean, default: undefined }
+  hovered: { type: Boolean, default: undefined },
+  rotationOverride: { type: Array, default: null },
+  colorSchemeOverride: { type: Object, default: null }
 })
 
 const cubeImgDiv = ref(null)
@@ -39,7 +41,7 @@ const insertSvgInto = (targetRef, viewType) => {
   let opts = {
     "puzzle": {
       "alg": scramble.value,
-      "scheme": settings.store.colorScheme
+      "scheme": props.colorSchemeOverride || settings.store.colorScheme
     },
     "width": parseInt(props.size),
     "height": parseInt(props.size),
@@ -47,7 +49,7 @@ const insertSvgInto = (targetRef, viewType) => {
   }
 
   if (viewType === "cube" || viewType === "cube-pll") {
-    opts.puzzle.rotations = settings.store.puzzleRotations
+    opts.puzzle.rotations = props.rotationOverride || settings.store.puzzleRotations
   }
 
   if (!scramble.value) {
@@ -64,7 +66,8 @@ const insertHoverSvg = () => {
 watch(
   () => [scramble.value, props.viewType, props.hoverViewType, props.size,
          settings.store.puzzleRotations, settings.store.strokeWidth,
-         settings.store.colorScheme],
+         settings.store.colorScheme,
+         props.rotationOverride, props.colorSchemeOverride],
   () => { insertSvg(); insertHoverSvg() },
   { deep: true }
 )

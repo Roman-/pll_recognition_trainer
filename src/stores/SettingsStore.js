@@ -10,7 +10,9 @@ const defaultSettings = {
     colorScheme: DefaultColorScheme,
     allowedCrossColors: DefaultAllowedCrossColors,
     showOnScreenKeyboard: isMobile,
-    fullNameMode: false
+    fullNameMode: false,
+    angleVariance: false,
+    colorVariance: false
 }
 
 const localStorageKey = "pll_recognition_settings"

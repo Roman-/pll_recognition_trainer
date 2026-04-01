@@ -78,6 +78,22 @@ const pictureCrossColor = computed(() => randomCrossColor(settings.store.allowed
           <small class="text-secondary">Type full case name (e.g. Ga instead of just G)</small>
         </div>
 
+        <div class="mb-3">
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="angleVariance" v-model="settings.store.angleVariance" />
+            <label class="form-check-label" for="angleVariance">Angle variance</label>
+          </div>
+          <small class="text-secondary">Randomly rotate the cube angle for each new case</small>
+        </div>
+
+        <div class="mb-3">
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="colorVariance" v-model="settings.store.colorVariance" />
+            <label class="form-check-label" for="colorVariance">Color variance</label>
+          </div>
+          <small class="text-secondary">Randomly shift cube colors for each new case</small>
+        </div>
+
         <hr/>
 
         <div class="mb-3">

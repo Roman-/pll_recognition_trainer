@@ -3,7 +3,7 @@
 import PllPic from "@/components/PllPic.vue";
 import {GameState} from "@/scripts/game_constants";
 import {useSessionStore} from "@/stores/SessionStore";
-import {computed, onMounted, watch} from "vue";
+import {computed, onMounted, ref, watch} from "vue";
 import {aufByDturn} from "@/scripts/pll_constants";
 import Note from "@/components/Note.vue";
 import ResultsList from "@/components/ResultsList.vue";
@@ -15,6 +15,8 @@ import {isMobile} from "@/scripts/device";
 import {useBreakpoint} from "@/composables/useBreakpoint";
 import {useTrainerKeyboard} from "@/composables/useTrainerKeyboard";
 import {useRouter} from "vue-router";
+import {randomRotationOffset} from "@/scripts/cube_display";
+import {mutateColorScheme} from "@/scripts/colors";
 
 const session = useSessionStore()
 const settings = useSettingsStore()
@@ -39,6 +41,26 @@ watch(() => session.store.state, (newState) => {
     router.replace('/results')
   }
 })
+
+const varianceRotation = ref(null)
+const varianceColorScheme = ref(null)
+
+watch(
+  () => session.currentCase,
+  (newCase) => {
+    if (newCase) {
+      varianceRotation.value = settings.store.angleVariance
+        ? randomRotationOffset(settings.store.puzzleRotations)
+        : null
+      varianceColorScheme.value = settings.store.colorVariance
+        ? mutateColorScheme(settings.store.colorScheme)
+        : null
+    } else {
+      varianceRotation.value = null
+      varianceColorScheme.value = null
+    }
+  }
+)
 
 const { pendingKey } = useTrainerKeyboard(session, settings)
 
@@ -97,7 +119,8 @@ const keyPressHint = computed(() => {
           </template>
         </div>
         <div class="trainer-center">
-          <PllPic :pllCase="session.currentCase" :viewType="session.store.mistake ? 'cube-pll' : 'cube'" :size="400" :clickable="false"/>
+          <PllPic :pllCase="session.currentCase" :viewType="session.store.mistake ? 'cube-pll' : 'cube'" :size="400" :clickable="false"
+                  :rotationOverride="varianceRotation" :colorSchemeOverride="varianceColorScheme"/>
         </div>
         <div class="trainer-side trainer-side-right"></div>
       </div>
