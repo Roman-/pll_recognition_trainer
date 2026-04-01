@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router'
 import { useSessionStore } from '@/stores/SessionStore'
 import { getAllSessions } from '@/scripts/session_history'
 import { msToHumanReadable } from '@/scripts/time_formatter'
-import { shuffle } from '@/scripts/helpers'
+import { buildSessionPool } from '@/scripts/session_sizing'
 
 const router = useRouter()
 const session = useSessionStore()
@@ -119,13 +119,7 @@ function formatAccuracy(s) {
 
 function repeatSession(s) {
   const keys = s.poolKey.split(',')
-  let pool = keys
-  if (s.sizeOption === 1) {
-    pool = [...keys, ...keys]
-  } else if (s.sizeOption > 0) {
-    const extra = Math.round(keys.length * s.sizeOption)
-    pool = [...keys, ...shuffle([...keys]).slice(0, extra)]
-  }
+  const pool = buildSessionPool(keys, s.sizeOption)
   session.startSession(pool, s.sizeOption, s.presetLabel)
   router.push('/trainer')
 }

@@ -5,8 +5,8 @@ import { useSessionStore } from '@/stores/SessionStore'
 import { allPllKeys } from '@/scripts/pll_cases'
 import { keysForGroups } from '@/scripts/guide_lookup'
 import { presets, getGroups, presetKeys } from '@/scripts/session_presets'
-import { shuffle } from '@/scripts/helpers'
 import { computePoolKey, getPersonalBests } from '@/scripts/session_history'
+import { SIZE_OPTIONS, SIZE_DEFAULT, SIZE_UNIQUE, computeSessionTotal, computeExtraCount, buildSessionPool as buildPool, sizeHelpText } from '@/scripts/session_sizing'
 import { useKeydown } from '@/composables/useKeydown'
 import { useHorizontalScroll } from '@/composables/useHorizontalScroll'
 import PresetCard from '@/components/PresetCard.vue'
@@ -37,7 +37,7 @@ async function loadPresetPBs() {
 
 const selectedPresetId = ref('all')
 const customGroupIds = ref(null)
-const sizeOption = ref(0)
+const sizeOption = ref(SIZE_DEFAULT)
 
 // Initialize from query params (e.g., /setup?groups=three_bar)
 const groupsParam = route.query.groups
@@ -66,9 +66,8 @@ const poolKeys = computed(() => {
   return preset ? presetKeys(preset) : allPllKeys()
 })
 
-const sizeOptions = [0, 0.15, 0.40, 1]
-const extraCount = computed(() => Math.round(poolKeys.value.length * sizeOption.value))
-const sessionCaseCount = computed(() => poolKeys.value.length + extraCount.value)
+const extraCount = computed(() => computeExtraCount(poolKeys.value.length, sizeOption.value))
+const sessionCaseCount = computed(() => computeSessionTotal(poolKeys.value.length, sizeOption.value))
 
 onMounted(loadPresetPBs)
 watch(sizeOption, loadPresetPBs)
@@ -78,12 +77,8 @@ function selectPreset(id) {
 }
 
 function buildSessionPool() {
-  const keys = poolKeys.value
-  if (sizeOption.value === 0) {
-    return selectedPresetId.value === 'all' ? null : keys
-  }
-  if (sizeOption.value === 1) return [...keys, ...keys]
-  return [...keys, ...shuffle([...keys]).slice(0, extraCount.value)]
+  if (sizeOption.value === SIZE_UNIQUE && selectedPresetId.value === 'all') return null
+  return buildPool(poolKeys.value, sizeOption.value)
 }
 
 function getPresetLabel() {
@@ -144,14 +139,14 @@ useKeydown((e) => {
     <div class="text-center mt-4">
       <div class="text-secondary small mb-2">Session size</div>
       <div class="btn-group" role="group">
-        <template v-for="opt in sizeOptions" :key="opt">
+        <template v-for="opt in SIZE_OPTIONS" :key="opt">
           <input type="radio" class="btn-check" :id="'size-' + opt" v-model="sizeOption" :value="opt">
           <label class="btn btn-outline-secondary" :for="'size-' + opt">
-            {{ poolKeys.length + Math.round(poolKeys.length * opt) }}
+            {{ computeSessionTotal(poolKeys.length, opt) }}
           </label>
         </template>
       </div>
-      <div class="text-secondary small mt-1 opacity-50">Extra cases are random duplicates from the same set to make it less predictable</div>
+      <div class="small mt-1 opacity-50" :class="sizeOption === SIZE_UNIQUE ? 'text-warning' : 'text-secondary'">{{ sizeHelpText(sizeOption) }}</div>
     </div>
 
     <div class="text-center mt-3">

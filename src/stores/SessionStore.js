@@ -6,6 +6,7 @@ import {isPllLetter, allPllCaseNames} from "@/scripts/pll_constants";
 import {shuffle} from "@/scripts/helpers";
 import {DefaultAllowedCrossColors, randomCrossColor} from "@/scripts/colors";
 import {saveSession} from "@/scripts/session_history";
+import {SIZE_DEFAULT, SIZE_OPTIONS} from "@/scripts/session_sizing";
 
 const storeKey = 'pll_store';
 const includeNoAufInInitialQueue = false // cases with no AUF might be easier to guess, we don't want this in evaluation
@@ -42,13 +43,18 @@ const defaultStore = {
     showResultsModal: false,
 
     // Session metadata for history tracking
-    sizeOption: 0,
+    sizeOption: SIZE_DEFAULT,
     presetLabel: 'All Cases',
 }
 
 export const useSessionStore = defineStore('session', () => {
     const saved = JSON.parse(localStorage.getItem(storeKey))
     const store = reactive(saved ? { ...defaultStore, ...saved } : defaultStore)
+
+    // Validate sizeOption after possible schema migration (old decimals → new integers)
+    if (!SIZE_OPTIONS.includes(store.sizeOption) && store.sizeOption !== -1) {
+        store.sizeOption = SIZE_DEFAULT
+    }
 
     // Non-persisted: signals the most recent answer submission for UI feedback
     const lastSubmission = ref(null)
@@ -160,7 +166,7 @@ export const useSessionStore = defineStore('session', () => {
         store.mistake = "-"
     }
 
-    const startSession = (pool = null, sizeOption = 0, presetLabel = 'All Cases') => {
+    const startSession = (pool = null, sizeOption = SIZE_DEFAULT, presetLabel = 'All Cases') => {
         store.pool = pool
         store.sizeOption = sizeOption
         store.presetLabel = presetLabel
