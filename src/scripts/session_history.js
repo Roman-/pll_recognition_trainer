@@ -34,6 +34,10 @@ export async function getAllSessions() {
     return db.sessions.orderBy('completedAt').reverse().toArray()
 }
 
+export async function clearAllSessions() {
+    return db.sessions.clear()
+}
+
 export async function getPersonalBests(poolKey, sizeOption) {
     const sessions = await getSessionsByType(poolKey, sizeOption)
     if (sessions.length === 0) return null

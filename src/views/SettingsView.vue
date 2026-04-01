@@ -6,9 +6,12 @@ import {randomCrossColor} from "@/scripts/colors";
 import {CubeViews, strokeWidthOptions} from "@/scripts/cube_display";
 import CrossColorPicker from "@/components/CrossColorPicker.vue";
 import ColorToneEditor from "@/components/ColorToneEditor.vue";
+import {useNotesStore} from "@/stores/NotesStore";
+import {clearAllSessions} from "@/scripts/session_history";
 import {computed} from "vue";
 
 const settings = useSettingsStore()
+const notesStore = useNotesStore()
 const themeStore = useThemeStore()
 const capitalize = (s) => s.charAt(0).toUpperCase() + s.slice(1)
 const pllCaseForPicture = {
@@ -27,6 +30,20 @@ const resetSettings = () => {
 }
 
 const pictureCrossColor = computed(() => randomCrossColor(settings.store.allowedCrossColors))
+
+const resetJourney = async () => {
+  if (confirm("This will permanently delete all training history, personal bests, and quest progress. Continue?")) {
+    await clearAllSessions()
+    settings.store.questStarted = false
+    settings.store.activeQuestStepId = null
+  }
+}
+
+const clearAllNotes = () => {
+  if (confirm("This will permanently delete all your per-case notes. Continue?")) {
+    notesStore.clearNotes()
+  }
+}
 </script>
 
 <template>
@@ -120,6 +137,15 @@ const pictureCrossColor = computed(() => randomCrossColor(settings.store.allowed
         <div class="d-flex justify-content-center gap-3">
           <button class="btn btn-warning" @click="resetSettings">Reset</button>
           <router-link to="/setup" class="btn btn-success">Start Training</router-link>
+        </div>
+
+        <hr class="mt-5"/>
+        <h5 class="text-danger mb-3">Danger Zone</h5>
+        <div class="d-grid gap-2">
+          <button class="btn btn-outline-danger" @click="resetJourney">Clear All Training History</button>
+          <small class="text-secondary mt-n1">Clears all training history, personal bests, and quest progress</small>
+          <button class="btn btn-outline-danger" @click="clearAllNotes">Clear All Notes</button>
+          <small class="text-secondary mt-n1">Removes all per-case recognition notes</small>
         </div>
       </div>
     </div>

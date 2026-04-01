@@ -10,5 +10,9 @@ export const useNotesStore = defineStore('notes', () => {
 
     watch(notes, () => localStorage.setItem(notesKey, JSON.stringify(notes)))
 
-    return {notes}
+    const clearNotes = () => {
+        Object.keys(notes).forEach(key => delete notes[key])
+    }
+
+    return {notes, clearNotes}
 });
