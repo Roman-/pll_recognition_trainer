@@ -70,26 +70,34 @@ const phaseSteps = computed(() => {
 
           <!-- Progress bar -->
           <div v-if="!loading" class="quest-progress mb-4">
-            <div v-for="pg in phaseSteps" :key="pg.phase.id" class="quest-phase">
-              <div class="quest-phase-label text-secondary small">{{ pg.phase.title }}</div>
-              <div class="quest-phase-dots">
-                <div
-                  v-for="s in pg.steps"
-                  :key="s.step.id"
-                  class="quest-dot"
-                  :class="{
-                    'quest-dot-mastered': s.mastered,
-                    'quest-dot-current': s.isCurrent,
-                    'quest-dot-combo': s.step.isCombo,
-                  }"
-                  :title="s.step.label"
-                >
-                  <i v-if="s.mastered" class="bi-check-lg"/>
-                  <span v-else-if="s.isCurrent" class="quest-dot-pulse"/>
+            <div class="quest-roadmap">
+              <template v-for="(pg, pi) in phaseSteps" :key="pg.phase.id">
+                <div v-if="pi > 0" class="quest-phase-gap"/>
+                <div class="quest-phase-group">
+                  <div class="quest-phase-dots">
+                    <template v-for="(s, si) in pg.steps" :key="s.step.id">
+                      <div v-if="si > 0" class="quest-connector"
+                        :class="{ 'quest-connector-done': pg.steps[si-1].mastered && s.mastered }"/>
+                      <div
+                        class="quest-dot"
+                        :class="{
+                          'quest-dot-mastered': s.mastered,
+                          'quest-dot-current': s.isCurrent,
+                          'quest-dot-combo': s.step.isCombo,
+                          'quest-dot-locked': !s.mastered && !s.isCurrent,
+                        }"
+                        :title="s.step.label"
+                      >
+                        <i v-if="s.mastered" class="bi-check-lg"/>
+                        <span v-else-if="s.isCurrent" class="quest-dot-pulse"/>
+                      </div>
+                    </template>
+                  </div>
+                  <div class="quest-phase-label">{{ pg.phase.title }}</div>
                 </div>
-              </div>
+              </template>
             </div>
-            <div class="quest-progress-text text-secondary small mt-1">
+            <div class="quest-progress-text text-secondary small mt-2">
               {{ masteredCount }} / {{ stepStatuses.length }} steps completed
             </div>
           </div>
@@ -189,41 +197,76 @@ const phaseSteps = computed(() => {
 }
 
 .quest-progress {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  align-items: flex-end;
+  text-align: center;
 }
 
-.quest-phase-label {
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: 4px;
+.quest-roadmap {
+  display: inline-flex;
+  align-items: flex-start;
+}
+
+.quest-phase-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .quest-phase-dots {
   display: flex;
-  gap: 4px;
+  align-items: center;
+}
+
+.quest-phase-gap {
+  width: 20px;
+  flex-shrink: 0;
+}
+
+.quest-connector {
+  width: 12px;
+  height: 2px;
+  background: var(--bs-border-color);
+  flex-shrink: 0;
+}
+
+.quest-connector-done {
+  background: var(--bs-success);
+}
+
+.quest-phase-label {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--bs-secondary-color);
+  margin-top: 6px;
+  white-space: nowrap;
 }
 
 .quest-dot {
-  width: 24px;
-  height: 24px;
+  --dot-size: 24px;
+  width: var(--dot-size);
+  height: var(--dot-size);
   border-radius: 50%;
   border: 2px solid var(--bs-border-color);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   position: relative;
   background: var(--bs-body-bg);
+  flex-shrink: 0;
+  transition: border-color 0.3s, background 0.3s, box-shadow 0.3s;
 }
 
 .quest-dot-combo {
-  width: 28px;
-  height: 28px;
-  border-radius: 6px;
+  box-shadow: inset 0 0 0 2px var(--bs-body-bg), inset 0 0 0 3.5px var(--bs-border-color);
+}
+
+.quest-dot-combo.quest-dot-mastered {
+  box-shadow: inset 0 0 0 2px var(--bs-success), inset 0 0 0 3.5px rgba(255, 255, 255, 0.5);
+}
+
+.quest-dot-combo.quest-dot-current {
+  box-shadow: inset 0 0 0 2px var(--bs-body-bg), inset 0 0 0 3.5px var(--bs-primary);
 }
 
 .quest-dot-mastered {
@@ -235,6 +278,10 @@ const phaseSteps = computed(() => {
 .quest-dot-current {
   border-color: var(--bs-primary);
   border-width: 2.5px;
+}
+
+.quest-dot-locked {
+  opacity: 0.45;
 }
 
 .quest-dot-pulse {
@@ -250,8 +297,20 @@ const phaseSteps = computed(() => {
   50% { opacity: 1; transform: scale(1.2); }
 }
 
-.quest-progress-text {
-  width: 100%;
+@media (max-width: 575.98px) {
+  .quest-dot {
+    --dot-size: 20px;
+    font-size: 0.55rem;
+  }
+  .quest-phase-gap {
+    width: 12px;
+  }
+  .quest-connector {
+    width: 6px;
+  }
+  .quest-phase-label {
+    display: none;
+  }
 }
 
 .quest-guide-card {
