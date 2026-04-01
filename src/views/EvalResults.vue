@@ -90,11 +90,11 @@ watch(questMastered, (mastered) => {
 
 <template>
   <div class="d-flex flex-column align-items-center">
-    <h1>Evaluation results</h1>
-    <h4>{{subtitle1}}</h4>
-    <h4>{{subtitle2}}</h4>
+    <h2>Results</h2>
+    <p class="text-secondary mb-3">{{ subtitle1 }} &middot; {{ subtitle2 }}</p>
 
-    <div v-if="sessionNumber > 0" class="card mt-3 mb-2" style="max-width: 360px; width: 100%;">
+    <!-- Unified stats card -->
+    <div v-if="sessionNumber > 0" class="card mb-3" style="max-width: 480px; width: 100%;">
       <div class="card-body text-center py-2 px-3">
         <div class="text-secondary small mb-1">
           Session #{{ sessionNumber }} &middot; {{ session.store.presetLabel || 'All Cases' }}
@@ -127,60 +127,108 @@ watch(questMastered, (mastered) => {
             New personal best!
           </div>
         </template>
+
+        <!-- Quest mastery (inline within same card) -->
+        <template v-if="isQuestSession">
+          <hr class="my-2">
+          <div class="text-secondary small mb-1">
+            Journey &middot; {{ questStep.label }}
+          </div>
+          <div v-if="questMastered" class="text-success fw-bold">
+            <i class="bi-check-circle-fill me-1"/>Step mastered!
+          </div>
+          <div v-else class="text-warning">
+            {{ formatAccuracy(accuracy) }} &mdash; need {{ formatAccuracy(MASTERY_ACCURACY) }} to advance
+          </div>
+        </template>
       </div>
     </div>
 
-    <!-- Quest mastery feedback -->
-    <div v-if="isQuestSession" class="card mt-3 mb-2" style="max-width: 360px; width: 100%;">
-      <div class="card-body text-center py-2 px-3">
-        <div class="text-secondary small mb-1">
-          Journey &middot; {{ questStep.label }}
-        </div>
-        <div v-if="questMastered" class="text-success fw-bold">
-          <i class="bi-check-circle-fill me-1"/>Step mastered!
-        </div>
-        <div v-else class="text-warning">
-          {{ formatAccuracy(accuracy) }} &mdash; need {{ formatAccuracy(MASTERY_ACCURACY) }} to advance
-        </div>
+    <!-- Primary CTA card -->
+    <div class="card cta-card mt-2" style="max-width: 480px; width: 100%;">
+      <div class="card-body text-center py-3">
+        <template v-if="isQuestSession">
+          <button v-if="questMastered && nextQuestStep" class="btn btn-primary btn-lg px-4 py-2 start-btn" @click="startNextQuestStep">
+            <i class="bi-arrow-right-circle-fill me-1"/>Next: {{ nextQuestStep.label }}
+          </button>
+          <button v-else-if="questMastered && !nextQuestStep" class="btn btn-success btn-lg px-4 py-2 start-btn" @click="router.push('/')">
+            <i class="bi-trophy-fill me-1"/>Journey Complete!
+          </button>
+          <button v-else class="btn btn-primary btn-lg px-4 py-2 start-btn" @click="retryQuestStep">
+            <i class="bi-arrow-counterclockwise me-1"/>Try Again
+          </button>
+        </template>
+        <template v-else>
+          <button class="btn btn-primary btn-lg px-4 py-2 start-btn" @click="startPersonalizedTraining">
+            <i class="bi-lightning-charge-fill me-1"/>Personalized Training ({{ personalizedCount }})
+          </button>
+          <p class="text-secondary small mt-2 mb-0">
+            Drills the cases you got wrong more often, with extra repetitions for your weakest patterns.
+          </p>
+        </template>
       </div>
     </div>
 
-    <!-- Quest navigation buttons -->
-    <template v-if="isQuestSession">
-      <button v-if="questMastered && nextQuestStep" class="btn btn-primary btn-lg px-4 py-2 m-2 start-btn" @click="startNextQuestStep">
-        <i class="bi-arrow-right-circle-fill me-1"/>Next: {{ nextQuestStep.label }}
+    <!-- Secondary actions -->
+    <div class="d-flex flex-wrap justify-content-center gap-2 mt-3">
+      <button v-if="isQuestSession" class="btn btn-sm btn-outline-primary" @click="startPersonalizedTraining">
+        <i class="bi-lightning-charge-fill me-1"/>Personalized ({{ personalizedCount }})
       </button>
-      <button v-else-if="questMastered && !nextQuestStep" class="btn btn-success btn-lg px-4 py-2 m-2 start-btn" @click="router.push('/')">
-        <i class="bi-trophy-fill me-1"/>Journey Complete!
+      <button class="btn btn-sm btn-outline-secondary" @click="repeatSession">
+        <i class="bi-arrow-counterclockwise me-1"/>Repeat
       </button>
-      <button v-else class="btn btn-primary btn-lg px-4 py-2 m-2 start-btn" @click="retryQuestStep">
-        <i class="bi-arrow-counterclockwise me-1"/>Try Again
+      <button class="btn btn-sm btn-outline-secondary" @click="router.push('/setup')">
+        <i class="bi-plus-circle me-1"/>{{ isQuestSession ? 'Free Practice' : 'New Session' }}
       </button>
-    </template>
-
-    <button class="btn btn-lg px-4 py-2 m-2 start-btn" :class="isQuestSession ? 'btn-outline-primary' : 'btn-primary'" @click="startPersonalizedTraining">
-      <i class="bi-lightning-charge-fill me-1"/>Start personalized training ({{ personalizedCount }})
-    </button>
-    <button class="btn btn-outline-secondary btn-lg px-4 py-2 m-2" @click="repeatSession">
-      <i class="bi-arrow-counterclockwise me-1"/>Repeat this session
-    </button>
-    <button class="btn btn-outline-primary btn-lg px-4 py-2 m-2" @click="router.push('/setup')">
-      <i class="bi-plus-circle me-1"/>{{ isQuestSession ? 'Free Practice' : 'Start new session' }}
-    </button>
-    <div class="col-12 col-md-8 col-lg-6 mx-auto p-2 pt-3">
-      <p>
-        Study these cases thoroughly and add notes on how you recognize them.
-        You can <strong>click the cube picture</strong> to view the PLL in all color/AUF variations.
-      </p>
-      <p>
-        When you start personalized training, you will be shown the cases you got wrong more often.
-      </p>
     </div>
+
+    <!-- Results list -->
+    <p class="text-secondary small text-center mt-4 mb-2">
+      <i class="bi-info-circle me-1"/>Click any cube picture to view all color and AUF variations.
+    </p>
     <div class="col-12 col-md-8 col-lg-6 mx-auto">
       <ResultsList :results="evalResults" :pictureSize="220" :showNotes="true" :showTopPicture="true" :cardLayout="true"/>
+    </div>
+
+    <!-- Bottom CTAs (duplicated after scrolling through results) -->
+    <div class="col-12 col-md-8 col-lg-6 mx-auto text-center bottom-cta pt-3 mt-4 mb-4">
+      <template v-if="isQuestSession">
+        <button v-if="questMastered && nextQuestStep" class="btn btn-primary btn-lg px-4 py-2 start-btn" @click="startNextQuestStep">
+          <i class="bi-arrow-right-circle-fill me-1"/>Next: {{ nextQuestStep.label }}
+        </button>
+        <button v-else-if="questMastered && !nextQuestStep" class="btn btn-success btn-lg px-4 py-2 start-btn" @click="router.push('/')">
+          <i class="bi-trophy-fill me-1"/>Journey Complete!
+        </button>
+        <button v-else class="btn btn-primary btn-lg px-4 py-2 start-btn" @click="retryQuestStep">
+          <i class="bi-arrow-counterclockwise me-1"/>Try Again
+        </button>
+      </template>
+      <template v-else>
+        <button class="btn btn-primary btn-lg px-4 py-2 start-btn" @click="startPersonalizedTraining">
+          <i class="bi-lightning-charge-fill me-1"/>Personalized Training ({{ personalizedCount }})
+        </button>
+      </template>
+      <div class="d-flex flex-wrap justify-content-center gap-2 mt-2">
+        <button v-if="isQuestSession" class="btn btn-sm btn-outline-primary" @click="startPersonalizedTraining">
+          <i class="bi-lightning-charge-fill me-1"/>Personalized ({{ personalizedCount }})
+        </button>
+        <button class="btn btn-sm btn-outline-secondary" @click="repeatSession">
+          <i class="bi-arrow-counterclockwise me-1"/>Repeat
+        </button>
+        <button class="btn btn-sm btn-outline-secondary" @click="router.push('/setup')">
+          <i class="bi-plus-circle me-1"/>{{ isQuestSession ? 'Free Practice' : 'New Session' }}
+        </button>
+      </div>
     </div>
   </div>
 </template>
 
 <style scoped>
+.cta-card {
+  border-color: rgba(var(--bs-primary-rgb), 0.3);
+}
+
+.bottom-cta {
+  border-top: 1px solid var(--bs-border-color);
+}
 </style>
