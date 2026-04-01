@@ -7,13 +7,11 @@ const session = useSessionStore()
 
 const themeStore = useThemeStore();
 const navBarClass = computed(() => themeStore.isDark ? "navbar-dark bg-dark" : "navbar-light bg-light");
-const resetSessionClicked = () => {
-  if (confirm("Restart evaluation?")) {
-    session.restartEvaluation()
-    if (isResults.value) {
-      router.push('/trainer')
-    }
+const newSessionClicked = () => {
+  if (isTrainer.value && session.store.results.length > 0) {
+    if (!confirm("Abandon current session? Progress won't be saved.")) return
   }
+  router.push('/setup')
 }
 import {useRoute, useRouter} from "vue-router";
 const router = useRouter();
@@ -67,16 +65,13 @@ const resultsCount = computed(() => session.store.results.length)
         >
           <i class="bi-gear font-bigger"/>
         </button>
-        <button v-if="!isTrainer && !isSetup"
+        <button v-if="!isSetup && !isResults"
             class="btn btn-link text-info"
-            @click="router.push('/setup')"
+            @click="newSessionClicked"
             title="New Session"
             tabindex="-1"
         >
           <i class="bi-lightning-charge-fill font-bigger"/>
-        </button>
-        <button v-if="!isHome" tabindex="-1" class="btn btn-link text-info" @click="resetSessionClicked" title="Restart evaluation">
-          <i class="bi-arrow-counterclockwise font-bigger"/>
         </button>
         <ThemeSwitcher/>
       </div>

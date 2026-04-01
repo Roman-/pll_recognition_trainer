@@ -160,16 +160,6 @@ export const useSessionStore = defineStore('session', () => {
         store.mistake = "-"
     }
 
-    const restartEvaluation = (newPool = undefined) => {
-        if (newPool !== undefined) {
-            store.pool = newPool
-        }
-        store.queue = generateEvaluationQueue(store.allowedCrossColors, store.pool)
-        store.results = []
-        store.mistake = ""
-        store.state = GameState.Paused
-    }
-
     const startSession = (pool = null, sizeOption = 0, presetLabel = 'All Cases') => {
         store.pool = pool
         store.sizeOption = sizeOption
@@ -194,6 +184,6 @@ export const useSessionStore = defineStore('session', () => {
     }, {deep: true})
 
     return {store, currentCase, lastSubmission, setInitial,
-        startSession, restartEvaluation, startPersonalized, setAllowedCrossColors,
+        startSession, startPersonalized, setAllowedCrossColors,
         pausePlay, resumePlay, submitAnswer, giveUpOnCase}
 });

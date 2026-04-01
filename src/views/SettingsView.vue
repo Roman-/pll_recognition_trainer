@@ -102,7 +102,7 @@ const pictureCrossColor = computed(() => randomCrossColor(settings.store.allowed
 
         <div class="d-flex justify-content-center gap-3">
           <button class="btn btn-warning" @click="resetSettings">Reset</button>
-          <router-link to="/trainer" class="btn btn-success">Start Training</router-link>
+          <router-link to="/setup" class="btn btn-success">Start Training</router-link>
         </div>
       </div>
     </div>

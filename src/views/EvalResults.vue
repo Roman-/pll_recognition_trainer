@@ -31,6 +31,11 @@ const startPersonalizedTraining = () => {
   router.push('/trainer')
 }
 
+const repeatSession = () => {
+  session.startSession(session.store.pool, session.store.sizeOption, session.store.presetLabel)
+  router.push('/trainer')
+}
+
 // Personal bests
 const pb = ref(null)
 const sessionNumber = ref(0)
@@ -106,6 +111,9 @@ function formatAccuracy(val) {
 
     <button class="btn btn-primary btn-lg px-4 py-2 m-2 start-btn" @click="startPersonalizedTraining">
       <i class="bi-lightning-charge-fill me-1"/>Start personalized training ({{ personalizedCount }})
+    </button>
+    <button class="btn btn-outline-secondary btn-lg px-4 py-2 m-2" @click="repeatSession">
+      <i class="bi-arrow-counterclockwise me-1"/>Repeat this session
     </button>
     <button class="btn btn-outline-primary btn-lg px-4 py-2 m-2" @click="router.push('/setup')">
       <i class="bi-plus-circle me-1"/>Start new session

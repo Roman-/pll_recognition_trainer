@@ -12,6 +12,7 @@ Client-side Vue 3 web app for speedcubers to practice recognizing PLL (Permutati
 - **Routing:** Vue Router 4 (hash mode)
 - **UI:** Bootstrap 5 + 17 swappable themes (12 light + 5 dark)
 - **Cube rendering:** sr-puzzlegen-pll (SVG output)
+- **Session history:** Dexie.js (IndexedDB wrapper)
 
 ## Commands
 
@@ -37,6 +38,7 @@ main.js → App.vue
                    ├── /results → EvalResults (evaluation done)
                    │                ├── ResultsList → ResultItem
                    │                └── AppFooter
+                   ├── /history → HistoryView (session history + PB tracking)
                    └── /settings → SettingsView
                                     ├── PllPic (preview)
                                     ├── CrossColorPicker
@@ -55,6 +57,8 @@ main.js → App.vue
 | SettingsStore | `pll_recognition_settings` | Cube view angle, stroke width, color scheme, allowed cross colors, on-screen keyboard toggle, fullNameMode |
 | NotesStore | `pll_notes` | Per-case user notes keyed by `"name/auf"` |
 | ThemeStore | `my_pll.*` | Dark/light mode, theme names |
+
+**Session History (IndexedDB via Dexie.js):** Completed sessions are automatically saved to IndexedDB (`pll_trainer` database) when the queue empties. Each record stores poolKey, sizeOption, presetLabel, accuracy, and timing stats. HistoryView displays all sessions with filtering by type and personal best (PB) tracking. See `src/db.js` and `src/scripts/session_history.js`.
 
 ## Core Game Loop
 
@@ -110,4 +114,5 @@ See `docs/guide_integration.md` for full details and `docs/cube_sim.md` for the 
 - Zero backend — full offline capability, no auth, no server
 - Hash routing — works on static hosting without server-side routing config
 - 16 variations per case — 4 AUFs x 4 color shifts ensure recognition from any angle
-- localStorage persistence — session survives refresh; no data export/import
+- localStorage persistence — session state survives refresh
+- IndexedDB for session history — completed sessions persist across sessions for PB tracking
