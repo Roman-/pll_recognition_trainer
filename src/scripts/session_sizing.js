@@ -44,11 +44,3 @@ export function sizeHelpText(sizeOption) {
     }
     return 'Extra cases are random duplicates from the same set to make it less predictable'
 }
-
-// --- Legacy migration ---
-export function migrateLegacySizeOption(old) {
-    if (old === -1) return -1
-    if (old === 0) return SIZE_UNIQUE
-    if (old >= 1) return SIZE_LARGE
-    return SIZE_MEDIUM // covers 0.15, 0.40, and any other fractional value
-}
