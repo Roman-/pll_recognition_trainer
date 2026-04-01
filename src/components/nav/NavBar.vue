@@ -23,6 +23,7 @@ const isHome = computed(() => route.name === "Home")
 const isSetup = computed(() => route.name === "Setup")
 const isTrainer = computed(() => route.name === "Trainer")
 const isResults = computed(() => route.name === "Results")
+const isHistory = computed(() => route.name === "History")
 
 const showResults = computed(() =>
     !isSettings.value && (session.store.state === GameState.Playing || session.store.results.length > 0)
@@ -49,6 +50,14 @@ const resultsCount = computed(() => session.store.results.length)
         >
           <i class="bi-list-ol font-bigger"/>
           <span class="badge bg-secondary align-top">{{ resultsCount }}</span>
+        </button>
+        <button v-if="!isHistory"
+            class="btn btn-link text-info"
+            @click="router.push('/history')"
+            title="Session History"
+            tabindex="-1"
+        >
+          <i class="bi-clock-history font-bigger"/>
         </button>
         <button v-if="!isSettings"
             class="btn btn-link text-info"

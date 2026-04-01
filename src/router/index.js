@@ -4,6 +4,7 @@ import SessionSetupView from "@/views/SessionSetupView.vue";
 import TrainerView from "@/views/TrainerView.vue";
 import EvalResults from "@/views/EvalResults.vue";
 import SettingsView from "@/views/SettingsView.vue";
+import HistoryView from "@/views/HistoryView.vue";
 import {GameState, useSessionStore} from "@/stores/SessionStore";
 
 const router = createRouter({
@@ -39,6 +40,11 @@ const router = createRouter({
             path: '/settings',
             name: 'Settings',
             component: SettingsView
+        },
+        {
+            path: '/history',
+            name: 'History',
+            component: HistoryView
         },
         {
             path: '/:pathMatch(.*)*',

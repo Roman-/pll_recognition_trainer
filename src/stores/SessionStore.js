@@ -5,6 +5,7 @@ import {resultsToEvalResults, evalResultsToNewQueue} from "@/scripts/evaluation"
 import {isPllLetter, allPllCaseNames} from "@/scripts/pll_constants";
 import {shuffle} from "@/scripts/helpers";
 import {DefaultAllowedCrossColors, randomCrossColor} from "@/scripts/colors";
+import {saveSession} from "@/scripts/session_history";
 
 const storeKey = 'pll_store';
 const includeNoAufInInitialQueue = false // cases with no AUF might be easier to guess, we don't want this in evaluation
@@ -38,11 +39,16 @@ const defaultStore = {
 
     allowedCrossColors: DefaultAllowedCrossColors,
 
-    showResultsModal: false
+    showResultsModal: false,
+
+    // Session metadata for history tracking
+    sizeOption: 0,
+    presetLabel: 'All Cases',
 }
 
 export const useSessionStore = defineStore('session', () => {
-    const store = reactive(JSON.parse(localStorage.getItem(storeKey)) || defaultStore)
+    const saved = JSON.parse(localStorage.getItem(storeKey))
+    const store = reactive(saved ? { ...defaultStore, ...saved } : defaultStore)
 
     // Non-persisted: signals the most recent answer submission for UI feedback
     const lastSubmission = ref(null)
@@ -133,6 +139,12 @@ export const useSessionStore = defineStore('session', () => {
         store.queue.shift()
         if (store.queue.length === 0) {
             store.state = GameState.EvaluationDone
+            saveSession({
+                pool: store.pool,
+                sizeOption: store.sizeOption,
+                presetLabel: store.presetLabel,
+                results: store.results,
+            }).catch(() => {})
         }
         store.currentRecognitionStarted = new Date()
     }
@@ -158,8 +170,10 @@ export const useSessionStore = defineStore('session', () => {
         store.state = GameState.Paused
     }
 
-    const startSession = (pool = null) => {
+    const startSession = (pool = null, sizeOption = 0, presetLabel = 'All Cases') => {
         store.pool = pool
+        store.sizeOption = sizeOption
+        store.presetLabel = presetLabel
         store.queue = generateEvaluationQueue(store.allowedCrossColors, store.pool)
         store.results = []
         store.mistake = ""
@@ -171,6 +185,8 @@ export const useSessionStore = defineStore('session', () => {
         store.results = []
         store.mistake = ""
         store.state = GameState.Paused
+        store.sizeOption = -1
+        store.presetLabel = store.presetLabel.replace(/ \(personalized\)$/, '') + ' (personalized)'
     }
 
     watch(store, () => {

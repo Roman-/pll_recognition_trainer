@@ -63,8 +63,14 @@ function buildSessionPool() {
   return [...keys, ...shuffle([...keys]).slice(0, extraCount.value)]
 }
 
+function getPresetLabel() {
+  if (selectedPresetId.value === 'custom') return customLabel.value
+  const preset = presets.find(p => p.id === selectedPresetId.value)
+  return preset ? preset.label : 'All Cases'
+}
+
 function startSession() {
-  session.startSession(buildSessionPool())
+  session.startSession(buildSessionPool(), sizeOption.value, getPresetLabel())
   router.push('/trainer')
 }
 
