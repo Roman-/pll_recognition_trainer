@@ -18,7 +18,7 @@ export function useSessionHistory() {
         sessions.value.forEach(s => {
             const key = sessionTypeKey(s)
             if (!types.has(key)) {
-                types.set(key, { label: s.presetLabel, caseCount: s.caseCount, key })
+                types.set(key, { label: s.presetLabel, totalCases: s.totalCases, key })
             }
         })
         return [...types.values()]

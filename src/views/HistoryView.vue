@@ -54,8 +54,7 @@ function repeatSession(s) {
         <select class="form-select form-select-sm d-inline-block" style="max-width: 280px;" v-model="selectedType">
           <option value="all">All types ({{ sessions.length }})</option>
           <option v-for="t in sessionTypes" :key="t.key" :value="t.key">
-            {{ t.label }} ({{ t.caseCount }})
-            <template v-if="trendMap.has(t.key)">{{ trendMap.get(t.key) === 'up' ? '\u25B2' : '\u25BC' }}</template>
+            {{ t.label }} ({{ t.totalCases }})
           </option>
         </select>
       </div>
