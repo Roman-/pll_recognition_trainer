@@ -3,12 +3,23 @@ import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import PllShowcase from '@/components/PllShowcase.vue'
 import GuideGroupCard from '@/components/guide/GuideGroupCard.vue'
+import QuestHero from '@/components/QuestHero.vue'
 import guideData from '@/assets/guide/pll_two_sided_page1.json'
 import { isMobile } from '@/scripts/device'
 import { useKeydown } from '@/composables/useKeydown'
-
+import { useSettingsStore } from '@/stores/SettingsStore'
+import { useSessionStore } from '@/stores/SessionStore'
+import { useQuestProgress } from '@/composables/useQuestProgress'
+import { keysForStep } from '@/scripts/quest'
+import { buildSessionPool } from '@/scripts/session_sizing'
+import { SIZE_MEDIUM } from '@/scripts/session_sizing'
 
 const router = useRouter()
+const settings = useSettingsStore()
+const session = useSessionStore()
+const quest = useQuestProgress()
+
+const questActive = computed(() => settings.store.questMode && settings.store.questStarted)
 
 const groupMap = computed(() => {
   const map = new Map()
@@ -16,18 +27,85 @@ const groupMap = computed(() => {
   return map
 })
 
+// Map guide group IDs to mastery status from quest progress
+const groupMastery = computed(() => {
+  const map = new Map()
+  for (const s of quest.stepStatuses.value) {
+    if (!s.step.isCombo && s.step.groups) {
+      map.set(s.step.groups[0], { mastered: s.mastered, bestAccuracy: s.bestAccuracy })
+    }
+  }
+  return map
+})
+
+function startQuestStep(step) {
+  const keys = keysForStep(step)
+  const pool = step.groups ? buildSessionPool(keys, SIZE_MEDIUM) : null
+  session.startSession(pool, SIZE_MEDIUM, step.label)
+  settings.store.activeQuestStepId = step.id
+  settings.store.questStarted = true
+  router.push('/trainer')
+}
+
+function startJourney() {
+  settings.store.questStarted = true
+}
+
 useKeydown((e) => {
   if (e.code === 'Space' && !e.repeat) {
     e.preventDefault()
-    router.push('/setup')
+    if (questActive.value && quest.currentStep.value && !quest.questComplete.value) {
+      startQuestStep(quest.currentStep.value)
+    } else {
+      router.push('/setup')
+    }
   }
 })
 </script>
 
 <template>
   <div class="container-fluid px-0">
-    <!-- Hero Section -->
-    <section class="hero-section">
+    <!-- Quest Hero (quest mode, started) -->
+    <QuestHero
+      v-if="questActive"
+      :stepStatuses="quest.stepStatuses.value"
+      :currentStep="quest.currentStep.value"
+      :currentStepIndex="quest.currentStepIndex.value"
+      :masteredCount="quest.masteredCount.value"
+      :questComplete="quest.questComplete.value"
+      :loading="quest.loading.value"
+      @startStep="startQuestStep"
+      @freePractice="router.push('/setup')"
+    />
+
+    <!-- New User Hero (quest mode, not started yet) -->
+    <section v-else-if="settings.store.questMode" class="hero-section">
+      <div class="container py-5">
+        <div class="row justify-content-center">
+          <div class="col-12 col-md-8 col-lg-6 text-center">
+            <h1 class="display-4 fw-bold mb-3 animate__animated animate__fadeInDown">PLL Recognition Trainer</h1>
+            <p class="lead text-secondary mb-4 animate__animated animate__fadeIn animate__delay-1s">
+              <strong class="text-primary">73 distinct patterns</strong> hide inside 21 PLL cases —
+              each one can show up in any color combo and from any angle.
+              Train your eye to recognize them all. The trainer adapts to your weaknesses,
+              drilling the patterns you miss until they click.
+            </p>
+            <div class="animate__animated animate__fadeInUp animate__delay-1s">
+              <button class="btn btn-primary btn-lg px-4 py-2 start-btn me-2" @click="startJourney">
+                <i class="bi-map me-1"/>Start Journey
+              </button>
+              <router-link to="/setup" class="btn btn-outline-secondary btn-lg px-4 py-2">
+                Free Practice
+              </router-link>
+              <div v-if="!isMobile" class="text-secondary small mt-2 opacity-50">Press Space to start</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Original Hero (quest mode off) -->
+    <section v-else class="hero-section">
       <div class="container py-5">
         <div class="row justify-content-center">
           <div class="col-12 col-md-8 col-lg-6 text-center">
@@ -123,6 +201,8 @@ useKeydown((e) => {
               :group="groupMap.get(groupId)"
               :defaultPatternColumns="guideData.layout.defaultPatternColumns"
               :showPracticeButton="true"
+              :mastered="groupMastery.get(groupId)?.mastered || false"
+              :bestAccuracy="groupMastery.get(groupId)?.bestAccuracy ?? null"
               @practice="router.push({ path: '/setup', query: { groups: groupId } })"
             />
           </template>

@@ -12,7 +12,10 @@ const defaultSettings = {
     showOnScreenKeyboard: isMobile,
     fullNameMode: false,
     angleVariance: false,
-    colorVariance: false
+    colorVariance: false,
+    questMode: true,
+    questStarted: false,
+    activeQuestStepId: null
 }
 
 const localStorageKey = "pll_recognition_settings"

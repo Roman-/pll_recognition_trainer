@@ -1,7 +1,8 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useSessionStore } from '@/stores/SessionStore'
+import { useSettingsStore } from '@/stores/SettingsStore'
 import { allPllKeys } from '@/scripts/pll_cases'
 import { keysForGroups } from '@/scripts/guide_lookup'
 import { presets, getGroups, presetKeys } from '@/scripts/session_presets'
@@ -14,6 +15,11 @@ import PresetCard from '@/components/PresetCard.vue'
 const router = useRouter()
 const route = useRoute()
 const session = useSessionStore()
+const settings = useSettingsStore()
+
+onMounted(() => {
+  settings.store.activeQuestStepId = null
+})
 const { scrollRef, canScrollLeft, canScrollRight, scrollBy } = useHorizontalScroll()
 
 const selectedPresetId = ref('all')
@@ -82,6 +88,11 @@ useKeydown((e) => {
 
 <template>
   <div class="container py-4">
+    <div v-if="settings.store.questMode && settings.store.questStarted" class="text-center mb-2">
+      <router-link to="/" class="text-secondary small text-decoration-none">
+        <i class="bi-arrow-left me-1"/>Back to Quest
+      </router-link>
+    </div>
     <div class="text-center mb-4">
       <h3 class="fw-bold">Session Setup</h3>
       <p class="text-secondary mb-0">Choose which patterns to practice</p>

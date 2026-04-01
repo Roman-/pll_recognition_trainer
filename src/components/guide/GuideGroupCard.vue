@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import StickerPattern from './StickerPattern.vue'
+import { formatAccuracy } from '@/scripts/formatters'
 
 defineEmits(['practice'])
 
@@ -8,7 +9,9 @@ const props = defineProps({
   group: { type: Object, required: true },
   defaultPatternColumns: { type: Number, default: 6 },
   highlightRowIndex: { type: Number, default: -1 },
-  showPracticeButton: { type: Boolean, default: false }
+  showPracticeButton: { type: Boolean, default: false },
+  mastered: { type: Boolean, default: false },
+  bestAccuracy: { type: Number, default: null },
 })
 
 const renderSegments = computed(() => {
@@ -44,6 +47,8 @@ const renderSegments = computed(() => {
     <div class="card-header guide-group-header">
       <StickerPattern :layers="group.header.layers" :minColumns="defaultPatternColumns" />
       <h6 class="mb-0 fw-bold text-uppercase">{{ group.title }}</h6>
+      <span v-if="mastered" class="ms-auto text-success" title="Mastered"><i class="bi-check-circle-fill"/></span>
+      <span v-else-if="bestAccuracy !== null" class="ms-auto badge text-bg-secondary small">{{ formatAccuracy(bestAccuracy) }}</span>
     </div>
 
     <div class="card-body p-2">
