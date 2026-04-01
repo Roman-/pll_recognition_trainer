@@ -1,11 +1,12 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useSessionStore } from '@/stores/SessionStore'
 import { allPllKeys } from '@/scripts/pll_cases'
 import { keysForGroups } from '@/scripts/guide_lookup'
 import { presets, getGroups, presetKeys } from '@/scripts/session_presets'
 import { shuffle } from '@/scripts/helpers'
+import { computePoolKey, getPersonalBests } from '@/scripts/session_history'
 import { useKeydown } from '@/composables/useKeydown'
 import { useHorizontalScroll } from '@/composables/useHorizontalScroll'
 import PresetCard from '@/components/PresetCard.vue'
@@ -14,6 +15,25 @@ const router = useRouter()
 const route = useRoute()
 const session = useSessionStore()
 const { scrollRef, canScrollLeft, canScrollRight, scrollBy } = useHorizontalScroll()
+
+const presetPBs = ref(new Map())
+
+async function loadPresetPBs() {
+  const map = new Map()
+  for (const preset of presets) {
+    const keys = presetKeys(preset)
+    const poolKey = computePoolKey(keys)
+    const pb = await getPersonalBests(poolKey, sizeOption.value)
+    if (pb) map.set(preset.id, pb)
+  }
+  if (customGroupIds.value) {
+    const keys = keysForGroups(customGroupIds.value)
+    const poolKey = computePoolKey(keys)
+    const pb = await getPersonalBests(poolKey, sizeOption.value)
+    if (pb) map.set('custom', pb)
+  }
+  presetPBs.value = map
+}
 
 const selectedPresetId = ref('all')
 const customGroupIds = ref(null)
@@ -49,6 +69,9 @@ const poolKeys = computed(() => {
 const sizeOptions = [0, 0.15, 0.40, 1]
 const extraCount = computed(() => Math.round(poolKeys.value.length * sizeOption.value))
 const sessionCaseCount = computed(() => poolKeys.value.length + extraCount.value)
+
+onMounted(loadPresetPBs)
+watch(sizeOption, loadPresetPBs)
 
 function selectPreset(id) {
   selectedPresetId.value = id
@@ -103,6 +126,7 @@ useKeydown((e) => {
             :customGroupIds="customGroupIds"
             :customLabel="customLabel"
             :selected="selectedPresetId === 'custom'"
+            :pb="presetPBs.get('custom')"
             @select="selectPreset('custom')"
           />
           <PresetCard
@@ -110,6 +134,7 @@ useKeydown((e) => {
             :key="preset.id"
             :preset="preset"
             :selected="selectedPresetId === preset.id"
+            :pb="presetPBs.get(preset.id)"
             @select="selectPreset(preset.id)"
           />
         </div>
