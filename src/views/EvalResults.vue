@@ -1,6 +1,7 @@
 <script setup>
 import {useSessionStore} from "@/stores/SessionStore";
-import {computed} from "vue";
+import {computed, watch} from "vue";
+import confetti from "@hiseb/confetti";
 import {resultsToEvalResults, evalQueueSize} from "@/scripts/evaluation";
 import ResultsList from "@/components/ResultsList.vue";
 import {msToHumanReadable} from "@/scripts/time_formatter";
@@ -40,6 +41,10 @@ const repeatSession = () => {
 const { pb, sessionNumber, isNewBestAccuracy, isNewBestTime } = useSessionPB(
   session.store.pool, session.store.sizeOption, accuracy, avgTimeMs
 )
+
+watch([isNewBestAccuracy, isNewBestTime], ([acc, time]) => {
+  if (acc || time) confetti({ count: 150, velocity: 250 })
+})
 
 </script>
 
