@@ -4,14 +4,13 @@ import StickerPattern from '@/components/guide/StickerPattern.vue'
 import PbStats from '@/components/PbStats.vue'
 
 const props = defineProps({
-  preset: { type: Object, default: null },
-  customGroupIds: { type: Array, default: null },
-  customLabel: { type: String, default: '' },
+  preset: { type: Object, required: true },
   selected: { type: Boolean, default: false },
+  deletable: { type: Boolean, default: false },
   pb: { type: Object, default: null },
 })
 
-defineEmits(['select'])
+defineEmits(['select', 'delete'])
 </script>
 
 <template>
@@ -22,41 +21,32 @@ defineEmits(['select'])
         <i v-else class="bi-circle text-body-tertiary"></i>
       </div>
 
-      <!-- Custom card -->
-      <template v-if="customGroupIds">
-        <div class="preset-patterns mb-2">
-          <StickerPattern
-            v-for="group in getGroups(customGroupIds)"
-            :key="group.id"
-            :layers="group.header.layers"
-            :cellSize="18"
-            :minColumns="6"
-          />
-        </div>
-        <h6 class="card-title mb-1">{{ customLabel }}</h6>
-        <PbStats v-if="pb" :pb="pb"/>
-        <span class="badge text-bg-secondary mt-auto">{{ presetKeys({ groups: customGroupIds }).length }} cases</span>
-      </template>
+      <button
+        v-if="deletable"
+        class="preset-delete"
+        @click.stop="$emit('delete')"
+        title="Delete preset"
+      >
+        <i class="bi-x-lg"></i>
+      </button>
 
-      <!-- Preset card -->
-      <template v-else-if="preset">
-        <div v-if="preset.groups" class="preset-patterns mb-2">
-          <StickerPattern
-            v-for="group in getGroups(preset.groups)"
-            :key="group.id"
-            :layers="group.header.layers"
-            :cellSize="18"
-            :minColumns="6"
-          />
-        </div>
-        <div v-else class="preset-icon mb-2">
-          <i :class="preset.exclude ? 'bi-dash-circle' : 'bi-grid-3x3-gap-fill'"></i>
-        </div>
-        <h6 class="card-title mb-1">{{ preset.label }}</h6>
-        <small v-if="subtitle(preset)" class="text-secondary d-block mb-2">{{ subtitle(preset) }}</small>
-        <PbStats v-if="pb" :pb="pb"/>
-        <span class="badge text-bg-secondary mt-auto">{{ presetKeys(preset).length }} cases</span>
-      </template>
+      <div v-if="preset.groups" class="preset-patterns mb-2">
+        <StickerPattern
+          v-for="group in getGroups(preset.groups)"
+          :key="group.id"
+          :layers="group.header.layers"
+          :cellSize="18"
+          :minColumns="6"
+        />
+      </div>
+      <div v-else class="preset-icon mb-2">
+        <i :class="preset.exclude ? 'bi-dash-circle' : 'bi-grid-3x3-gap-fill'"></i>
+      </div>
+
+      <h6 class="card-title mb-1">{{ preset.label }}</h6>
+      <small v-if="subtitle(preset)" class="text-secondary d-block mb-2">{{ subtitle(preset) }}</small>
+      <PbStats v-if="pb" :pb="pb"/>
+      <span class="badge text-bg-secondary mt-auto">{{ presetKeys(preset).length }} cases</span>
     </div>
   </div>
 </template>
@@ -85,6 +75,31 @@ defineEmits(['select'])
   top: 8px;
   right: 8px;
   font-size: 1.1rem;
+}
+
+.preset-delete {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  border: none;
+  background: none;
+  color: var(--bs-secondary);
+  font-size: 0.75rem;
+  padding: 2px 4px;
+  line-height: 1;
+  border-radius: 3px;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s, color 0.15s;
+}
+
+.preset-card:hover .preset-delete {
+  opacity: 0.6;
+}
+
+.preset-delete:hover {
+  opacity: 1 !important;
+  color: var(--bs-danger);
 }
 
 .preset-patterns {

@@ -3,19 +3,22 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useSessionStore } from '@/stores/SessionStore'
 import { useSettingsStore } from '@/stores/SettingsStore'
+import { useCustomPresetsStore } from '@/stores/CustomPresetsStore'
 import { allPllKeys } from '@/scripts/pll_cases'
 import { keysForGroups } from '@/scripts/guide_lookup'
-import { presets, getGroups, presetKeys } from '@/scripts/session_presets'
+import { presets, presetKeys } from '@/scripts/session_presets'
 import { SIZE_OPTIONS, SIZE_DEFAULT, SIZE_UNIQUE, computeSessionTotal, computeExtraCount, buildSessionPool as buildPool, sizeHelpText } from '@/scripts/session_sizing'
 import { useKeydown } from '@/composables/useKeydown'
 import { useHorizontalScroll } from '@/composables/useHorizontalScroll'
 import { usePresetPBs } from '@/composables/usePersonalBests'
 import PresetCard from '@/components/PresetCard.vue'
+import CreatePresetModal from '@/components/CreatePresetModal.vue'
 
 const router = useRouter()
 const route = useRoute()
 const session = useSessionStore()
 const settings = useSettingsStore()
+const customPresetsStore = useCustomPresetsStore()
 
 onMounted(() => {
   settings.store.activeQuestStepId = null
@@ -23,43 +26,60 @@ onMounted(() => {
 const { scrollRef, canScrollLeft, canScrollRight, scrollBy } = useHorizontalScroll()
 
 const selectedPresetId = ref('all')
-const customGroupIds = ref(null)
 const sizeOption = ref(SIZE_DEFAULT)
+const showCreateModal = ref(false)
 
 // Initialize from query params (e.g., /setup?groups=three_bar)
 const groupsParam = route.query.groups
 if (groupsParam) {
   const ids = groupsParam.split(',')
   const sorted = [...ids].sort()
-  const match = presets.find(p =>
+  // Check default presets
+  const defaultMatch = presets.find(p =>
     p.groups && p.groups.length === sorted.length &&
     [...p.groups].sort().every((g, i) => g === sorted[i])
   )
-  if (match) {
-    selectedPresetId.value = match.id
+  if (defaultMatch) {
+    selectedPresetId.value = defaultMatch.id
   } else {
-    customGroupIds.value = ids
-    selectedPresetId.value = 'custom'
+    // Check custom presets
+    const customMatch = customPresetsStore.customPresets.find(p =>
+      p.groups.length === sorted.length &&
+      [...p.groups].sort().every((g, i) => g === sorted[i])
+    )
+    if (customMatch) {
+      selectedPresetId.value = customMatch.id
+    } else {
+      // Auto-create a custom preset
+      const preset = customPresetsStore.addPreset(ids.map(id => id).join(' + '), ids)
+      selectedPresetId.value = preset.id
+    }
   }
 }
 
-const customLabel = computed(() =>
-  getGroups(customGroupIds.value).map(g => g.title).join(' + ')
-)
+const allPresets = computed(() => [...presets, ...customPresetsStore.customPresets])
+
+function findPreset(id) {
+  return allPresets.value.find(p => p.id === id)
+}
 
 const poolKeys = computed(() => {
-  if (selectedPresetId.value === 'custom') return keysForGroups(customGroupIds.value)
-  const preset = presets.find(p => p.id === selectedPresetId.value)
+  const preset = findPreset(selectedPresetId.value)
   return preset ? presetKeys(preset) : allPllKeys()
 })
 
 const extraCount = computed(() => computeExtraCount(poolKeys.value.length, sizeOption.value))
 const sessionCaseCount = computed(() => computeSessionTotal(poolKeys.value.length, sizeOption.value))
 
-const { presetPBs } = usePresetPBs(sizeOption, customGroupIds)
+const { presetPBs } = usePresetPBs(sizeOption)
 
 function selectPreset(id) {
   selectedPresetId.value = id
+}
+
+function deletePreset(id) {
+  if (selectedPresetId.value === id) selectedPresetId.value = 'all'
+  customPresetsStore.removePreset(id)
 }
 
 function buildSessionPool() {
@@ -68,8 +88,7 @@ function buildSessionPool() {
 }
 
 function getPresetLabel() {
-  if (selectedPresetId.value === 'custom') return customLabel.value
-  const preset = presets.find(p => p.id === selectedPresetId.value)
+  const preset = findPreset(selectedPresetId.value)
   return preset ? preset.label : 'All Cases'
 }
 
@@ -108,21 +127,21 @@ useKeydown((e) => {
       <div class="preset-scroll" ref="scrollRef">
         <div class="preset-grid">
           <PresetCard
-            v-if="customGroupIds"
-            :customGroupIds="customGroupIds"
-            :customLabel="customLabel"
-            :selected="selectedPresetId === 'custom'"
-            :pb="presetPBs.get('custom')"
-            @select="selectPreset('custom')"
-          />
-          <PresetCard
-            v-for="preset in presets"
+            v-for="preset in allPresets"
             :key="preset.id"
             :preset="preset"
             :selected="selectedPresetId === preset.id"
+            :deletable="preset.id.startsWith('custom_')"
             :pb="presetPBs.get(preset.id)"
             @select="selectPreset(preset.id)"
+            @delete="deletePreset(preset.id)"
           />
+          <div class="card preset-card add-card" @click="showCreateModal = true">
+            <div class="card-body d-flex flex-column align-items-center justify-content-center text-center">
+              <i class="bi-plus-lg add-icon"></i>
+              <small class="text-secondary mt-1">Custom</small>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -146,6 +165,8 @@ useKeydown((e) => {
       </button>
       <div class="text-secondary small mt-2 opacity-50">Press Space to start</div>
     </div>
+
+    <CreatePresetModal v-if="showCreateModal" :closeCallback="() => showCreateModal = false"/>
   </div>
 </template>
 
@@ -200,5 +221,26 @@ useKeydown((e) => {
   display: inline-flex;
   gap: 0.75rem;
   padding: 0.5rem 0.25rem;
+}
+
+.add-card {
+  width: 180px;
+  flex-shrink: 0;
+  cursor: pointer;
+  border: 2px dashed var(--bs-border-color);
+  transition: border-color 0.2s;
+}
+
+.add-card:hover {
+  border-color: rgba(var(--bs-primary-rgb), 0.5);
+}
+
+.add-icon {
+  font-size: 2rem;
+  opacity: 0.4;
+}
+
+.add-card:hover .add-icon {
+  opacity: 0.7;
 }
 </style>

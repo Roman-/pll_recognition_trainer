@@ -1,31 +1,27 @@
 import { ref, computed, watch, onMounted, unref } from 'vue'
 import { presets, presetKeys } from '@/scripts/session_presets'
-import { keysForGroups } from '@/scripts/guide_lookup'
+import { useCustomPresetsStore } from '@/stores/CustomPresetsStore'
 import { computePoolKey, getPersonalBests } from '@/scripts/session_history'
 
-export function usePresetPBs(sizeOption, customGroupIds) {
+export function usePresetPBs(sizeOption) {
     const presetPBs = ref(new Map())
+    const customPresetsStore = useCustomPresetsStore()
 
     async function load() {
         const map = new Map()
-        for (const preset of presets) {
+        const allPresets = [...presets, ...customPresetsStore.customPresets]
+        for (const preset of allPresets) {
             const keys = presetKeys(preset)
             const poolKey = computePoolKey(keys)
             const pb = await getPersonalBests(poolKey, unref(sizeOption))
             if (pb) map.set(preset.id, pb)
-        }
-        const groupIds = unref(customGroupIds)
-        if (groupIds) {
-            const keys = keysForGroups(groupIds)
-            const poolKey = computePoolKey(keys)
-            const pb = await getPersonalBests(poolKey, unref(sizeOption))
-            if (pb) map.set('custom', pb)
         }
         presetPBs.value = map
     }
 
     onMounted(load)
     watch(sizeOption, load)
+    watch(() => customPresetsStore.customPresets.length, load)
 
     return { presetPBs }
 }
