@@ -26,7 +26,7 @@ export async function saveSession({ pool, sizeOption, presetLabel, results }) {
     })
 }
 
-export async function getSessionsByType(poolKey, sizeOption) {
+async function getSessionsByType(poolKey, sizeOption) {
     return db.sessions.where({ poolKey, sizeOption }).sortBy('completedAt')
 }
 

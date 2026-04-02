@@ -2,7 +2,7 @@ import {reactive, watch} from 'vue'
 import {defineStore} from 'pinia'
 
 const notesKey = 'pll_notes';
-// notes: {`name/auf` : note}
+// notes: {`name/rotation` : note}
 const initialNotes = JSON.parse(localStorage.getItem(notesKey)) || {}
 
 export const useNotesStore = defineStore('notes', () => {

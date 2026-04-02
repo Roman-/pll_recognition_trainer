@@ -13,6 +13,10 @@ Client-side Vue 3 web app for speedcubers to practice recognizing PLL (Permutati
 - **UI:** Bootstrap 5 + 17 swappable themes (12 light + 5 dark)
 - **Cube rendering:** sr-puzzlegen-pll (SVG output)
 - **Session history:** Dexie.js (IndexedDB wrapper)
+- **Color manipulation:** colord (HSV shifting for color variance)
+- **Confetti:** @hiseb/confetti (celebration effects on PBs/mastery)
+- **Animations:** animate.css (entrance animations)
+- **Icons:** Bootstrap Icons (icon font used app-wide)
 
 ## Commands
 
@@ -25,9 +29,10 @@ Client-side Vue 3 web app for speedcubers to practice recognizing PLL (Permutati
 ```
 main.js → App.vue
               ├── NavBar (+ ThemeSwitcher)
+              ├── AppFooter
               └── Router
-                   ├── / → HomeView (landing + PllShowcase + GuideGroupCard grid)
-                   ├── /setup → SessionSetupView (session config + PresetCard)
+                   ├── / → HomeView (landing + QuestHero + PllShowcase + GuideGroupCard grid)
+                   ├── /setup → SessionSetupView (session config + PresetCard → PbStats)
                    ├── /trainer → TrainerView (game active)
                    │                ├── PllPic (cube SVG)
                    │                ├── GuideHint → GuideGroupCard
@@ -36,8 +41,8 @@ main.js → App.vue
                    │                ├── ResultsList → ResultItem → PllPic + Note
                    │                └── ResultsModal (mobile results overlay)
                    ├── /results → EvalResults (evaluation done)
-                   │                ├── ResultsList → ResultItem
-                   │                └── AppFooter
+                   │                ├── EvalCtaButtons (action buttons)
+                   │                └── ResultsList → ResultItem
                    ├── /history → HistoryView (session history + PB tracking)
                    └── /settings → SettingsView
                                     ├── PllPic (preview)
@@ -54,8 +59,8 @@ main.js → App.vue
 | Store | localStorage Key | Purpose |
 |-------|-----------------|---------|
 | SessionStore | `pll_store` | Game state machine (Paused/Playing/EvaluationDone), case queue, results array, current mistake tracking, `lastSubmission` for button feedback |
-| SettingsStore | `pll_recognition_settings` | Cube view angle, stroke width, color scheme, allowed cross colors, on-screen keyboard toggle, fullNameMode |
-| NotesStore | `pll_notes` | Per-case user notes keyed by `"name/auf"` |
+| SettingsStore | `pll_recognition_settings` | Cube view angle, stroke width, color scheme, allowed cross colors, on-screen keyboard toggle, fullNameMode, angleVariance, colorVariance, questMode, questStarted, activeQuestStepId |
+| NotesStore | `pll_notes` | Per-case user notes keyed by `"name/rotation"` |
 | ThemeStore | `my_pll.*` | Dark/light mode, theme names |
 
 **Session History (IndexedDB via Dexie.js):** Completed sessions are automatically saved to IndexedDB (`pll_trainer` database) when the queue empties. Each record stores poolKey, sizeOption, presetLabel, accuracy, and timing stats. HistoryView displays all sessions with filtering by type and personal best (PB) tracking. See `src/db.js` and `src/scripts/session_history.js`.
@@ -73,25 +78,32 @@ main.js → App.vue
 
 Sorts results worst-to-best, then: worst 15% repeated 4x, next 15% 3x, next 20% 2x, remaining 1x, unattempted cases 1x. Queue is shuffled with fresh random AUF/color shifts.
 
+### Session Sizing (session_sizing.js)
+
+Three size options control session length via duplicate cases added to the pool:
+- **SIZE_UNIQUE (0):** Exactly one of each case (no duplicates — order becomes predictable)
+- **SIZE_MEDIUM (1):** `roundUpTo(max(unique × 1.2, unique + 4), 5)` — ~20% extra, rounded to nearest 5
+- **SIZE_LARGE (2):** `roundUpTo(max(unique × 1.6, unique + 11), 10)` — ~60% extra, rounded to nearest 10
+
 ## Data Models
 
 **PLL Case:** `{ name, rotation, dTurn, colorShift, crossColor }`
 
-**Result:** `{ pllCase, started: Date, finished: Date, mistake: "" | "-" | "WrongLetter" }`
+**Result:** `{ pllCase, started: Date, finished: Date, mistake: "" | "-" | <wrong answer> }` — empty string = correct on first try, `"-"` = gave up, otherwise the literal wrong answer typed (e.g. `"A"`, `"Gb"`)
 
 **Algorithm DB** (src/assets/algs/pll.json): 21 PLL cases, each with 4 AUF variants (noAuf, U, U2, U'), multiple algorithm strings per variant.
 
 ## Key Directories
 
 - `src/components/` — Vue components
-- `src/composables/` — Vue composables (useKeydown, useBreakpoint, useTrainerKeyboard, useHorizontalScroll)
+- `src/composables/` — Vue composables (useKeydown, useBreakpoint, useTrainerKeyboard, useHorizontalScroll, usePersonalBests, useSessionHistory, useQuestProgress)
 - `src/stores/` — Pinia state management
 - `src/views/` — Page-level components
-- `src/scripts/` — Utility modules (helpers, colors, pll_cases, pll_constants, scramble, cube_sim, guide_lookup, session_presets, evaluation, time_formatter, device)
+- `src/scripts/` — Utility modules (helpers, colors, pll_cases, pll_constants, scramble, cube_sim, cube_display, guide_lookup, session_presets, session_sizing, session_history, evaluation, time_formatter, formatters, game_constants, device, quest)
 - `src/assets/algs/` — PLL algorithm database (JSON)
 - `src/assets/guide/` — Two-sided PLL recognition guide data (JSON)
 - `src/assets/bootstrap_themes/` — 17 pre-bundled Bootstrap theme CSS files
-- `docs/` — Technical documentation (guide integration, cube simulator, improvement suggestions)
+- `docs/` — Technical documentation (guide integration, cube simulator)
 
 ## Rendering Pipeline
 
@@ -99,7 +111,7 @@ PllPic.vue calls sr-puzzlegen's `SVG()` with a scramble string (inverse of the P
 
 ## Keyboard Input
 
-Handled in TrainerView.vue via `useKeydown` composable: Space (resume / "Press Space to start" on HomeView), Escape (pause), A-Z (submit answer filtered by isPllLetter), Minus/F1/? (give up), Shift+N (edit note). Mobile users get OnScreenKeyboard.vue with 13 letter buttons (or 21 full-name buttons in fullNameMode).
+Handled in TrainerView.vue via `useTrainerKeyboard` composable (which wraps `useKeydown`): Space (resume / "Press Space to start" on HomeView), Escape (pause), A-Z (submit answer filtered by isPllLetter), give up keys: `-`, `F1`, `?`, `s`, `S`, `/` (see `isHelpKey`), Shift+N (edit note), Shift+C (debug cheat — auto-submits correct answer). Mobile users get OnScreenKeyboard.vue with 13 letter buttons (or 21 full-name buttons in fullNameMode).
 
 ## Recognition Guide Integration
 
@@ -116,3 +128,21 @@ See `docs/guide_integration.md` for full details and `docs/cube_sim.md` for the 
 - 16 variations per case — 4 AUFs x 4 color shifts ensure recognition from any angle
 - localStorage persistence — session state survives refresh
 - IndexedDB for session history — completed sessions persist across sessions for PB tracking
+
+## Quest Mode
+
+A guided learning journey that introduces PLL recognition patterns in a structured order. Defined in `src/scripts/quest.js`, progress tracked by `src/composables/useQuestProgress.js`, UI rendered by `src/components/QuestHero.vue`.
+
+**13 steps across 5 phases:**
+
+| Phase | Steps |
+|-------|-------|
+| 1. Most Distinctive | Double Lights, Three-Bar |
+| 2. Lights | Lone Lights, Lights + 2-Bar, All Lights (combo) |
+| 3. Bars | Double 2-Bar, Outside 2-Bar, Inside 2-Bar, All Bars (combo) |
+| 4. Bookends | Bookends No Bar, No Bookends, Look Around (combo) |
+| 5. Grand Finale | All Cases (combo) |
+
+**Mastery:** A step is mastered when best session accuracy ≥ 90% (`MASTERY_ACCURACY`) for that step's pool at SIZE_MEDIUM. Combo steps review all groups from their phase.
+
+**Settings:** `questMode` (show quest UI on home), `questStarted` (user began the journey), `activeQuestStepId` (current step during a session, used by EvalResults for quest-specific CTAs).

@@ -5,6 +5,7 @@ import {computed, watch} from "vue";
 import confetti from "@hiseb/confetti";
 import {resultsToEvalResults, evalQueueSize} from "@/scripts/evaluation";
 import ResultsList from "@/components/ResultsList.vue";
+import EvalCtaButtons from "@/components/EvalCtaButtons.vue";
 import {msToHumanReadable} from "@/scripts/time_formatter";
 import {formatAccuracy} from "@/scripts/formatters";
 import {useRouter} from "vue-router";
@@ -147,39 +148,13 @@ watch(questMastered, (mastered) => {
     <!-- Primary CTA card -->
     <div class="card cta-card mt-2" style="max-width: 480px; width: 100%;">
       <div class="card-body text-center py-3">
-        <template v-if="isQuestSession">
-          <button v-if="questMastered && nextQuestStep" class="btn btn-primary btn-lg px-4 py-2 start-btn" @click="startNextQuestStep">
-            <i class="bi-arrow-right-circle-fill me-1"/>Next: {{ nextQuestStep.label }}
-          </button>
-          <button v-else-if="questMastered && !nextQuestStep" class="btn btn-success btn-lg px-4 py-2 start-btn" @click="router.push('/')">
-            <i class="bi-trophy-fill me-1"/>Journey Complete!
-          </button>
-          <button v-else class="btn btn-primary btn-lg px-4 py-2 start-btn" @click="retryQuestStep">
-            <i class="bi-arrow-counterclockwise me-1"/>Try Again
-          </button>
-        </template>
-        <template v-else>
-          <button class="btn btn-primary btn-lg px-4 py-2 start-btn" @click="startPersonalizedTraining">
-            <i class="bi-lightning-charge-fill me-1"/>Personalized Training ({{ personalizedCount }})
-          </button>
-          <p class="text-secondary small mt-2 mb-0">
-            Drills the cases you got wrong more often, with extra repetitions for your weakest patterns.
-          </p>
-        </template>
+        <EvalCtaButtons
+          :isQuestSession="isQuestSession" :questMastered="questMastered" :nextQuestStep="nextQuestStep"
+          :personalizedCount="personalizedCount" :showDescription="true"
+          @startNext="startNextQuestStep" @retry="retryQuestStep" @personalized="startPersonalizedTraining"
+          @repeat="repeatSession" @newSession="router.push('/setup')" @journeyComplete="router.push('/')"
+        />
       </div>
-    </div>
-
-    <!-- Secondary actions -->
-    <div class="d-flex flex-wrap justify-content-center gap-2 mt-3">
-      <button v-if="isQuestSession" class="btn btn-sm btn-outline-primary" @click="startPersonalizedTraining">
-        <i class="bi-lightning-charge-fill me-1"/>Personalized ({{ personalizedCount }})
-      </button>
-      <button class="btn btn-sm btn-outline-secondary" @click="repeatSession">
-        <i class="bi-arrow-counterclockwise me-1"/>Repeat
-      </button>
-      <button class="btn btn-sm btn-outline-secondary" @click="router.push('/setup')">
-        <i class="bi-plus-circle me-1"/>{{ isQuestSession ? 'Free Practice' : 'New Session' }}
-      </button>
     </div>
 
     <!-- Results list -->
@@ -190,35 +165,14 @@ watch(questMastered, (mastered) => {
       <ResultsList :results="evalResults" :pictureSize="220" :showNotes="true" :showTopPicture="true" :cardLayout="true"/>
     </div>
 
-    <!-- Bottom CTAs (duplicated after scrolling through results) -->
+    <!-- Bottom CTAs (repeated after scrolling through results) -->
     <div class="col-12 col-md-8 col-lg-6 mx-auto text-center bottom-cta pt-3 mt-4 mb-4">
-      <template v-if="isQuestSession">
-        <button v-if="questMastered && nextQuestStep" class="btn btn-primary btn-lg px-4 py-2 start-btn" @click="startNextQuestStep">
-          <i class="bi-arrow-right-circle-fill me-1"/>Next: {{ nextQuestStep.label }}
-        </button>
-        <button v-else-if="questMastered && !nextQuestStep" class="btn btn-success btn-lg px-4 py-2 start-btn" @click="router.push('/')">
-          <i class="bi-trophy-fill me-1"/>Journey Complete!
-        </button>
-        <button v-else class="btn btn-primary btn-lg px-4 py-2 start-btn" @click="retryQuestStep">
-          <i class="bi-arrow-counterclockwise me-1"/>Try Again
-        </button>
-      </template>
-      <template v-else>
-        <button class="btn btn-primary btn-lg px-4 py-2 start-btn" @click="startPersonalizedTraining">
-          <i class="bi-lightning-charge-fill me-1"/>Personalized Training ({{ personalizedCount }})
-        </button>
-      </template>
-      <div class="d-flex flex-wrap justify-content-center gap-2 mt-2">
-        <button v-if="isQuestSession" class="btn btn-sm btn-outline-primary" @click="startPersonalizedTraining">
-          <i class="bi-lightning-charge-fill me-1"/>Personalized ({{ personalizedCount }})
-        </button>
-        <button class="btn btn-sm btn-outline-secondary" @click="repeatSession">
-          <i class="bi-arrow-counterclockwise me-1"/>Repeat
-        </button>
-        <button class="btn btn-sm btn-outline-secondary" @click="router.push('/setup')">
-          <i class="bi-plus-circle me-1"/>{{ isQuestSession ? 'Free Practice' : 'New Session' }}
-        </button>
-      </div>
+      <EvalCtaButtons
+        :isQuestSession="isQuestSession" :questMastered="questMastered" :nextQuestStep="nextQuestStep"
+        :personalizedCount="personalizedCount" :showDescription="false"
+        @startNext="startNextQuestStep" @retry="retryQuestStep" @personalized="startPersonalizedTraining"
+        @repeat="repeatSession" @newSession="router.push('/setup')" @journeyComplete="router.push('/')"
+      />
     </div>
   </div>
 </template>

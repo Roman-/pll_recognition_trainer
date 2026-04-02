@@ -40,8 +40,8 @@ export const useThemeStore = defineStore('theme', () => {
   const name = computed(()=> isDark.value ? darkThemeName.value : lightThemeName.value);
   const icon = computed(() => isDark.value ? "bi-moon" : "bi-sun");
 
-  const getThemeCssUrl = (name) => {
-    return new URL(`../assets/bootstrap_themes/${name}.min.css`, import.meta.url).href
+  const getThemeCssUrl = (themeName) => {
+    return new URL(`../assets/bootstrap_themes/${themeName}.min.css`, import.meta.url).href
   }
 
   function applyCurrentTheme() {
@@ -64,17 +64,19 @@ export const useThemeStore = defineStore('theme', () => {
     }
   }
 
-  function setThemeName(name, isDark) {
-    if (!isAvailable(name, isDark)) {
-      return console.error("setThemeName("+isDark+"): " + name + " not available in themes set");
+  function setThemeName(themeName, forDarkMode) {
+    if (!isAvailable(themeName, forDarkMode)) {
+      return console.error("setThemeName(" + forDarkMode + "): " + themeName + " not available in themes set");
     }
-    (isDark ? darkThemeName : lightThemeName).value = name;
-    applyCurrentTheme();
-    localStorage.setItem(isDark ? darkNameKey : lightNameKey, name);
+    (forDarkMode ? darkThemeName : lightThemeName).value = themeName;
+    if (forDarkMode === isDark.value) {
+      applyCurrentTheme();
+    }
+    localStorage.setItem(forDarkMode ? darkNameKey : lightNameKey, themeName);
   }
 
-  function setDarkTheme(name){ setThemeName(name, true) }
-  function setLightTheme(name){ setThemeName(name, false); }
+  function setDarkTheme(themeName){ setThemeName(themeName, true) }
+  function setLightTheme(themeName){ setThemeName(themeName, false); }
 
   function reset() {
     isDark.value = defaultIsDark;

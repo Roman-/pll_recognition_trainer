@@ -8,18 +8,12 @@ const noteHotkey = 'N'
 
 const props = defineProps({
   pllCase: Object,
-  key: String,
   enableHotkeys: Boolean
 })
 
 const input = ref(null)
 
-const key = computed(() => {
-  if (props.key) {
-    return props.key;
-  }
-  return caseToKey(props.pllCase)
-})
+const key = computed(() => caseToKey(props.pllCase))
 const isEditing = ref(false)
 const notes = useNotesStore()
 
@@ -41,7 +35,7 @@ const inputKeyDown = (e) => {
   if (e.key === 'Enter' || e.key === 'Escape') {
     finishEditing()
     e.stopPropagation()
-    e.preventDefault() // this is redundant, and e.stopPropagation() should be below the brace
+    e.preventDefault()
   }
 }
 
@@ -50,7 +44,7 @@ const componentKeyDown = (e) => {
   if (isEditing.value) {
     return
   }
-  // shift + E to enable editing
+  // shift + N to enable editing
   if (e.key === noteHotkey && e.shiftKey) {
     startEditing()
     e.stopPropagation()
@@ -91,7 +85,7 @@ if (props.enableHotkeys) {
           <button
               @click="startEditing"
               class="btn btn-link btn-sm mx-1"
-              :title="'Edit' + props.enableHotkeys ? ` (shift+${noteHotkey})` : ''"
+              :title="'Edit' + (props.enableHotkeys ? ` (shift+${noteHotkey})` : '')"
           >
             <i class="bi bi-pencil"></i>
           </button>
@@ -103,6 +97,3 @@ if (props.enableHotkeys) {
     </div>
   </div>
 </template>
-
-<style scoped>
-</style>
