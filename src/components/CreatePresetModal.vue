@@ -76,11 +76,6 @@ function save() {
   Modal.getInstance(modalRef.value)?.hide()
 }
 
-function resetAll() {
-  customPresetsStore.clearAll()
-  Modal.getInstance(modalRef.value)?.hide()
-}
-
 onMounted(() => {
   const m = new Modal(modalRef.value)
   m.show()
@@ -107,9 +102,14 @@ onMounted(() => {
             >
           </div>
 
-          <div class="d-flex justify-content-end gap-2 mb-2">
-            <button class="btn btn-outline-secondary btn-sm" @click="selectAll">All</button>
-            <button class="btn btn-outline-secondary btn-sm" @click="selectNone">None</button>
+          <div class="d-flex align-items-center mb-2">
+            <span class="text-secondary small">
+              {{ selected.size > 0 ? totalCases + ' cases selected' : '\u00a0' }}
+            </span>
+            <div class="ms-auto d-flex gap-2">
+              <button class="btn btn-outline-secondary btn-sm" @click="selectAll">All</button>
+              <button class="btn btn-outline-secondary btn-sm" @click="selectNone">None</button>
+            </div>
           </div>
 
           <div class="group-grid">
@@ -136,15 +136,6 @@ onMounted(() => {
             </template>
           </div>
 
-          <div class="text-center mt-3 text-secondary small">
-            {{ selected.size > 0 ? totalCases + ' cases selected' : '\u00a0' }}
-          </div>
-
-          <div v-if="customPresetsStore.customPresets.length > 0" class="text-center mt-3">
-            <button class="btn btn-link btn-sm text-danger text-decoration-none" @click="resetAll">
-              <i class="bi-trash3 me-1"/>Reset all custom presets
-            </button>
-          </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
