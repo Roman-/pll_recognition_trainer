@@ -2,13 +2,13 @@
 import {useSettingsStore} from "@/stores/SettingsStore";
 import {useThemeStore, lightThemesSet, darkThemesSet} from "@/stores/ThemeStore";
 import PllPic from "@/components/PllPic.vue";
-import {randomCrossColor} from "@/scripts/colors";
-import {CubeViews, strokeWidthOptions} from "@/scripts/cube_display";
+import {randomCrossColor, mutateColorScheme} from "@/scripts/colors";
+import {CubeViews, strokeWidthOptions, randomRotationOffset} from "@/scripts/cube_display";
 import CrossColorPicker from "@/components/CrossColorPicker.vue";
 import ColorToneEditor from "@/components/ColorToneEditor.vue";
 import {useNotesStore} from "@/stores/NotesStore";
 import {clearAllSessions} from "@/scripts/session_history";
-import {computed} from "vue";
+import {computed, ref, watch} from "vue";
 
 const settings = useSettingsStore()
 const notesStore = useNotesStore()
@@ -30,6 +30,16 @@ const resetSettings = () => {
 }
 
 const pictureCrossColor = computed(() => randomCrossColor(settings.store.allowedCrossColors))
+
+const rotationOverride = ref(settings.store.angleVariance ? randomRotationOffset(settings.store.puzzleRotations) : null)
+const colorSchemeOverride = ref(settings.store.colorVariance ? mutateColorScheme(settings.store.colorScheme) : null)
+
+watch(() => settings.store.angleVariance, (on) => {
+  rotationOverride.value = on ? randomRotationOffset(settings.store.puzzleRotations) : null
+})
+watch(() => settings.store.colorVariance, (on) => {
+  colorSchemeOverride.value = on ? mutateColorScheme(settings.store.colorScheme) : null
+})
 
 const resetJourney = async () => {
   if (confirm("This will permanently delete all training history, personal bests, and quest progress. Continue?")) {
@@ -77,7 +87,7 @@ const clearAllNotes = () => {
         </div>
 
         <div class="text-center mb-3">
-          <PllPic :pllCase="pllCaseForPicture" viewType="cube" :size="250" :crossColor="pictureCrossColor"/>
+          <PllPic :pllCase="pllCaseForPicture" viewType="cube" :size="250" :crossColor="pictureCrossColor" :rotationOverride="rotationOverride" :colorSchemeOverride="colorSchemeOverride"/>
         </div>
 
         <div class="mb-3">
