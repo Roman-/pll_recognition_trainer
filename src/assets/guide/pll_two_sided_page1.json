@@ -50,7 +50,7 @@
   "groups": [
     {
       "id": "three_bar",
-      "title": "3-BAR",
+      "title": "3-Bar",
       "gridRow": 0,
       "gridCol": 0,
       "header": {
@@ -161,7 +161,7 @@
     },
     {
       "id": "double_lights",
-      "title": "DOUBLE LIGHTS",
+      "title": "Double Lights",
       "gridRow": 0,
       "gridCol": 1,
       "header": {
@@ -261,7 +261,7 @@
     },
     {
       "id": "lights_plus_2bar",
-      "title": "LIGHTS + 2-BAR",
+      "title": "Lights + 2-Bar",
       "gridRow": 0,
       "gridCol": 2,
       "header": {
@@ -376,7 +376,7 @@
     },
     {
       "id": "lone_lights",
-      "title": "LONE LIGHTS",
+      "title": "Lone Lights",
       "gridRow": 1,
       "gridCol": 0,
       "header": {
@@ -476,7 +476,7 @@
     },
     {
       "id": "double_2bar",
-      "title": "DOUBLE 2-BAR",
+      "title": "Double 2-Bar",
       "gridRow": 1,
       "gridCol": 1,
       "header": {
@@ -610,7 +610,7 @@
     },
     {
       "id": "outside_2bar",
-      "title": "OUTSIDE 2-BAR",
+      "title": "Outside 2-Bar",
       "gridRow": 1,
       "gridCol": 2,
       "header": {
@@ -729,7 +729,7 @@
     },
     {
       "id": "inside_2bar",
-      "title": "INSIDE 2-BAR",
+      "title": "Inside 2-Bar",
       "gridRow": 2,
       "gridCol": 0,
       "header": {
@@ -810,7 +810,7 @@
     },
     {
       "id": "bookends_no_bar",
-      "title": "BOOKENDS NO BAR",
+      "title": "Bookends No Bar",
       "gridRow": 2,
       "gridCol": 1,
       "header": {
@@ -891,7 +891,7 @@
     },
     {
       "id": "no_bookends",
-      "title": "NO BOOKENDS",
+      "title": "No Bookends",
       "gridRow": 2,
       "gridCol": 2,
       "header": {

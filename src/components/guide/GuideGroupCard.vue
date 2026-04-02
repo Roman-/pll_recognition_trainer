@@ -46,7 +46,7 @@ const renderSegments = computed(() => {
   <article class="card guide-group">
     <div class="card-header guide-group-header">
       <StickerPattern :layers="group.header.layers" :minColumns="defaultPatternColumns" />
-      <h6 class="mb-0 fw-bold text-uppercase">{{ group.title }}</h6>
+      <h6 class="mb-0 fw-bold">{{ group.title }}</h6>
       <span v-if="mastered" class="ms-auto text-success" title="Mastered"><i class="bi-check-circle-fill"/></span>
       <span v-else-if="bestAccuracy !== null" class="ms-auto badge text-bg-secondary small">{{ formatAccuracy(bestAccuracy) }}</span>
     </div>
