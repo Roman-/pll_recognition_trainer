@@ -1,12 +1,10 @@
 # PLL Recognition Trainer
 
-**[bestsiteever.net/pll_recognition](https://bestsiteever.net/pll_recognition)**
+**[avelytchko.github.io/pll_recognition_trainer](https://avelytchko.github.io/pll_recognition_trainer)**
 
 ![app preview](public/pll_recognition_trainer.jpg "App preview")
 
 A browser-based trainer for speedcubers to practice recognizing PLL (Permutation of the Last Layer) cases. Presents each case in up to 16 variations (4 AUFs x 4 color shifts) and adapts to your performance so you spend more time on the cases you struggle with. No account needed — everything runs client-side with localStorage.
-
-Video overview: [YouTube](https://youtu.be/lIjel-amSeg?si=nLCzXIcVpmAKlFyn)
 
 ## Features
 

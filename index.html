@@ -2,20 +2,30 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <link rel="icon" href="/favicon.ico" sizes="48x48">
-    <link rel="icon" href="/icon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-    <link rel="manifest" href="/manifest.json">
+    <link rel="icon" href="%BASE_URL%favicon.ico" sizes="48x48">
+    <link rel="icon" href="%BASE_URL%icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="%BASE_URL%apple-touch-icon.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#222222">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="PLL Trainer">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <title>PLL Recognition Trainer</title>
     <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=%VITE_GA_ID%"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-    
-      gtag('config', '%VITE_GA_ID%');
+    <script type="module">
+      const gaId = import.meta.env.VITE_GA_ID || '';
+      if (gaId) {
+        const gaScript = document.createElement('script');
+        gaScript.async = true;
+        gaScript.src = `https://www.googletagmanager.com/gtag/js?id=${gaId}`;
+        document.head.appendChild(gaScript);
+
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', gaId);
+      }
     </script>
     <meta name="description" content="Adaptive, keyboard-driven PLL recognition trainer">
 </head>

@@ -17,9 +17,11 @@ const isDarkKey = "my_pll.is_dark";
 const darkNameKey = "my_pll.dark_name";
 const lightNameKey = "my_pll.light_name";
 
-const defaultIsDark = false;
+const defaultIsDark = true;
 const defaultLightName = "flatly";
 const defaultDarkName = "darkly";
+const defaultLightThemeColor = "#ffffff";
+const defaultDarkThemeColor = "#222222";
 
 export const lightThemesSet = ["cerulean", "cosmo", "flatly", "litera", "lux", "materia", "minty", "morph", "quartz", "sandstone", "sketchy", "zephyr"];
 export const darkThemesSet = ["cyborg", "darkly", "slate", "solar", "superhero"];
@@ -33,8 +35,13 @@ function loadFromStorage(key, defaultValue, validator) {
   return validator ? (validator(stored) ? stored : defaultValue) : stored;
 }
 
+function loadBooleanFromStorage(key, defaultValue) {
+  const stored = localStorage?.getItem(key);
+  return stored == null ? defaultValue : stored === "true";
+}
+
 export const useThemeStore = defineStore('theme', () => {
-  const isDark = ref(localStorage?.getItem(isDarkKey) === "true")
+  const isDark = ref(loadBooleanFromStorage(isDarkKey, defaultIsDark))
   const lightThemeName = ref(loadFromStorage(lightNameKey, defaultLightName, n => isAvailable(n, false)));
   const darkThemeName = ref(loadFromStorage(darkNameKey, defaultDarkName, n => isAvailable(n, true)));
   const name = computed(()=> isDark.value ? darkThemeName.value : lightThemeName.value);
@@ -42,6 +49,17 @@ export const useThemeStore = defineStore('theme', () => {
 
   const getThemeCssUrl = (themeName) => {
     return new URL(`../assets/bootstrap_themes/${themeName}.min.css`, import.meta.url).href
+  }
+
+  function setThemeColor(color) {
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (!meta) return;
+    meta.setAttribute('content', color);
+  }
+
+  function updateThemeColor(fallbackColor = isDark.value ? defaultDarkThemeColor : defaultLightThemeColor) {
+    const themeColor = getComputedStyle(document.documentElement).getPropertyValue('--bs-body-bg').trim();
+    setThemeColor(themeColor || fallbackColor);
   }
 
   function applyCurrentTheme() {
@@ -53,7 +71,10 @@ export const useThemeStore = defineStore('theme', () => {
       link.rel = 'stylesheet';
       document.head.appendChild(link);
     }
-    document.getElementById("bootstrap_stylesheet").href = getThemeCssUrl(name.value);
+    const stylesheet = document.getElementById("bootstrap_stylesheet");
+    stylesheet.addEventListener('load', () => updateThemeColor(), { once: true });
+    setThemeColor(isDark.value ? defaultDarkThemeColor : defaultLightThemeColor);
+    stylesheet.href = getThemeCssUrl(name.value);
   }
 
   function toggleDayNight() {
